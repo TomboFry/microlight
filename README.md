@@ -1,5 +1,9 @@
 # microlight (or µLight, or µlite, etc)
 
+> **Please note:** The code quality of this repository is going to be very low
+> quality until I figure out the right direction and how to **properly** manage
+> databases in PHP...
+
 ## Why?
 
 Microlight is a blogging engine based on [IndieWeb](https://indieweb.org)-based
@@ -25,8 +29,9 @@ concepts. This means support for:
 ## Requirements
 
 * **PHP v7**
-* **MySQL** - may potentially be database agnostic, I haven't gotten that far
-  yet though.
+  Being developed on PHP 7.2, although it probably will work on 5.5 and above
+* **PDO SQLite**
+  I would like it to be database agnostic, but I haven't gotten that far yet.
 
 ## Installation
 
