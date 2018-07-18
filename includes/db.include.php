@@ -2,7 +2,7 @@
 
 if (!defined('MICROLIGHT_INIT')) die();
 
-require('sql.include.php');
+require_once('sql.include.php');
 
 class DBError extends Exception {}
 
@@ -29,8 +29,10 @@ class Model {
 		$this->db = $db->db;
 		$this->table_name = $table_name;
 
-		// Create the various statements
-		$this->findAllStatement = $this->db->prepare("SELECT * FROM $table_name LIMIT :limit OFFSET :offset");
+		// Prepare various statements
+		$this->findAllStatement = $this->db->prepare(
+			"SELECT * FROM $table_name LIMIT :limit OFFSET :offset"
+		);
 		if ($this->findAllStatement === false) {
 			throw new DBError("Table \"$table_name\" not set up - TODO: Redirect to install.php", 0);
 		}
@@ -66,7 +68,7 @@ class Identity extends Model {
 		$db->db->exec($db->sql->create($this->table_name, [
 			[
 				'column' => 'id',
-				'type' => 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE'
+				'type' => SQL::PRIMARY_KEY_TYPE
 			],
 			[
 				'column' => 'name',
@@ -97,7 +99,7 @@ class RelMe extends Model {
 		$db->db->exec($db->sql->create($this->table_name, [
 			[
 				'column' => 'id',
-				'type' => 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE'
+				'type' => SQL::PRIMARY_KEY_TYPE
 			],
 			[
 				'column' => 'name',
@@ -127,7 +129,7 @@ class Post extends Model {
 		$db->db->exec($db->sql->create($this->table_name, [
 			[
 				'column' => 'id',
-				'type' => 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE'
+				'type' => SQL::PRIMARY_KEY_TYPE
 			],
 			[
 				'column' => 'name',
@@ -177,11 +179,11 @@ class PostTag extends Model {
 		$db->db->exec($db->sql->create($this->table_name, [
 			[
 				'column' => 'id',
-				'type' => 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE'
+				'type' => SQL::PRIMARY_KEY_TYPE
 			],
 			[
 				'column' => 'tag',
-				'type' => 'TEXT'
+				'type' => 'TEXT NOT NULL'
 			]
 		], [
 			[

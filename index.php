@@ -4,11 +4,12 @@
 define('MICROLIGHT_INIT', 'true');
 
 // Load configuration
-require('includes/config.php');
+require_once('includes/config.php');
 
-// Set up a connection to the database
 try {
-	require('includes/db.include.php');
+	require_once('includes/db.include.php');
+
+	// Set up a connection to the database
 	$db = new DB();
 
 	// Load Identity

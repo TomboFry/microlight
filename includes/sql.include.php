@@ -10,6 +10,10 @@
 if (!defined('MICROLIGHT_INIT')) die();
 
 class SQL {
+	// Static variables
+	const PRIMARY_KEY_TYPE = 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE';
+
+	// Class variables and functions
 	private $db;
 
 	function __construct(&$db) {
@@ -40,12 +44,12 @@ class SQL {
 	}
 
 	private function foreignKeyToString ($foreign_keys) {
-		array_walk($foreign_keys, function ($foreign_key_properties) use (&$acc) {
+		array_walk($foreign_keys, function ($key_props) use (&$acc) {
 			// The table to refer to
-			$table = $foreign_key_properties['table'];
+			$table = $key_props['table'];
 
 			// The column name from the foreign table
-			$reference = $foreign_key_properties['reference'];
+			$reference = $key_props['reference'];
 
 			// Check all three props
 			$this->regex_test('/^[a-zA-Z_]+$/', $table);
@@ -53,7 +57,9 @@ class SQL {
 
 			$column = $table . '_' . $reference;
 
-			$acc .= ", `$column` INTEGER NOT NULL, FOREIGN KEY(`$column`) REFERENCES `$table`(`$reference`)";
+			$acc .= ", `$column` INTEGER NOT NULL,"
+				. " FOREIGN KEY(`$column`)"
+				. " REFERENCES `$table`(`$reference`)";
 		});
 
 		return $acc;
