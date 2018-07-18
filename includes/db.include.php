@@ -32,7 +32,7 @@ class Model {
 		// Create the various statements
 		$this->findAllStatement = $this->db->prepare("SELECT * FROM $table_name LIMIT :limit OFFSET :offset");
 		if ($this->findAllStatement === false) {
-			throw new DBError("Table \"$table_name\" not set up - TODO: Redirect to install.php");
+			throw new DBError("Table \"$table_name\" not set up - TODO: Redirect to install.php", 0);
 		}
 	}
 
@@ -97,7 +97,7 @@ class RelMe extends Model {
 		$db->db->exec($db->sql->create($this->table_name, [
 			[
 				'column' => 'id',
-				'type' => 'INTEGER'
+				'type' => 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE'
 			],
 			[
 				'column' => 'name',
@@ -105,16 +105,87 @@ class RelMe extends Model {
 			],
 			[
 				'column' => 'url',
-				'type' => 'TEXT'
-			],
-			[
-				'column' => 'identity_id',
-				'type' => 'INTEGER'
+				'type' => 'TEXT NOT NULL'
 			]
 		], [
 			[
-				'column' => 'identity_id',
 				'table' => 'identity',
+				'reference' => 'id'
+			]
+		]));
+		*/
+	}
+}
+
+class Post extends Model {
+	public $table_name = 'post';
+
+	function __construct (&$db) {
+		parent::__construct($db, $this->table_name);
+
+		/*
+		$db->db->exec($db->sql->create($this->table_name, [
+			[
+				'column' => 'id',
+				'type' => 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE'
+			],
+			[
+				'column' => 'name',
+				'type' => 'TEXT'
+			],
+			[
+				'column' => 'content',
+				'type' => 'TEXT NOT NULL'
+			],
+			[
+				'column' => 'type',
+				'type' => 'TEXT NOT NULL'
+			],
+			[
+				'column' => 'slug',
+				'type' => 'TEXT NOT NULL'
+			],
+			[
+				'column' => 'published',
+				'type' => 'TEXT NOT NULL'
+			],
+			[
+				'column' => 'location',
+				'type' => 'TEXT'
+			],
+			[
+				'column' => 'url',
+				'type' => 'TEXT'
+			]
+		], [
+			[
+				'table' => 'identity',
+				'reference' => 'id'
+			]
+		]));
+		*/
+	}
+}
+
+class PostTag extends Model {
+	public $table_name = 'tag';
+
+	function __construct (&$db) {
+		parent::__construct($db, $this->table_name);
+
+		/*
+		$db->db->exec($db->sql->create($this->table_name, [
+			[
+				'column' => 'id',
+				'type' => 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE'
+			],
+			[
+				'column' => 'tag',
+				'type' => 'TEXT'
+			]
+		], [
+			[
+				'table' => 'post',
 				'reference' => 'id'
 			]
 		]));

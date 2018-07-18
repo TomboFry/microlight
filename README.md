@@ -29,7 +29,7 @@ concepts. This means support for:
 ## Requirements
 
 * **PHP v7**
-  Being developed on PHP 7.2, although it probably will work on 5.5 and above
+  Being developed on PHP 7.1, although it probably will work on 5.5 and above
 * **PDO SQLite**
   I would like it to be database agnostic, but I haven't gotten that far yet.
 

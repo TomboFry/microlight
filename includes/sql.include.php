@@ -44,19 +44,16 @@ class SQL {
 			// The table to refer to
 			$table = $foreign_key_properties['table'];
 
-			// The column name in the current table
-			$column = $foreign_key_properties['column'];
-
 			// The column name from the foreign table
 			$reference = $foreign_key_properties['reference'];
 
 			// Check all three props
 			$this->regex_test('/^[a-zA-Z_]+$/', $table);
-			$this->regex_test('/^[a-zA-Z_]+$/', $column);
 			$this->regex_test('/^[a-zA-Z_]+$/', $reference);
 
-			$acc .= ', FOREIGN KEY(`' . $column . '`) REFERENCES `' . $table
-				. '`(`' . $reference . '`)';
+			$column = $table . '_' . $reference;
+
+			$acc .= ", `$column` INTEGER NOT NULL, FOREIGN KEY(`$column`) REFERENCES `$table`(`$reference`)";
 		});
 
 		return $acc;

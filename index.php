@@ -18,10 +18,13 @@ try {
 	// are found.
 	$me = $identity->findOne();
 	echo $me['name'] . "<br />";
+	echo $me['email'] . "<br />";
 	echo $me['note'] . "<br />";
 
-	// Load the URLs that belong to the user
+	// Load all classes
 	$relme = new RelMe($db);
+	$posts = new Post($db);
+	$posttags = new PostTag($db);
 
 	// Close DB connection
 	$db->close();
