@@ -21,7 +21,7 @@ class DB {
 }
 
 class Model {
-	private $table_name = '';
+	private $table_name = ''; // Inherited classes must set this.
 	private $findAllStatement;
 	private $db;
 
@@ -30,18 +30,23 @@ class Model {
 		$this->table_name = $table_name;
 
 		// Create the various statements
-		$this->findAllStatement = $this->db->prepare("SELECT * FROM $table_name");
+		$this->findAllStatement = $this->db->prepare("SELECT * FROM $table_name LIMIT :limit OFFSET :offset");
 		if ($this->findAllStatement === false) {
-			throw new DBError('Table not set up - TODO: Redirect to install.php');
+			throw new DBError("Table \"$table_name\" not set up - TODO: Redirect to install.php");
 		}
 	}
 
-	function findAll () {
+	function findAll ($limit = -1, $offset = 0) {
+		$this->findAllStatement->bindParam(':limit', $limit);
+		$this->findAllStatement->bindParam(':offset', $offset);
 		$this->findAllStatement->execute();
 		return $this->findAllStatement->fetchAll();
 	}
 
-	function findOne () {
+	function findOne ($offset = 0) {
+		$limit = 1;
+		$this->findAllStatement->bindParam(':limit', $limit);
+		$this->findAllStatement->bindParam(':offset', $offset);
 		$this->findAllStatement->execute();
 		return $this->findAllStatement->fetch();
 	}
@@ -49,9 +54,6 @@ class Model {
 
 class Identity extends Model {
 	public $table_name = 'identity';
-	public $name;
-	public $email;
-	public $note; // Tagline / description / short sentence about yourself.
 
 	function __construct (&$db) {
 		parent::__construct($db, $this->table_name);
@@ -68,7 +70,7 @@ class Identity extends Model {
 			],
 			[
 				'column' => 'name',
-				'type' => 'TEXT'
+				'type' => 'TEXT NOT NULL'
 			],
 			[
 				'column' => 'email',
@@ -85,8 +87,6 @@ class Identity extends Model {
 
 class RelMe extends Model {
 	public $table_name = 'relme';
-	public $name;
-	public $url;
 
 	function __construct (&$db) {
 		parent::__construct($db, $this->table_name);
