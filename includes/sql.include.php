@@ -9,7 +9,9 @@
 
 if (!defined('MICROLIGHT_INIT')) die();
 
-abstract class SQLOP {
+require_once('lib/enum.php');
+
+abstract class SQLOP extends BasicEnum {
 	const EQUAL = '=';
 	const LIKE = 'LIKE';
 	const GT = '>';
@@ -104,6 +106,9 @@ class SQL {
 
 			// Make sure "column" is actually a valid column name
 			$this->regex_test('/^[a-zA-Z_]+$/', $column);
+			if (!SQLOP::isValidValue($operator)) {
+				throw new Exception("Operator \"$operator\" invalid");
+			}
 
 			if ($index > 0) {
 				$acc .= ' AND';
