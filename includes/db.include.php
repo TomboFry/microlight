@@ -72,7 +72,7 @@ class Identity extends Model {
 			],
 			[
 				'column' => 'name',
-				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
+				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
 			],
 			[
 				'column' => 'email',
@@ -107,7 +107,7 @@ class RelMe extends Model {
 			],
 			[
 				'column' => 'url',
-				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
+				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
 			]
 		], [
 			[
@@ -137,19 +137,19 @@ class Post extends Model {
 			],
 			[
 				'column' => 'content',
-				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
+				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
 			],
 			[
 				'column' => 'type',
-				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
+				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
 			],
 			[
 				'column' => 'slug',
-				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
+				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
 			],
 			[
 				'column' => 'published',
-				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
+				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
 			],
 			[
 				'column' => 'location',
@@ -183,7 +183,7 @@ class PostTag extends Model {
 			],
 			[
 				'column' => 'tag',
-				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
+				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
 			]
 		], [
 			[

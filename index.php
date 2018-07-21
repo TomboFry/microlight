@@ -13,14 +13,13 @@ try {
 	$db = new DB();
 
 	// Load Identity
-	$identity = new Identity($db);
+	$Me = (new Identity($db))->findOne();
 
 	// For now, simply print the name and description of the user if they
 	// are found.
-	$me = $identity->findOne();
-	echo $me['name'] . "<br />";
-	echo $me['email'] . "<br />";
-	echo $me['note'] . "<br />";
+	echo $Me->name . "<br />";
+	echo $Me->email . "<br />";
+	echo $Me->note . "<br />";
 
 	// Load all classes
 	$relme = new RelMe($db);
