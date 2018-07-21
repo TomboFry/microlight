@@ -22,35 +22,30 @@ class DB {
 
 class Model {
 	private $table_name = ''; // Inherited classes must set this.
-	private $findAllStatement;
 	private $db;
+	private $sql;
 
 	function __construct(&$db, $table_name) {
 		$this->db = $db->db;
+		$this->sql = $db->sql;
 		$this->table_name = $table_name;
-
-		// Prepare various statements
-		$this->findAllStatement = $this->db->prepare(
-			"SELECT * FROM $table_name LIMIT :limit OFFSET :offset"
-		);
-		if ($this->findAllStatement === false) {
-			throw new DBError("Table \"$table_name\" not set up - TODO: Redirect to install.php", 0);
-		}
 	}
 
-	function findAll ($limit = -1, $offset = 0) {
-		$this->findAllStatement->bindParam(':limit', $limit);
-		$this->findAllStatement->bindParam(':offset', $offset);
-		$this->findAllStatement->execute();
-		return $this->findAllStatement->fetchAll();
+	// Main "SELECT" function, to fetch data from the DB
+	function find ($where = [], $limit = -1, $offset = 0) {
+		$sql = "SELECT * FROM $this->table_name";
+		$sql .= $this->sql->where($where);
+		$sql .= " LIMIT $limit OFFSET $offset";
+		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
+		return $stmt->fetchAll();
 	}
 
-	function findOne ($offset = 0) {
-		$limit = 1;
-		$this->findAllStatement->bindParam(':limit', $limit);
-		$this->findAllStatement->bindParam(':offset', $offset);
-		$this->findAllStatement->execute();
-		return $this->findAllStatement->fetch();
+	// Essentially the same as the "find" function but will return a single
+	// object, instead of an array.
+	function findOne ($where = [], $offset = 0) {
+		$results = $this->find($where, 1, $offset);
+		if (count($results) > 0) return $results[0];
+		return NULL;
 	}
 }
 

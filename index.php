@@ -19,12 +19,18 @@ try {
 	// are found.
 	echo $Me->name . "<br />";
 	echo $Me->email . "<br />";
-	echo $Me->note . "<br />";
+	echo $Me->note . "<br /><br />";
 
 	// Load all classes
 	$relme = new RelMe($db);
 	$posts = new Post($db);
 	$posttags = new PostTag($db);
+	$links = $relme->find();
+
+	foreach ($links as $key => $value) {
+		echo $value->name . "<br />";
+		echo $value->url . "<br /><br/>";
+	}
 
 	// Close DB connection
 	$db->close();

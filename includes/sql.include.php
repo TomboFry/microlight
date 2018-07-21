@@ -9,6 +9,15 @@
 
 if (!defined('MICROLIGHT_INIT')) die();
 
+abstract class SQLOP {
+	const EQUAL = '=';
+	const LIKE = 'LIKE';
+	const GT = '>';
+	const GTE = '>=';
+	const LT = '<';
+	const LTE = '<=';
+}
+
 class SQL {
 	// Static variables
 	const PRIMARY_KEY_TYPE = 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE';
@@ -85,5 +94,24 @@ class SQL {
 		$full_string .= ');';
 		return $full_string;
 	}
-}
 
+	public function where ($conditions) {
+		array_walk($conditions, function ($condition, $index) use (&$acc) {
+			// Get condition properties
+			$column = $condition['column'];
+			$operator = $condition['operator'];
+			$value = $condition['value'];
+
+			// Make sure "column" is actually a valid column name
+			$this->regex_test('/^[a-zA-Z_]+$/', $column);
+
+			if ($index > 0) {
+				$acc .= ' AND';
+			} else {
+				$acc .= ' WHERE';
+			}
+			$acc .= " $column $operator '$value'";
+		});
+		return $acc;
+	}
+}
