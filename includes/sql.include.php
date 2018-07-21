@@ -12,6 +12,9 @@ if (!defined('MICROLIGHT_INIT')) die();
 class SQL {
 	// Static variables
 	const PRIMARY_KEY_TYPE = 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE';
+	const TEXT_TYPE = 'TEXT';
+	const INTEGER_TYPE = 'INTEGER';
+	const NOT_NULL = ' NOT NULL';
 
 	// Class variables and functions
 	private $db;
@@ -26,6 +29,10 @@ class SQL {
 	}
 
 	private function propsToString ($properties) {
+		// `array_walk` loops over every property provided.
+
+		// NOTE: Does not validate the structure of them, only the
+		// contents assuming they exist. Should it?
 		array_walk($properties, function ($property, $key) use (&$acc) {
 			// Make sure "type" only contains alpha chars or a space
 			$this->regex_test('/^[a-zA-Z ]+$/', $property['type']);
@@ -44,6 +51,10 @@ class SQL {
 	}
 
 	private function foreignKeyToString ($foreign_keys) {
+		// `array_walk` loops over every property provided.
+
+		// NOTE: Does not validate the structure of them, only the
+		// contents assuming they exist. Should it?
 		array_walk($foreign_keys, function ($key_props) use (&$acc) {
 			// The table to refer to
 			$table = $key_props['table'];

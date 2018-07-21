@@ -72,15 +72,15 @@ class Identity extends Model {
 			],
 			[
 				'column' => 'name',
-				'type' => 'TEXT NOT NULL'
+				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
 			],
 			[
 				'column' => 'email',
-				'type' => 'TEXT'
+				'type' => SQL::TEXT_TYPE
 			],
 			[
 				'column' => 'note',
-				'type' => 'TEXT'
+				'type' => SQL::TEXT_TYPE
 			]
 		]));
 		*/
@@ -103,11 +103,11 @@ class RelMe extends Model {
 			],
 			[
 				'column' => 'name',
-				'type' => 'TEXT'
+				'type' => SQL::TEXT_TYPE
 			],
 			[
 				'column' => 'url',
-				'type' => 'TEXT NOT NULL'
+				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
 			]
 		], [
 			[
@@ -133,31 +133,31 @@ class Post extends Model {
 			],
 			[
 				'column' => 'name',
-				'type' => 'TEXT'
+				'type' => SQL::TEXT_TYPE
 			],
 			[
 				'column' => 'content',
-				'type' => 'TEXT NOT NULL'
+				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
 			],
 			[
 				'column' => 'type',
-				'type' => 'TEXT NOT NULL'
+				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
 			],
 			[
 				'column' => 'slug',
-				'type' => 'TEXT NOT NULL'
+				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
 			],
 			[
 				'column' => 'published',
-				'type' => 'TEXT NOT NULL'
+				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
 			],
 			[
 				'column' => 'location',
-				'type' => 'TEXT'
+				'type' => SQL::TEXT_TYPE
 			],
 			[
 				'column' => 'url',
-				'type' => 'TEXT'
+				'type' => SQL::TEXT_TYPE
 			]
 		], [
 			[
@@ -183,7 +183,7 @@ class PostTag extends Model {
 			],
 			[
 				'column' => 'tag',
-				'type' => 'TEXT NOT NULL'
+				'type' => SQL::TEXT_TYPE + SQL::NOT_NULL
 			]
 		], [
 			[
