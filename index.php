@@ -21,17 +21,8 @@ try {
 	die();
 }
 
-// Show Debug Information (for now)
-echo "<strong>Debug:</strong><br />";
-echo "Slug: '$post_slug'<br />";
-echo "Tag: '$post_tag'<br />";
-echo "Type: '$post_type'<br />";
-echo "Page: '$pagination'<br />";
-echo "Search Query: '$search_query'<br />";
-echo "Showing: '$showing'<br />";
-
-echo '<pre>' . var_export($Me, true) . '</pre>';
-echo '<pre>' . var_export($Posts, true) . '</pre>';
+// Initialise the theme
+require_once("themes/" . Config::THEME . "/index.php");
 
 // Kill the PHP script. Some free webhosts like to inject their tracking scripts
 // and this should hopefully prevent that.

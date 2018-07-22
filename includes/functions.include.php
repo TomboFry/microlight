@@ -57,7 +57,9 @@ function ml_database_setup () {
 
 	// Load Identity
 	$Me = (new Identity($db))->findOne();
-	$Me->links = (new RelMe($db))->find();
+	if ($Me !== NULL) {
+		$Me->links = (new RelMe($db))->find();
+	}
 }
 
 function ml_load_posts () {
@@ -126,4 +128,31 @@ function ml_load_posts () {
 function ml_database_close () {
 	global $db;
 	$db->close();
+}
+
+function ml_get_name () {
+	global $Me;
+
+	return $Me->name;
+}
+
+// Returns the title, depending on whether you're on a single post or not.
+function ml_get_title() {
+	global $showing;
+	global $Posts;
+
+	$str = "";
+	if ($showing === Show::POST || $showing === Show::PAGE) {
+		$str .= $Posts->name . Config::TITLE_SEPARATOR;
+	}
+	$str .= ml_get_name();
+	return $str;
+}
+
+function ml_get_permalink ($Post) {
+	return '/?post_slug=' . $Post->slug;
+}
+
+function ml_get_theme_dir () {
+	return '/themes/' . Config::THEME;
 }

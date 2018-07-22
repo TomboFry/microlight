@@ -1,0 +1,32 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	max-width: 640px;
+	width: 100%;
+	margin: 0 auto;
+	font-family: sans-serif;
+}
+
+p {
+	line-height: 20px;
+	margin-bottom: 10px;
+}
+h1,h2 {
+	margin-bottom: 16px;
+}
+
+header {
+	padding: 32px;
+	padding-bottom: 16px;
+}
+
+article {
+	padding: 16px;
+	padding-bottom: 0;
+	margin-top: 16px;
+	border-top: 1px solid #ccc;
+}

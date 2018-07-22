@@ -9,11 +9,24 @@ class Config {
 
 	// DB File (string):
 	// The location of the SQLite database file, relative to root.
+	// default: 'microlight.db'
 	const DB_FILE = 'microlight.db';
 
 	// Posts Per Page (integer):
 	// How many posts should be shown on the homepage or while searching
+	// default: 20
 	const POSTS_PER_PAGE = 20;
+
+	// Theme (string):
+	// The folder name of the theme you would like to use for this blog
+	// default: 'uberlight'
+	const THEME = 'uberlight';
+
+	// Title Separator (string):
+	// What splits up your name and the post name in the title bar
+	// eg. "Your Name | Post Title"
+	// default: ' | '
+	const TITLE_SEPARATOR = ' | ';
 }
 
 /**********************************
