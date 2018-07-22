@@ -21,14 +21,19 @@ class DB {
 }
 
 class Model {
-	private $table_name = ''; // Inherited classes must set this.
-	private $db;
-	private $sql;
+	public $table_name = ''; // Inherited classes must set this.
+	public $db;
+	public $sql;
 
 	function __construct(&$db, $table_name) {
 		$this->db = $db->db;
 		$this->sql = $db->sql;
 		$this->table_name = $table_name;
+	}
+
+	// This should be run by the inherited classes
+	function createTable () {
+		throw new DBError('Cannot create an empty table', 1);
 	}
 
 	// Main "SELECT" function, to fetch data from the DB
@@ -55,6 +60,11 @@ class Model {
 		if (count($results) > 0) return $results[0];
 		return NULL;
 	}
+
+	function insert($properties) {
+		$sql = 'INSERT INTO ' . $this->table_name . $this->sql->insert($properties);
+		$this->db->query($sql, PDO::FETCH_OBJ);
+	}
 }
 
 class Identity extends Model {
@@ -62,13 +72,11 @@ class Identity extends Model {
 
 	function __construct (&$db) {
 		parent::__construct($db, $this->table_name);
+	}
 
+	function createTable() {
 		// Create the table if it does not already exist
-
-		// We should assume that this table already exists, and should
-		// therefore not be run every time the blog is loaded.
-		/*
-		$db->db->exec($db->sql->create($this->table_name, [
+		$this->db->exec($this->sql->create($this->table_name, [
 			[
 				'column' => 'id',
 				'type' => SQL::PRIMARY_KEY_TYPE
@@ -86,7 +94,6 @@ class Identity extends Model {
 				'type' => SQL::TEXT_TYPE
 			]
 		]));
-		*/
 	}
 }
 
@@ -95,11 +102,11 @@ class RelMe extends Model {
 
 	function __construct (&$db) {
 		parent::__construct($db, $this->table_name);
+	}
 
-		// We should assume that this table already exists, and should
-		// therefore not be run every time the blog is loaded.
-		/*
-		$db->db->exec($db->sql->create($this->table_name, [
+	function createTable() {
+		// Create the table if it does not already exist
+		$this->db->exec($this->sql->create($this->table_name, [
 			[
 				'column' => 'id',
 				'type' => SQL::PRIMARY_KEY_TYPE
@@ -118,7 +125,6 @@ class RelMe extends Model {
 				'reference' => 'id'
 			]
 		]));
-		*/
 	}
 }
 
@@ -127,9 +133,11 @@ class Post extends Model {
 
 	function __construct (&$db) {
 		parent::__construct($db, $this->table_name);
+	}
 
-		/*
-		$db->db->exec($db->sql->create($this->table_name, [
+	function createTable() {
+		// Create the table if it does not already exist
+		$this->db->exec($this->sql->create($this->table_name, [
 			[
 				'column' => 'id',
 				'type' => SQL::PRIMARY_KEY_TYPE
@@ -189,7 +197,6 @@ class Post extends Model {
 				'reference' => 'id'
 			]
 		]));
-		*/
 	}
 
 	function find ($where = [], $limit = -1, $offset = 0, $orderField = 'id', $orderDirection = 'DESC') {

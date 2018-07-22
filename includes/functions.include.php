@@ -6,7 +6,6 @@ function ml_get_not_blank($var) {
 	return (isset($_GET[$var]) && $_GET[$var] !== "");
 }
 
-
 function ml_showing () {
 	global $post_slug;
 	global $post_tag;
@@ -155,4 +154,9 @@ function ml_get_permalink ($Post) {
 
 function ml_get_theme_dir () {
 	return '/themes/' . Config::THEME;
+}
+
+// Returns the full URL, including "http(s)"
+function ml_base_url() {
+	return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
 }

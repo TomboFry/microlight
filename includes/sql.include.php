@@ -119,4 +119,17 @@ class SQL {
 		});
 		return $acc;
 	}
+
+	public function insert ($properties) {
+		$keys = '';
+		$values = '';
+		$str = '';
+
+		foreach ($properties as $key => $value) {
+			$keys .= '`' . $key . '`,';
+			$values .= '\'' . $value . '\',';
+		};
+
+		return ' (' . substr($keys, 0, -1) . ') VALUES (' . substr($values, 0, -1) . ')';
+	}
 }
