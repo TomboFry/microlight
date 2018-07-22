@@ -6,6 +6,10 @@ function ml_get_not_blank($var) {
 	return (isset($_GET[$var]) && $_GET[$var] !== "");
 }
 
+function ml_post_not_blank($var) {
+	return (isset($_POST[$var]) && $_POST[$var] !== "");
+}
+
 function ml_showing () {
 	global $post_slug;
 	global $post_tag;
@@ -148,15 +152,16 @@ function ml_get_title() {
 	return $str;
 }
 
-function ml_get_permalink ($Post) {
-	return '/?post_slug=' . $Post->slug;
-}
-
-function ml_get_theme_dir () {
-	return '/themes/' . Config::THEME;
-}
-
 // Returns the full URL, including "http(s)"
 function ml_base_url() {
 	return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
+}
+
+// Returns an absolute link to a specific post
+function ml_get_permalink ($Post) {
+	return ml_base_url() . '/?post_slug=' . $Post->slug;
+}
+
+function ml_get_theme_dir () {
+	return ml_base_url() . '/themes/' . Config::THEME;
 }

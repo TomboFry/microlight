@@ -63,7 +63,8 @@ class Model {
 
 	function insert($properties) {
 		$sql = 'INSERT INTO ' . $this->table_name . $this->sql->insert($properties);
-		$this->db->query($sql, PDO::FETCH_OBJ);
+		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
+		return $this->db->lastInsertId();
 	}
 }
 

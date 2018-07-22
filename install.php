@@ -3,9 +3,84 @@
 define('MICROLIGHT_INIT', true);
 require_once('includes/config.php');
 
+function putValue ($val, $index = NULL) {
+	echo ml_post_not_blank($val)
+		? $index !== NULL
+			? $_POST[$val][$index]
+			: $_POST[$val]
+		: '';
+}
+
 if (isset($_POST['submit'])) {
-	echo "<pre>" . var_export($_POST, true) . "</pre>";
+	// echo "<pre>" . var_export($_POST, true) . "</pre>";
+
+	$errors = [];
+	$services = [];
+
+	try {
+		// Validate POST variables first
+		if (!ml_post_not_blank('name')) array_push($errors, 'Name required');
+		if (!ml_post_not_blank('email')) array_push($errors, 'Email required');
+		foreach ($_POST['sm_service_names'] as $index => $name) {
+			$url = $_POST['sm_service_urls'][$index];
+			if (!empty($name) && empty($url)) {
+				array_push($errors, "Service '$name' requires a URL");
+			} else if (!empty($name) && !empty($url)) {
+				array_push($services, [
+					'name' => $name,
+					'url' => $url
+				]);
+			}
+		}
+
+		if (count($errors) === 0) {
+			$name = $_POST['name'];
+			$email = $_POST['email'];
+			$note = $_POST['note'];
+			$sm_service_names = $_POST['sm_service_names'];
+			$sm_service_urls = $_POST['sm_service_urls'];
+
+			// Connect to DB
+			$db = new DB();
+
+			// Create identity table
+			$identity = new Identity($db);
+			$identity->createTable();
+
+			// Create RelMe table
+			$relme = new RelMe($db);
+			$relme->createTable();
+
+			// Create posts table
+			$post = new Post($db);
+			$post->createTable();
+
+			$identity_id = $identity->insert([
+				'name' => $name,
+				'email' => $email,
+				'note' => $note
+			]);
+
+			foreach ($services as $key => $value) {
+				$relme->insert([
+					'name' => $value['name'],
+					'url' => $value['url'],
+					'identity_id' => $identity_id
+				]);
+			}
+		}
+	} catch (Exception $e) {
+		array_push($errors, $e->getMessage());
+	}
 } else {
+	try {
+		$db = new DB();
+		$identity = new Identity($db);
+		if ($identity->findOne() !== NULL) {
+			header('Location: index.php');
+		}
+	} catch (Exception $e) {}
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +96,6 @@ if (isset($_POST['submit'])) {
 			box-sizing: border-box;
 		}
 		body {
-			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 			width: 100%;
 			padding: 64px;
 			max-width: 640px;
@@ -29,16 +103,21 @@ if (isset($_POST['submit'])) {
 			color: #333;
 			line-height: 1;
 		}
-		body > * {
-			margin-bottom: 16px;
+		body, input {
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 		}
 		h1 {
 			font-weight: 300;
 			font-size: 32pt;
 		}
-		.p {
-			line-height: 1.4em;
-		}
+
+		body > * { margin-bottom: 16px }
+		a { color: #3fa9f5 }
+		a:hover { color: #3793d5 }
+		.p { line-height: 1.4em }
+		.i-left { border-right: 0 !important }
+		ul { margin-left: 24px }
+
 		.f {
 			display: block;
 			width: 100%;
@@ -64,9 +143,6 @@ if (isset($_POST['submit'])) {
 			margin-bottom: 8px;
 			font-size: 18px;
 		}
-		.i-left {
-			border-right: 0 !important;
-		}
 		.d {
 			display: block;
 			margin-top: 8px;
@@ -91,6 +167,13 @@ if (isset($_POST['submit'])) {
 			color: #E34;
 			border-radius: 6px;
 		}
+		.s {
+			padding: 16px;
+			border: 1px solid #184;
+			/* background-color: #4A3; */
+			color: #184;
+			border-radius: 6px;
+		}
 		#install {
 			background: #4A3;
 			background: linear-gradient(#5B5, #4A3);
@@ -112,25 +195,51 @@ if (isset($_POST['submit'])) {
 </head>
 <body>
 	<h1>Install Microlight</h1>
+	<?php if (!empty($errors)) { ?>
+	<div class='p w'>
+		Some errors occurred during installation:
+		<ul>
+		<?php
+			foreach($errors as $err) {
+				echo "<li>$err</li>";
+			}
+		?>
+		</ul>
+	</div>
+	<?php } else if (isset($_POST['submit'])){ ?>
+	<p class='p s'>
+		Installation successful! You can now create posts using a
+		micropub editor/publisher.
+	</p>
+	<a class='f' href="<?php echo ml_base_url(); ?>">&lt; Go Home</a>
+	</body></html>
+	<?php die(); ?>
+	<?php } else { ?>
 	<p class='p w'>
 		You are viewing this page because Microlight has not been
 		completely set up. You will need to create an identity to begin
 		using Microlight.
 	</p>
+	<?php } ?>
 	<form action='' method='POST'>
 		<div class='f'>
 			<label for='name'>
-				Full Name
+				Name
 				<span class='r'>required</span>
 			</label>
-			<input required type='text' name='name' id='name' />
+			<input required type='text' name='name' id='name' value='<?php putValue('name'); ?>' />
+			<span class='d p'>
+				Who do you identify as? This will be displayed
+				prominently on your homepage and by every post
+				you make.
+			</span>
 		</div>
 		<div class='f'>
 			<label for='email'>
 				Email Address
 				<span class='r'>required</span>
 			</label>
-			<input required type='email' name='email' id='email' />
+			<input required type='email' name='email' id='email' value='<?php putValue('email'); ?>' />
 			<span class='d p'>
 				Your email is not sent to me, it is simply to
 				display on your homepage as contact information.
@@ -142,6 +251,7 @@ if (isset($_POST['submit'])) {
 		<div class='f'>
 			<label for='note'>Note / Tagline</label>
 			<input type='text' name='note' id='note' />
+			<span class='d p'>Describe yourself. What makes you, you?</span>
 		</div>
 		<div class='f'>
 			<label for='l'>
@@ -152,25 +262,43 @@ if (isset($_POST['submit'])) {
 					<input
 						type='text'
 						placeholder='Name (eg. "Twitter")'
-						name='sm_service[]'
+						name='sm_service_names[]'
 						class='i-left'
-					/><input type='url' placeholder='URL' name='sm_url[]' />
+						value='<?php putValue('sm_service_names', 0); ?>'
+					/><input
+						type='url'
+						placeholder='URL'
+						name='sm_service_urls[]'
+						value='<?php putValue('sm_service_urls', 0); ?>'
+					/>
 				</div>
 				<div class='account'>
 					<input
 						type='text'
 						placeholder='Name (eg. "GitHub")'
-						name='sm_service[]'
+						name='sm_service_names[]'
 						class='i-left'
-					/><input type='url' placeholder='URL' name='sm_url[]' />
+						value='<?php putValue('sm_service_names', 1); ?>'
+					/><input
+						type='url'
+						placeholder='URL'
+						name='sm_service_urls[]'
+						value='<?php putValue('sm_service_urls', 1); ?>'
+					/>
 				</div>
 				<div class='account'>
 					<input
 						type='text'
 						placeholder='Name'
-						name='sm_service[]'
+						name='sm_service_names[]'
 						class='i-left'
-					/><input type='url' placeholder='URL' name='sm_url[]' />
+						value='<?php putValue('sm_service_names', 2); ?>'
+					/><input
+						type='url'
+						placeholder='URL'
+						name='sm_service_urls[]'
+						value='<?php putValue('sm_service_urls', 2); ?>'
+					/>
 				</div>
 			</div>
 			<span class='d p b'>
@@ -178,7 +306,8 @@ if (isset($_POST['submit'])) {
 				these social media accounts (instead of email),
 				<a href='<?php echo ml_base_url(); ?>'>your
 				homepage</a> must appear on the accounts you
-				have specified.
+				have specified. See <a target='_blank' href='https://indieweb.org/IndieAuth'>IndieAuth</a>
+				for more information.
 			</span>
 		</div>
 		<div class='f b'>
@@ -187,4 +316,6 @@ if (isset($_POST['submit'])) {
 	</form>
 </body>
 </html>
-<?php } die(); ?>
+<?php
+
+die();
