@@ -7,43 +7,31 @@ define('MICROLIGHT_INIT', 'true');
 require_once('includes/config.php');
 
 try {
-	require_once('includes/db.include.php');
 
-	// Set up a connection to the database
-	$db = new DB();
+	// Determine what post to show
+	ml_showing();
 
-	// Load Identity
-	$Me = (new Identity($db))->findOne();
-	$Me->links = (new RelMe($db))->find([
-		[
-			'column' => 'identity_id',
-			'operator' => SQLOP::EQUAL,
-			'value' => $Me->id
-		]
-	]);
-
-	$Posts = (new Post($db))->find([
-		[
-			'column' => 'identity_id',
-			'operator' => SQLOP::EQUAL,
-			'value' => $Me->id
-		]
-	]);
-
-	foreach ($Posts as $key => $value) {
-		echo "$value->content<br/>";
-		echo "$value->published<br/>";
-		echo implode(' - ', $value->tags) . "<br/>";
-		echo "<br/>";
-	}
-
-	// Close DB connection
-	$db->close();
+	ml_database_setup();
+	ml_load_posts();
+	ml_database_close();
 } catch (Exception $e) {
 	echo "<h1>Error (likely, for now)</h1>";
 	echo "<p><strong>Message:</strong> {$e->getMessage()}</p>";
 	echo "<p><strong>Code:</strong> {$e->getCode()}</p>";
+	die();
 }
+
+// Show Debug Information (for now)
+echo "<strong>Debug:</strong><br />";
+echo "Slug: '$post_slug'<br />";
+echo "Tag: '$post_tag'<br />";
+echo "Type: '$post_type'<br />";
+echo "Page: '$pagination'<br />";
+echo "Search Query: '$search_query'<br />";
+echo "Showing: '$showing'<br />";
+
+echo '<pre>' . var_export($Me, true) . '</pre>';
+echo '<pre>' . var_export($Posts, true) . '</pre>';
 
 // Kill the PHP script. Some free webhosts like to inject their tracking scripts
 // and this should hopefully prevent that.

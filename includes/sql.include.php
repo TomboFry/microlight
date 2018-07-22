@@ -89,7 +89,7 @@ class SQL {
 
 	public function create ($table_name, $properties, $foreign_keys = NULL) {
 		$new_props = $this->propsToString($properties);
-		$full_string = "CREATE TABLE IF NOT EXISTS $table_name ($new_props";
+		$full_string = "CREATE TABLE IF NOT EXISTS `$table_name` ($new_props";
 		if ($foreign_keys != NULL) {
 			$full_string .= $this->foreignKeyToString($foreign_keys);
 		}
@@ -115,7 +115,7 @@ class SQL {
 			} else {
 				$acc .= ' WHERE';
 			}
-			$acc .= " $column $operator '$value'";
+			$acc .= " `$column` $operator '$value'";
 		});
 		return $acc;
 	}

@@ -32,11 +32,19 @@ class Model {
 	}
 
 	// Main "SELECT" function, to fetch data from the DB
-	function find ($where = [], $limit = -1, $offset = 0) {
-		$sql = "SELECT * FROM $this->table_name";
+	function find ($where = [], $limit = -1, $offset = 0, $orderField = 'id', $orderDirection = 'ASC') {
+		$sql = "SELECT * FROM `$this->table_name`";
 		$sql .= $this->sql->where($where);
+
+		// Add ordering
+		$sql .= " ORDER BY `$orderField` $orderDirection";
+
+		// Add limiting (mostly used for pagination)
 		$sql .= " LIMIT $limit OFFSET $offset";
+
 		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
+		if ($stmt === false) throw new DBError('Could not execute query', 0);
+
 		return $stmt->fetchAll();
 	}
 
@@ -132,6 +140,11 @@ class Post extends Model {
 				'type' => SQL::TEXT_TYPE
 			],
 			[
+				// Text based introduction to a particular post
+				'column' => 'summary',
+				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
+			],
+			[
 				// Markdown post contents
 				'column' => 'content',
 				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
@@ -179,13 +192,18 @@ class Post extends Model {
 		*/
 	}
 
-	function find ($where = [], $limit = -1, $offset = 0) {
-		$results = parent::find($where, $limit, $offset);
+	function find ($where = [], $limit = -1, $offset = 0, $orderField = 'id', $orderDirection = 'DESC') {
+		$results = parent::find($where, $limit, $offset, $orderField, $orderDirection);
+
 		// Process each result
 		foreach ($results as $key => $value) {
 			// Split the commas in the tags into an array
 			$results[$key]->tags = explode(',', $value->tags);
+
+			// Remove the last element, which is always empty
+			array_pop($results[$key]->tags);
 		}
+
 		return $results;
 	}
 }
