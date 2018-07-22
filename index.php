@@ -14,22 +14,27 @@ try {
 
 	// Load Identity
 	$Me = (new Identity($db))->findOne();
+	$Me->links = (new RelMe($db))->find([
+		[
+			'column' => 'identity_id',
+			'operator' => SQLOP::EQUAL,
+			'value' => $Me->id
+		]
+	]);
 
-	// For now, simply print the name and description of the user if they
-	// are found.
-	echo $Me->name . "<br />";
-	echo $Me->email . "<br />";
-	echo $Me->note . "<br /><br />";
+	$Posts = (new Post($db))->find([
+		[
+			'column' => 'identity_id',
+			'operator' => SQLOP::EQUAL,
+			'value' => $Me->id
+		]
+	]);
 
-	// Load all classes
-	$relme = new RelMe($db);
-	$posts = new Post($db);
-	$posttags = new PostTag($db);
-	$links = $relme->find();
-
-	foreach ($links as $key => $value) {
-		echo $value->name . "<br />";
-		echo $value->url . "<br /><br/>";
+	foreach ($Posts as $key => $value) {
+		echo "$value->content<br/>";
+		echo "$value->published<br/>";
+		echo implode(' - ', $value->tags) . "<br/>";
+		echo "<br/>";
 	}
 
 	// Close DB connection

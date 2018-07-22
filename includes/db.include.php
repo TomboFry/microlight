@@ -127,34 +127,50 @@ class Post extends Model {
 				'type' => SQL::PRIMARY_KEY_TYPE
 			],
 			[
+				// Post Title
 				'column' => 'name',
 				'type' => SQL::TEXT_TYPE
 			],
 			[
+				// Markdown post contents
 				'column' => 'content',
 				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
 			],
 			[
+				// Post Type
 				'column' => 'type',
 				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
 			],
 			[
+				// URL friendly copy of the title
 				'column' => 'slug',
 				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
 			],
 			[
+				// Date/Time ISO8601
 				'column' => 'published',
 				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
 			],
 			[
+				// Comma separated tags
+				'column' => 'tags',
+				'type' => SQL::TEXT_TYPE
+			],
+			[
+				// "lat,long", otherwise "Address"
 				'column' => 'location',
 				'type' => SQL::TEXT_TYPE
 			],
 			[
+				// If the post directly refers to a specific
+				// location on the internet, here is where to
+				// put it.
 				'column' => 'url',
 				'type' => SQL::TEXT_TYPE
 			]
 		], [
+			// A post must be made by an identity, although there
+			// should only ever be one identity.
 			[
 				'table' => 'identity',
 				'reference' => 'id'
@@ -162,30 +178,14 @@ class Post extends Model {
 		]));
 		*/
 	}
-}
 
-class PostTag extends Model {
-	public $table_name = 'tag';
-
-	function __construct (&$db) {
-		parent::__construct($db, $this->table_name);
-
-		/*
-		$db->db->exec($db->sql->create($this->table_name, [
-			[
-				'column' => 'id',
-				'type' => SQL::PRIMARY_KEY_TYPE
-			],
-			[
-				'column' => 'tag',
-				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
-			]
-		], [
-			[
-				'table' => 'post',
-				'reference' => 'id'
-			]
-		]));
-		*/
+	function find ($where = [], $limit = -1, $offset = 0) {
+		$results = parent::find($where, $limit, $offset);
+		// Process each result
+		foreach ($results as $key => $value) {
+			// Split the commas in the tags into an array
+			$results[$key]->tags = explode(',', $value->tags);
+		}
+		return $results;
 	}
 }
