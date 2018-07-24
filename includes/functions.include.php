@@ -62,6 +62,7 @@ function ml_database_setup () {
 	$Me = (new Identity($db))->findOne();
 	if ($Me !== NULL) {
 		$Me->links = (new RelMe($db))->find();
+		$Me->home = ml_base_url();
 	}
 }
 
@@ -143,25 +144,37 @@ function ml_get_name () {
 function ml_get_title() {
 	global $showing;
 	global $Posts;
+	global $Me;
 
 	$str = "";
 	if ($showing === Show::POST || $showing === Show::PAGE) {
 		$str .= $Posts->name . Config::TITLE_SEPARATOR;
 	}
-	$str .= ml_get_name();
+	$str .= $Me->name;
 	return $str;
 }
 
 // Returns the full URL, including "http(s)"
 function ml_base_url() {
-	return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
+	return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . Config::ROOT;
 }
 
 // Returns an absolute link to a specific post
-function ml_get_permalink ($Post) {
-	return ml_base_url() . '/?post_slug=' . $Post->slug;
+function ml_post_permalink ($Post) {
+	return ml_base_url() . '?post_slug=' . $Post->slug;
+}
+
+function ml_tag_permalink ($tag) {
+	return ml_base_url() . '?post_tag=' . $tag;
 }
 
 function ml_get_theme_dir () {
-	return ml_base_url() . '/themes/' . Config::THEME;
+	return ml_base_url() . 'themes/' . Config::THEME;
+}
+
+function ml_date_pretty ($date) {
+	return date(
+		Config::DATE_PRETTY,
+		strtotime($date)
+	);
 }

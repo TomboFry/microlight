@@ -19,13 +19,13 @@ require_once('helper.php');
 <body>
 	<header class="p-author vcard hcard h-card">
 		<h1>
-			<a href="/" class="p-name u-url uid fn" rel="me">
-				<?php echo ml_get_name(); ?>
+			<a href="<?php echo $Me->home; ?>" class="p-name u-url uid fn" rel="me">
+				<?php echo $Me->name; ?>
 			</a>
 		</h1>
 		<?php echo links($Me); ?>
 	</header>
-	<div class="<?php echo $showing; ?>">
+	<div class="<?php echo strtolower($showing); ?>">
 		<?php
 			if ($showing === Show::ERROR404) {
 				echo "That post could not be found.";

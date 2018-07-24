@@ -7,14 +7,29 @@ if (!defined('MICROLIGHT_INIT')) die();
 function post ($Post, $showPermalink = true) {
 	echo "<article class='h-entry'>";
 	if ($Post->name !== '' && $Post->name !== NULL) {
-		echo "<h2>";
-		if ($showPermalink) echo "<a href='" . ml_get_permalink($Post) . "'>";
+		if ($showPermalink) echo "<a href='" . ml_post_permalink($Post) . "'>";
+		echo "<h2 class='p-name'>";
 		echo $Post->name;
-		if ($showPermalink) echo "</a>";
 		echo "</h2>";
+		if ($showPermalink) echo "</a>";
 	}
-	echo "<p>" . $Post->summary . "</p>";
-	echo "<a href='" . ml_get_permalink($Post) . "'>" . $Post->published . "</a>";
+	if ($showPermalink) {
+		echo "<p class='p-summary'>" . $Post->summary . "</p>";
+	} else {
+		echo "<div class='e-content'>" . $Post->content . "</div>";
+	}
+	echo "<footer>";
+		echo "<a class='u-url u-uid' href='" . ml_post_permalink($Post) . "'>";
+			echo "<time class='dt-published' datetime='$Post->published'>";
+			echo ml_date_pretty($Post->published);
+			echo "</time>";
+		echo "</a>";
+		echo "<div class='tags'>";
+			foreach ($Post->tags as $key) {
+				echo "<a class='p-category' href='" . ml_tag_permalink($key) . "'>" . $key . "</a>; ";
+			}
+		echo "</div>";
+	echo "</footer>";
 	echo "</article>";
 }
 
@@ -36,4 +51,5 @@ function links ($Me) {
 		echo "</a>";
 		echo "</li>";
 	}
+	echo "</ul>";
 }

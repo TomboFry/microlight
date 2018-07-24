@@ -11,10 +11,15 @@ body {
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
-p {
+p, .e-content {
 	line-height: 20px;
 	margin-bottom: 10px;
 }
+
+ul {
+	margin-left: 24px;
+}
+
 h1,h2 {
 	margin-bottom: 16px;
 }

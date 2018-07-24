@@ -27,6 +27,20 @@ class Config {
 	// eg. "Your Name | Post Title"
 	// default: ' | '
 	const TITLE_SEPARATOR = ' | ';
+
+	// Root (string):
+	// Must start AND end with a slash.
+	// Where your site is hosted relative to the absolute root. For example,
+	// if your site's address is 'https://example.com/blog', ROOT would be
+	// set to '/blog/'.
+	// default: '/'
+	const ROOT = '/';
+
+	// Date Pretty (string):
+	// A PHP date format string used to format the default ISO8601 published
+	// date.
+	// default: 'l jS F Y, h:i A'
+	const DATE_PRETTY = 'l jS F Y, H:i';
 }
 
 /**********************************
