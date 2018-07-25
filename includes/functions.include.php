@@ -255,3 +255,28 @@ function ml_pagination_right_link () {
 	global $pagination;
 	return ml_current_page_permalink() . "page=" . ($pagination + 2);
 }
+
+// Determines whether a location from the database are coordinates or an address
+function ml_location_geo ($location) {
+	// Don't even try parsing if it's empty
+	if ($location === '' || $location === null) return $location;
+
+	// Float Regex, taken from: https://stackoverflow.com/a/12643073
+	$float = '([+-]?([0-9]*[.])?[0-9]+)';
+	$full_regex = '/^' . $float . ',' . $float . '$/';
+
+	// If it matches our regex, then it's a geo-location, not an address
+	if (preg_match($full_regex, $location, $matches)) {
+		$lat = (float)$matches[1];
+		$long = (float)$matches[3];
+
+		// Make sure the latitude and longitude are within
+		// sensible boundaries
+		if ($lat > 180 || $lat < -180 || $long > 90 || $long < -90) {
+			return $location;
+		}
+		return [ 'latitude' => $lat, 'longitude' => $long ];
+	} else {
+		return $location;
+	}
+}
