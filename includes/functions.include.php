@@ -44,7 +44,6 @@ function ml_showing () {
 		$showing = Show::ARCHIVE;
 		$pagination = 0;
 
-
 		if (ml_get_not_blank('post_tag')) {
 			$post_tag = $_GET['post_tag'];
 		}
@@ -134,8 +133,7 @@ function ml_load_posts () {
 	// Run the SQL query
 	$post_class = new Post($db);
 	$posts = $post_class->find($where, $limit, $offset);
-	$post_total_count = $post_class->count();
-
+	$post_total_count = $post_class->count($where);
 
 	// If we're asking for a page or post, there should only ever be one
 	// result, so process that here:
@@ -182,22 +180,78 @@ function ml_base_url() {
 	return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . Config::ROOT;
 }
 
-// Returns an absolute link to a specific post
+// Returns an absolute URL to a specific post
 function ml_post_permalink ($Post) {
 	return ml_base_url() . '?post_slug=' . $Post->slug;
 }
 
+// Returns an absolute URL to the archive of a specific tag
 function ml_tag_permalink ($tag) {
 	return ml_base_url() . '?post_tag=' . $tag;
 }
 
+function ml_current_page_permalink() {
+	global $post_tag;
+	global $post_type;
+	global $search_query;
+	$str = ml_base_url() . '?';
+	if ($search_query !== '') {
+		$str .= "search_query=$search_query&";
+	} else if ($post_tag !== '' || $post_type !== '') {
+		$str = ml_base_url() . '?';
+		if ($post_tag !== '') $str .= "post_tag=$post_tag&";
+		if ($post_type !== '') $str .= "post_type=$post_type&";
+	}
+	return $str;
+}
+
+// Returns an absolute URL pointing towards the directory of the currently
+// selected theme
 function ml_get_theme_dir () {
 	return ml_base_url() . 'themes/' . Config::THEME;
 }
 
+// Prints an ISO8601 date in the format defined in the configuration
 function ml_date_pretty ($date) {
 	return date(
 		Config::DATE_PRETTY,
 		strtotime($date)
 	);
+}
+
+function ml_pagination_enabled () {
+	global $showing;
+	global $post_total_count;
+
+	// Only ever show pagination on archive pages
+	if ($showing !== Show::ARCHIVE) return false;
+
+	// Don't show pagination if there are less posts than there should be
+	// displayed on a page
+	if ($post_total_count <= Config::POSTS_PER_PAGE) return false;
+
+	// Otherwise, we have pagination!
+	return true;
+}
+
+function ml_pagination_left_enabled () {
+	global $pagination;
+	return $pagination > 0;
+}
+
+function ml_pagination_right_enabled () {
+	global $pagination;
+	global $post_total_count;
+	$total = ceil($post_total_count / Config::POSTS_PER_PAGE) - 1;
+	return $pagination < $total;
+}
+
+function ml_pagination_left_link () {
+	global $pagination;
+	return ml_current_page_permalink() . "page=$pagination";
+}
+
+function ml_pagination_right_link () {
+	global $pagination;
+	return ml_current_page_permalink() . "page=" . ($pagination + 2);
 }

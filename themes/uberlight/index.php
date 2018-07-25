@@ -38,5 +38,15 @@ require_once('helper.php');
 			}
 		?>
 	</div>
+	<?php if (ml_pagination_enabled()) { ?>
+	<div class='pagination'>
+		<?php if (ml_pagination_left_enabled()) { ?>
+		<a href='<?php echo ml_pagination_left_link(); ?>'>&lt;&lt; Newer</a>
+		<?php } ?>
+		<?php if (ml_pagination_right_enabled()) { ?>
+		<a href='<?php echo ml_pagination_right_link(); ?>'>Older &gt;&gt;</a>
+		<?php } ?>
+	</div>
+	<?php } ?>
 </body>
 </html>

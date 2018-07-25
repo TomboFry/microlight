@@ -67,8 +67,9 @@ class Model {
 		return $this->db->lastInsertId();
 	}
 
-	function count () {
-		$sql = 'SELECT COUNT(id) as count FROM ' . $this->table_name;
+	function count ($where = []) {
+		$sql = "SELECT COUNT(id) as count FROM `$this->table_name`";
+		$sql .= $this->sql->where($where);
 		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
 		return (int)$stmt->fetch()->count;
 	}
