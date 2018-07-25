@@ -66,6 +66,12 @@ class Model {
 		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
 		return $this->db->lastInsertId();
 	}
+
+	function count () {
+		$sql = 'SELECT COUNT(id) as count FROM ' . $this->table_name;
+		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
+		return (int)$stmt->fetch()->count;
+	}
 }
 
 class Identity extends Model {

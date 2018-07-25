@@ -50,20 +50,3 @@ class Config {
 require_once('lib/enum.php');
 require_once('db.include.php');
 require_once('functions.include.php');
-
-abstract class Show extends BasicEnum {
-	const ARCHIVE = 'ARCHIVE';
-	const POST = 'POST';
-	const PAGE = 'PAGE';
-	const ERROR404 = 'ERROR404';
-}
-
-$post_slug = '';
-$post_tag = '';
-$post_type = '';
-$search_query = '';
-$pagination = null;
-$showing = Show::ARCHIVE;
-$db = null;
-$Me = null;
-$Posts = null;

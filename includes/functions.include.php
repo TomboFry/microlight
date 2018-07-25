@@ -2,6 +2,25 @@
 
 if (!defined('MICROLIGHT_INIT')) die();
 
+abstract class Show extends BasicEnum {
+	const ARCHIVE = 'ARCHIVE';
+	const POST = 'POST';
+	const PAGE = 'PAGE';
+	const ERROR404 = 'ERROR404';
+}
+
+// Define all globally available variables
+$post_slug = '';
+$post_tag = '';
+$post_type = '';
+$search_query = '';
+$post_total_count = 0;
+$pagination = null;
+$showing = Show::ARCHIVE;
+$db = null;
+$Me = null;
+$Posts = null;
+
 function ml_get_not_blank($var) {
 	return (isset($_GET[$var]) && $_GET[$var] !== "");
 }
@@ -72,6 +91,7 @@ function ml_load_posts () {
 	global $post_tag;
 	global $post_type;
 	global $search_query;
+	global $post_total_count;
 	global $pagination;
 	global $showing;
 	global $Posts;
@@ -112,7 +132,10 @@ function ml_load_posts () {
 	}
 
 	// Run the SQL query
-	$Posts = (new Post($db))->find($where, $limit, $offset);
+	$post_class = new Post($db);
+	$Posts = $post_class->find($where, $limit, $offset);
+	$post_total_count = $post_class->count();
+
 
 	// If we're asking for a page or post, there should only ever be one
 	// result, so process that here:
