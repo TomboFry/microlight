@@ -77,7 +77,7 @@ function ml_database_setup () {
 	$db = new DB();
 
 	// Load Identity
-	$me = (new Identity($db))->findOne();
+	$me = (new Identity($db))->find_one();
 	if ($me !== NULL) {
 		$me->links = (new RelMe($db))->find();
 		$me->home = ml_base_url();

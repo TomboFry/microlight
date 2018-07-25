@@ -3,7 +3,7 @@
 define('MICROLIGHT_INIT', true);
 require_once('includes/config.php');
 
-function putValue ($val, $index = NULL) {
+function put_value ($val, $index = NULL) {
 	echo ml_post_not_blank($val)
 		? $index !== NULL
 			? $_POST[$val][$index]
@@ -45,15 +45,15 @@ if (isset($_POST['submit'])) {
 
 			// Create identity table
 			$identity = new Identity($db);
-			$identity->createTable();
+			$identity->create_table();
 
 			// Create RelMe table
 			$relme = new RelMe($db);
-			$relme->createTable();
+			$relme->create_table();
 
 			// Create posts table
 			$post = new Post($db);
-			$post->createTable();
+			$post->create_table();
 
 			$identity_id = $identity->insert([
 				'name' => $name,
@@ -76,7 +76,7 @@ if (isset($_POST['submit'])) {
 	try {
 		$db = new DB();
 		$identity = new Identity($db);
-		if ($identity->findOne() !== NULL) {
+		if ($identity->find_one() !== NULL) {
 			header('Location: index.php');
 		}
 	} catch (Exception $e) {}
@@ -227,7 +227,7 @@ if (isset($_POST['submit'])) {
 				Name
 				<span class='r'>required</span>
 			</label>
-			<input required type='text' name='name' id='name' value='<?php putValue('name'); ?>' />
+			<input required type='text' name='name' id='name' value='<?php put_value('name'); ?>' />
 			<span class='d p'>
 				Who do you identify as? This will be displayed
 				prominently on your homepage and by every post
@@ -239,7 +239,7 @@ if (isset($_POST['submit'])) {
 				Email Address
 				<span class='r'>required</span>
 			</label>
-			<input required type='email' name='email' id='email' value='<?php putValue('email'); ?>' />
+			<input required type='email' name='email' id='email' value='<?php put_value('email'); ?>' />
 			<span class='d p'>
 				Your email is not sent to me, it is simply to
 				display on your homepage as contact information.
@@ -264,12 +264,12 @@ if (isset($_POST['submit'])) {
 						placeholder='Name (eg. "Twitter")'
 						name='sm_service_names[]'
 						class='i-left'
-						value='<?php putValue('sm_service_names', 0); ?>'
+						value='<?php put_value('sm_service_names', 0); ?>'
 					/><input
 						type='url'
 						placeholder='URL'
 						name='sm_service_urls[]'
-						value='<?php putValue('sm_service_urls', 0); ?>'
+						value='<?php put_value('sm_service_urls', 0); ?>'
 					/>
 				</div>
 				<div class='account'>
@@ -278,12 +278,12 @@ if (isset($_POST['submit'])) {
 						placeholder='Name (eg. "GitHub")'
 						name='sm_service_names[]'
 						class='i-left'
-						value='<?php putValue('sm_service_names', 1); ?>'
+						value='<?php put_value('sm_service_names', 1); ?>'
 					/><input
 						type='url'
 						placeholder='URL'
 						name='sm_service_urls[]'
-						value='<?php putValue('sm_service_urls', 1); ?>'
+						value='<?php put_value('sm_service_urls', 1); ?>'
 					/>
 				</div>
 				<div class='account'>
@@ -292,12 +292,12 @@ if (isset($_POST['submit'])) {
 						placeholder='Name'
 						name='sm_service_names[]'
 						class='i-left'
-						value='<?php putValue('sm_service_names', 2); ?>'
+						value='<?php put_value('sm_service_names', 2); ?>'
 					/><input
 						type='url'
 						placeholder='URL'
 						name='sm_service_urls[]'
-						value='<?php putValue('sm_service_urls', 2); ?>'
+						value='<?php put_value('sm_service_urls', 2); ?>'
 					/>
 				</div>
 			</div>

@@ -32,7 +32,7 @@ class Model {
 	}
 
 	// This should be run by the inherited classes
-	function createTable () {
+	function create_table () {
 		throw new DBError('Cannot create an empty table', 1);
 	}
 
@@ -55,7 +55,7 @@ class Model {
 
 	// Essentially the same as the "find" function but will return a single
 	// object, instead of an array.
-	function findOne ($where = [], $offset = 0) {
+	function find_one ($where = [], $offset = 0) {
 		$results = $this->find($where, 1, $offset);
 		if (count($results) > 0) return $results[0];
 		return NULL;
@@ -82,7 +82,7 @@ class Identity extends Model {
 		parent::__construct($db, $this->table_name);
 	}
 
-	function createTable() {
+	function create_table() {
 		// Create the table if it does not already exist
 		$this->db->exec($this->sql->create($this->table_name, [
 			[
@@ -112,7 +112,7 @@ class RelMe extends Model {
 		parent::__construct($db, $this->table_name);
 	}
 
-	function createTable() {
+	function create_table() {
 		// Create the table if it does not already exist
 		$this->db->exec($this->sql->create($this->table_name, [
 			[
@@ -143,7 +143,7 @@ class Post extends Model {
 		parent::__construct($db, $this->table_name);
 	}
 
-	function createTable() {
+	function create_table() {
 		// Create the table if it does not already exist
 		$this->db->exec($this->sql->create($this->table_name, [
 			[
