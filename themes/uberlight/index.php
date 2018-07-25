@@ -19,22 +19,22 @@ require_once('helper.php');
 <body>
 	<header class="p-author vcard hcard h-card">
 		<h1>
-			<a href="<?php echo $Me->home; ?>" class="p-name u-url uid fn" rel="me">
-				<?php echo $Me->name; ?>
+			<a href="<?php echo $me->home; ?>" class="p-name u-url uid fn" rel="me">
+				<?php echo $me->name; ?>
 			</a>
 		</h1>
-		<?php echo links($Me); ?>
+		<?php echo links($me); ?>
 	</header>
 	<div class="<?php echo strtolower($showing); ?>">
 		<?php
 			if ($showing === Show::ERROR404) {
 				echo "That post could not be found.";
 			} else if ($showing === Show::ARCHIVE) {
-				foreach ($Posts as $Post) {
+				foreach ($posts as $Post) {
 					echo post($Post);
 				}
 			} else if ($showing === Show::POST || $showing === Show::PAGE) {
-				echo post($Posts, false);
+				echo post($posts, false);
 			}
 		?>
 	</div>

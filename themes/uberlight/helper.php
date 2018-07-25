@@ -4,28 +4,28 @@
 // file from within microlight itself.
 if (!defined('MICROLIGHT_INIT')) die();
 
-function post ($Post, $showPermalink = true) {
+function post ($post, $show_permalink = true) {
 	echo "<article class='h-entry'>";
-	if ($Post->name !== '' && $Post->name !== NULL) {
-		if ($showPermalink) echo "<a href='" . ml_post_permalink($Post) . "'>";
+	if ($post->name !== '' && $post->name !== NULL) {
+		if ($show_permalink) echo "<a href='" . ml_post_permalink($post) . "'>";
 		echo "<h2 class='p-name'>";
-		echo $Post->name;
+		echo $post->name;
 		echo "</h2>";
-		if ($showPermalink) echo "</a>";
+		if ($show_permalink) echo "</a>";
 	}
-	if ($showPermalink) {
-		echo "<p class='p-summary'>" . $Post->summary . "</p>";
+	if ($show_permalink) {
+		echo "<p class='p-summary'>" . $post->summary . "</p>";
 	} else {
-		echo "<div class='e-content'>" . $Post->content . "</div>";
+		echo "<div class='e-content'>" . $post->content . "</div>";
 	}
 	echo "<footer>";
-		echo "<a class='u-url u-uid' href='" . ml_post_permalink($Post) . "'>";
-			echo "<time class='dt-published' datetime='$Post->published'>";
-			echo ml_date_pretty($Post->published);
+		echo "<a class='u-url u-uid' href='" . ml_post_permalink($post) . "'>";
+			echo "<time class='dt-published' datetime='$post->published'>";
+			echo ml_date_pretty($post->published);
 			echo "</time>";
 		echo "</a>";
 		echo "<div class='tags'>";
-			foreach ($Post->tags as $key) {
+			foreach ($post->tags as $key) {
 				echo "<a class='p-category' href='" . ml_tag_permalink($key) . "'>" . $key . "</a>; ";
 			}
 		echo "</div>";
@@ -33,18 +33,18 @@ function post ($Post, $showPermalink = true) {
 	echo "</article>";
 }
 
-function links ($Me) {
+function links ($me) {
 	echo "<ul>";
 
 	// Display Email at the top
 	echo "<li>";
-	echo "<a rel='me' class='u-email' href='mailto:$Me->email'>";
-	echo $Me->email;
+	echo "<a rel='me' class='u-email' href='mailto:$me->email'>";
+	echo $me->email;
 	echo "</a>";
 	echo "</li>";
 
 	// Display all links underneath
-	foreach ($Me->links as $value) {
+	foreach ($me->links as $value) {
 		echo "<li>";
 		echo "<a rel='me' target='_blank' href='$value->url'>";
 		echo $value->name;

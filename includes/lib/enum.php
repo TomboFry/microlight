@@ -4,18 +4,18 @@
 // Credit / Source: https://stackoverflow.com/a/254543
 
 abstract class BasicEnum {
-	private static $constCacheArray = NULL;
+	private static $const_cache_array = NULL;
 
 	private static function getConstants() {
-		if (self::$constCacheArray == NULL) {
-			self::$constCacheArray = [];
+		if (self::$const_cache_array == NULL) {
+			self::$const_cache_array = [];
 		}
-		$calledClass = get_called_class();
-		if (!array_key_exists($calledClass, self::$constCacheArray)) {
-			$reflect = new ReflectionClass($calledClass);
-			self::$constCacheArray[$calledClass] = $reflect->getConstants();
+		$called_class = get_called_class();
+		if (!array_key_exists($called_class, self::$const_cache_array)) {
+			$reflect = new ReflectionClass($called_class);
+			self::$const_cache_array[$called_class] = $reflect->getConstants();
 		}
-		return self::$constCacheArray[$calledClass];
+		return self::$const_cache_array[$called_class];
 	}
 
 	public static function isValidName($name, $strict = false) {

@@ -37,12 +37,12 @@ class Model {
 	}
 
 	// Main "SELECT" function, to fetch data from the DB
-	function find ($where = [], $limit = -1, $offset = 0, $orderField = 'id', $orderDirection = 'ASC') {
+	function find ($where = [], $limit = -1, $offset = 0, $order_field = 'id', $order_direction = 'ASC') {
 		$sql = "SELECT * FROM `$this->table_name`";
 		$sql .= $this->sql->where($where);
 
 		// Add ordering
-		$sql .= " ORDER BY `$orderField` $orderDirection";
+		$sql .= " ORDER BY `$order_field` $order_direction";
 
 		// Add limiting (mostly used for pagination)
 		$sql .= " LIMIT $limit OFFSET $offset";
@@ -206,8 +206,8 @@ class Post extends Model {
 		]));
 	}
 
-	function find ($where = [], $limit = -1, $offset = 0, $orderField = 'id', $orderDirection = 'DESC') {
-		$results = parent::find($where, $limit, $offset, $orderField, $orderDirection);
+	function find ($where = [], $limit = -1, $offset = 0, $order_field = 'id', $order_direction = 'DESC') {
+		$results = parent::find($where, $limit, $offset, $order_field, $order_direction);
 
 		// Process each result
 		foreach ($results as $key => $value) {

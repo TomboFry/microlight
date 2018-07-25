@@ -18,8 +18,8 @@ $post_total_count = 0;
 $pagination = null;
 $showing = Show::ARCHIVE;
 $db = null;
-$Me = null;
-$Posts = null;
+$me = null;
+$posts = null;
 
 function ml_get_not_blank($var) {
 	return (isset($_GET[$var]) && $_GET[$var] !== "");
@@ -72,16 +72,16 @@ function ml_showing () {
 
 function ml_database_setup () {
 	global $db;
-	global $Me;
+	global $me;
 
 	// Set up a connection to the database
 	$db = new DB();
 
 	// Load Identity
-	$Me = (new Identity($db))->findOne();
-	if ($Me !== NULL) {
-		$Me->links = (new RelMe($db))->find();
-		$Me->home = ml_base_url();
+	$me = (new Identity($db))->findOne();
+	if ($me !== NULL) {
+		$me->links = (new RelMe($db))->find();
+		$me->home = ml_base_url();
 	}
 }
 
@@ -94,7 +94,7 @@ function ml_load_posts () {
 	global $post_total_count;
 	global $pagination;
 	global $showing;
-	global $Posts;
+	global $posts;
 
 	$where = [];
 	$limit = Config::POSTS_PER_PAGE;
@@ -133,7 +133,7 @@ function ml_load_posts () {
 
 	// Run the SQL query
 	$post_class = new Post($db);
-	$Posts = $post_class->find($where, $limit, $offset);
+	$posts = $post_class->find($where, $limit, $offset);
 	$post_total_count = $post_class->count();
 
 
@@ -141,12 +141,12 @@ function ml_load_posts () {
 	// result, so process that here:
 	if ($showing === Show::POST || $showing === Show::PAGE) {
 		// If there is not 1 post, show a 404 error
-		if (count($Posts) !== 1) {
+		if (count($posts) !== 1) {
 			$showing = Show::ERROR404;
-			$Posts = null;
+			$posts = null;
 		} else {
 			// Otherwise, take the only post out of the array
-			$Posts = $Posts[0];
+			$posts = $posts[0];
 		}
 	}
 }
@@ -158,22 +158,22 @@ function ml_database_close () {
 }
 
 function ml_get_name () {
-	global $Me;
+	global $me;
 
-	return $Me->name;
+	return $me->name;
 }
 
 // Returns the title, depending on whether you're on a single post or not.
 function ml_get_title() {
 	global $showing;
-	global $Posts;
-	global $Me;
+	global $posts;
+	global $me;
 
 	$str = "";
 	if ($showing === Show::POST || $showing === Show::PAGE) {
-		$str .= $Posts->name . Config::TITLE_SEPARATOR;
+		$str .= $posts->name . Config::TITLE_SEPARATOR;
 	}
-	$str .= $Me->name;
+	$str .= $me->name;
 	return $str;
 }
 
