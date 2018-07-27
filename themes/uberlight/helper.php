@@ -29,6 +29,32 @@ function post ($post, $show_permalink = true) {
 				echo "<a class='p-category' href='" . ml_tag_permalink($key) . "'>" . $key . "</a>; ";
 			}
 		echo "</div>";
+		if (!$show_permalink) {
+			$geo = ml_location_geo($post->location);
+			if (is_array($geo)) {
+				$link = 'https://www.openstreetmap.org/?mlat=' . $geo['lat'] . '&mlon=' . $geo['long'];
+				?>
+				<div class='h-geo'>
+					<a
+						target='_blank'
+						href='<?php echo $link; ?>'
+					>
+						<span class='p-latitude'><?php echo $geo['lat']; ?></span>,
+						<span class='p-longitude'><?php echo $geo['long']; ?></span>
+					</a>
+				</div>
+			<?php } else if (is_string($geo)) { ?>
+				<div class='h-adr'>
+					<a
+						target='_blank'
+						class='p-street-address'
+						href='https://www.openstreetmap.org/search?query=<?php echo $geo; ?>'
+					>
+						<?php echo $geo; ?>
+					</a>
+				</div>
+			<?php }
+		}
 	echo "</footer>";
 	echo "</article>";
 }

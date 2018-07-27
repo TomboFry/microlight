@@ -275,7 +275,7 @@ function ml_location_geo ($location) {
 		if ($lat > 180 || $lat < -180 || $long > 90 || $long < -90) {
 			return $location;
 		}
-		return [ 'latitude' => $lat, 'longitude' => $long ];
+		return [ 'lat' => $lat, 'long' => $long ];
 	} else {
 		return $location;
 	}
