@@ -13,6 +13,28 @@ function post ($post, $show_permalink = true) {
 		echo "</h2>";
 		if ($show_permalink) echo "</a>";
 	}
+
+	// Show different content for different post types
+	switch ($post->type) {
+	case 'audio':
+		?>
+			<audio class='u-audio' controls>
+				<source src='<?php echo $post->url; ?>' />
+				<p>Your browser does not support this audio format</p>
+			</audio>
+		<?php
+		break;
+	case 'photo':
+		?>
+			<img class='u-photo' src='<?php echo $post->url; ?>'/>
+		<?php
+		break;
+
+	default:
+		// Do nothing
+		break;
+	}
+
 	if ($show_permalink) {
 		echo "<p class='p-summary'>" . $post->summary . "</p>";
 	} else {
