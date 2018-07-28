@@ -280,3 +280,7 @@ function ml_location_geo ($location) {
 		return $location;
 	}
 }
+
+function ml_post_has_name($post) {
+	return $post->name !== null && $post->name !== '';
+}

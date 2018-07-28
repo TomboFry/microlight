@@ -6,7 +6,7 @@ if (!defined('MICROLIGHT_INIT')) die();
 
 function post ($post, $show_permalink = true) {
 	echo "<article class='h-entry'>";
-	if ($post->name !== '' && $post->name !== NULL) {
+	if (ml_post_has_name($post)) {
 		if ($show_permalink) echo "<a href='" . ml_post_permalink($post) . "'>";
 		echo "<h2 class='p-name'>";
 		echo $post->name;
@@ -18,45 +18,60 @@ function post ($post, $show_permalink = true) {
 	} else {
 		echo "<div class='e-content'>" . $post->content . "</div>";
 	}
-	echo "<footer>";
-		echo "<a class='u-url u-uid' href='" . ml_post_permalink($post) . "'>";
-			echo "<time class='dt-published' datetime='$post->published'>";
-			echo ml_date_pretty($post->published);
-			echo "</time>";
-		echo "</a>";
-		echo "<div class='tags'>";
+
+	// Everything below this point is for metadata
+	?>
+	<footer>
+		<a class='u-url u-uid' href='<?php echo ml_post_permalink($post); ?>'>
+			<time class='dt-published' datetime='<?php echo $post->published; ?>'>
+				<?php echo ml_date_pretty($post->published); ?>
+			</time>
+		</a>
+		<div class='tags'>
+			<?php
 			foreach ($post->tags as $key) {
 				echo "<a class='p-category' href='" . ml_tag_permalink($key) . "'>" . $key . "</a>; ";
 			}
-		echo "</div>";
-		if (!$show_permalink) {
-			$geo = ml_location_geo($post->location);
-			if (is_array($geo)) {
-				$link = 'https://www.openstreetmap.org/?mlat=' . $geo['lat'] . '&mlon=' . $geo['long'];
-				?>
-				<div class='h-geo'>
-					<a
-						target='_blank'
-						href='<?php echo $link; ?>'
-					>
-						<span class='p-latitude'><?php echo $geo['lat']; ?></span>,
-						<span class='p-longitude'><?php echo $geo['long']; ?></span>
-					</a>
-				</div>
-			<?php } else if (is_string($geo)) { ?>
-				<div class='h-adr'>
-					<a
-						target='_blank'
-						class='p-street-address'
-						href='https://www.openstreetmap.org/search?query=<?php echo $geo; ?>'
-					>
-						<?php echo $geo; ?>
-					</a>
-				</div>
-			<?php }
-		}
-	echo "</footer>";
-	echo "</article>";
+			?>
+		</div>
+	<?php
+
+	// Print Location
+	if (!$show_permalink):
+		$geo = ml_location_geo($post->location);
+		if (is_array($geo)):
+			$link = 'https://www.openstreetmap.org/?mlat=' . $geo['lat'] . '&mlon=' . $geo['long'];
+		?>
+			<div class='h-geo'>
+				&#x1F4CD;
+				<a
+					target='_blank'
+					href='<?php echo $link; ?>'
+				>
+					<span class='p-latitude'><?php echo $geo['lat']; ?></span>,
+					<span class='p-longitude'><?php echo $geo['long']; ?></span>
+				</a>
+			</div>
+		<?php
+		elseif (is_string($geo)):
+		?>
+			<div class='h-adr'>
+				&#x1F4CD;
+				<a
+					target='_blank'
+					class='p-street-address'
+					href='https://www.openstreetmap.org/search?query=<?php echo $geo; ?>'
+				>
+					<?php echo $geo; ?>
+				</a>
+			</div>
+		<?php
+		endif;
+	endif;
+	?>
+	</footer>
+	</article>
+	<?php
 }
 
 function links ($me) {
