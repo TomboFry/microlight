@@ -1,8 +1,6 @@
 # microlight (or µLight, or µlite, etc)
 
-> **Please note:** The code quality of this repository is going to be very low
-> quality until I figure out the right direction and how to **properly** manage
-> databases in PHP...
+**Please note:** Not currently suitable for use in production.
 
 ## Why?
 
@@ -28,10 +26,13 @@ concepts. This means support for:
 
 ## Requirements
 
-* **PHP v7**
-  Being developed on PHP 7.1, although it probably will work on 5.5 and above
-* **PDO SQLite**
+* **PHP 5.6 or above**  
+  Being developed on PHP 7.1, although in theory should work on 5.6. I will test
+  it properly at some point!
+* **PDO SQLite**  
   I would like it to be database agnostic, but I haven't gotten that far yet.
+* **Apache Rewrite Module (mod_rewrite)** (optional)  
+  While this is not required, post permalinks are going to look *much* nicer,
 
 ## Installation
 
