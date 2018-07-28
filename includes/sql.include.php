@@ -46,13 +46,18 @@ abstract class SQLEscape extends BasicEnum {
 	const ISO8601 = '/^[0-9]{4}-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])[T ]([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[\+-]([0-1][0-9]|2[0-3]):?([0-5][0-9])?)?$/';
 }
 
-class SQL {
-	// Static variables
+abstract class SQLType extends BasicEnum {
+	// Actual SQLite Types
 	const PRIMARY_KEY_TYPE = 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE';
 	const TEXT_TYPE = 'TEXT';
 	const INTEGER_TYPE = 'INTEGER';
-	const NOT_NULL = ' NOT NULL';
 
+	// Modifiers
+	const MOD_NOT_NULL = ' NOT NULL';
+	const MOD_UNIQUE = ' UNIQUE';
+}
+
+class SQL {
 	// Class variables and functions
 	private $db;
 

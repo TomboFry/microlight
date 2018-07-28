@@ -89,20 +89,20 @@ class Identity extends Model {
 		$this->db->exec($this->sql->create($this->table_name, [
 			[
 				'column' => 'id',
-				'type' => SQL::PRIMARY_KEY_TYPE
+				'type' => SQLType::PRIMARY_KEY_TYPE,
 			],
 			[
 				'column' => 'name',
-				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
 			],
 			[
 				'column' => 'email',
-				'type' => SQL::TEXT_TYPE
+				'type' => SQLType::TEXT_TYPE,
 			],
 			[
 				'column' => 'note',
-				'type' => SQL::TEXT_TYPE
-			]
+				'type' => SQLType::TEXT_TYPE,
+			],
 		]));
 	}
 }
@@ -119,21 +119,21 @@ class RelMe extends Model {
 		$this->db->exec($this->sql->create($this->table_name, [
 			[
 				'column' => 'id',
-				'type' => SQL::PRIMARY_KEY_TYPE
+				'type' => SQLType::PRIMARY_KEY_TYPE,
 			],
 			[
 				'column' => 'name',
-				'type' => SQL::TEXT_TYPE
+				'type' => SQLType::TEXT_TYPE,
 			],
 			[
 				'column' => 'url',
-				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
-			]
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
+			],
 		], [
 			[
 				'table' => 'identity',
-				'reference' => 'id'
-			]
+				'reference' => 'id',
+			],
 		]));
 	}
 }
@@ -150,62 +150,62 @@ class Post extends Model {
 		$this->db->exec($this->sql->create($this->table_name, [
 			[
 				'column' => 'id',
-				'type' => SQL::PRIMARY_KEY_TYPE
+				'type' => SQLType::PRIMARY_KEY_TYPE,
 			],
 			[
 				// Post Title
 				'column' => 'name',
-				'type' => SQL::TEXT_TYPE
+				'type' => SQLType::TEXT_TYPE,
 			],
 			[
 				// Text based introduction to a particular post
 				'column' => 'summary',
-				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
 			],
 			[
 				// Markdown post contents
 				'column' => 'content',
-				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
 			],
 			[
 				// Post Type
 				'column' => 'type',
-				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
 			],
 			[
 				// URL friendly copy of the title
 				'column' => 'slug',
-				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL . SQLType::MOD_UNIQUE,
 			],
 			[
 				// Date/Time ISO8601
 				'column' => 'published',
-				'type' => SQL::TEXT_TYPE . SQL::NOT_NULL
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
 			],
 			[
 				// Comma separated tags
 				'column' => 'tags',
-				'type' => SQL::TEXT_TYPE
+				'type' => SQLType::TEXT_TYPE,
 			],
 			[
 				// "lat,long", otherwise "Address"
 				'column' => 'location',
-				'type' => SQL::TEXT_TYPE
+				'type' => SQLType::TEXT_TYPE,
 			],
 			[
 				// If the post directly refers to a specific
 				// location on the internet, here is where to
 				// put it.
 				'column' => 'url',
-				'type' => SQL::TEXT_TYPE
-			]
+				'type' => SQLType::TEXT_TYPE,
+			],
 		], [
 			// A post must be made by an identity, although there
 			// should only ever be one identity.
 			[
 				'table' => 'identity',
-				'reference' => 'id'
-			]
+				'reference' => 'id',
+			],
 		]));
 	}
 
