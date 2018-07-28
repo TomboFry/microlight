@@ -7,7 +7,7 @@
 //
 // **These functions should only be used internally and not rely on user input.**
 
-if (!defined('MICROLIGHT_INIT')) die();
+if (!defined('MICROLIGHT')) die();
 
 require_once('lib/enum.php');
 

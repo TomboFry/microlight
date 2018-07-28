@@ -1,7 +1,7 @@
 <?php
 
 // This definition will prevent any files to be loaded outside of this file.
-define('MICROLIGHT_INIT', 'true');
+define('MICROLIGHT', 'v0.0.1');
 
 // Load configuration
 require_once('includes/config.php');

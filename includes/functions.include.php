@@ -1,6 +1,6 @@
 <?php
 
-if (!defined('MICROLIGHT_INIT')) die();
+if (!defined('MICROLIGHT')) die();
 
 abstract class Show extends BasicEnum {
 	const ARCHIVE = 'ARCHIVE';

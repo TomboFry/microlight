@@ -2,7 +2,7 @@
 
 // Stop the rest of the page from processing if we're not actually loading this
 // file from within microlight itself.
-if (!defined('MICROLIGHT_INIT')) die();
+if (!defined('MICROLIGHT')) die();
 
 function post ($post, $show_permalink = true) {
 	echo "<article class='h-entry'>";

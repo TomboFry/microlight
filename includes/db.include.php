@@ -1,6 +1,6 @@
 <?php
 
-if (!defined('MICROLIGHT_INIT')) die();
+if (!defined('MICROLIGHT')) die();
 
 require_once('sql.include.php');
 

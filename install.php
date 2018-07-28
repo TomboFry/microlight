@@ -1,6 +1,7 @@
 <?php
 
-define('MICROLIGHT_INIT', true);
+// This definition will prevent any files to be loaded outside of this file.
+define('MICROLIGHT', 'v0.0.1');
 
 session_start();
 
