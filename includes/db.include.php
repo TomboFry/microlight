@@ -42,6 +42,8 @@ class Model {
 		$sql .= $this->sql->where($where);
 
 		// Add ordering
+		SQL::regex_test(SQLEscape::COLUMN, $order_field);
+		SQL::regex_test(SQLEscape::ORDER_DIRECTION, $order_direction);
 		$sql .= " ORDER BY `$order_field` $order_direction";
 
 		// Add limiting (mostly used for pagination)

@@ -105,28 +105,32 @@ function ml_load_posts () {
 		$where = [[
 			'column' => 'slug',
 			'operator' => SQLOP::EQUAL,
-			'value' => $post_slug
+			'value' => $post_slug,
+			'escape' => SQLEscape::SLUG,
 		]];
 	} else if ($post_tag !== '' || $post_type !== '') {
 		if ($post_tag !== ''){
 			array_push($where, [
 				'column' => 'tags',
 				'operator' => SQLOP::LIKE,
-				'value' => "%$post_tag,%"
+				'value' => "%$post_tag,%",
+				'escape' => SQLEscape::TAG,
 			]);
 		}
 		if ($post_type !== '') {
 			array_push($where, [
 				'column' => 'type',
 				'operator' => SQLOP::EQUAL,
-				'value' => $post_type
+				'value' => $post_type,
+				'escape' => SQLEscape::TYPE,
 			]);
 		}
 	} else if ($search_query !== '') {
 		$where = [[
 			'column' => 'name',
 			'operator' => SQLOP::LIKE,
-			'value' => "%$search_query%"
+			'value' => "%$search_query%",
+			'escape' => SQLEscape::NONE,
 		]];
 	}
 
