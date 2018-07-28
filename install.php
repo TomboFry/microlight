@@ -1,6 +1,9 @@
 <?php
 
 define('MICROLIGHT_INIT', true);
+
+session_start();
+
 require_once('includes/config.php');
 
 function put_value ($val, $index = NULL) {
@@ -11,13 +14,24 @@ function put_value ($val, $index = NULL) {
 		: '';
 }
 
-if (isset($_POST['submit'])) {
-	// echo "<pre>" . var_export($_POST, true) . "</pre>";
+try {
+	$db = new DB();
+	$identity = new Identity($db);
+	if ($identity->find_one() !== NULL) {
+		header('Location: index.php');
+	}
+} catch (Exception $e) {}
 
+if (isset($_POST['submit'])) {
 	$errors = [];
 	$services = [];
 
 	try {
+		if (!ml_post_not_blank('token')) array_push($errors, 'CSRF Token required');
+		if (empty($_SESSION['token'])) array_push($errors, 'CSRF Token required');
+
+		if (!hash_equals($_POST['token'], $_SESSION['token'])) array_push($errors, 'CSRF Token invalid');
+
 		// Validate POST variables first
 		if (!ml_post_not_blank('name')) array_push($errors, 'Name required');
 		if (!ml_post_not_blank('email')) array_push($errors, 'Email required');
@@ -37,8 +51,6 @@ if (isset($_POST['submit'])) {
 			$name = $_POST['name'];
 			$email = $_POST['email'];
 			$note = $_POST['note'];
-			$sm_service_names = $_POST['sm_service_names'];
-			$sm_service_urls = $_POST['sm_service_urls'];
 
 			// Connect to DB
 			$db = new DB();
@@ -68,18 +80,26 @@ if (isset($_POST['submit'])) {
 					'identity_id' => $identity_id
 				]);
 			}
+
+			session_destroy();
 		}
 	} catch (Exception $e) {
 		array_push($errors, $e->getMessage());
 	}
 } else {
-	try {
-		$db = new DB();
-		$identity = new Identity($db);
-		if ($identity->find_one() !== NULL) {
-			header('Location: index.php');
+	if (empty($_SESSION['token'])) {
+		if (function_exists('random_bytes')){
+			$_SESSION['token'] = bin2hex(random_bytes(32));
+		} else if (function_exists('mcrypt_create_iv')) {
+			$_SESSION['token'] = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
+		} else if (function_exists('openssl_random_pseudo_bytes')) {
+			$_SESSION['token'] = bin2hex(openssl_random_pseudo_bytes(32));
+		} else {
+			// Not recommended, but if none of the above functions
+			// exist, well then...  ¯\_(ツ)_/¯
+			$_SESSION['token'] = md5(uniqid(rand(), TRUE)) . md5(uniqid(rand(), TRUE));
 		}
-	} catch (Exception $e) {}
+	}
 }
 ?>
 <!DOCTYPE html>
@@ -310,6 +330,7 @@ if (isset($_POST['submit'])) {
 				for more information.
 			</span>
 		</div>
+		<input type='hidden' name='token' value='<?php echo $_SESSION['token']; ?>' />
 		<div class='f b'>
 			<input id='install' name='submit' type='submit' value='Install' />
 		</div>
