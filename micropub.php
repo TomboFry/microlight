@@ -37,19 +37,36 @@ function post($key) {
 	return null;
 }
 
+function response($response_code = ResponseCode::SERVER_ERROR, $location, $contents) {
+	header('HTTP/1.1 ' . $response_code['code']);
+
+	if (!empty($location)) {
+		header('Location: ' . $location);
+		return;
+	}
+
+	if (!empty($contents)) {
+		header('Content-Type: application/json');
+		echo $contents;
+	}
+
+	return;
+}
+
 function show_error($error = ResponseCode::SERVER_ERROR, $description = '') {
 	if (!ResponseCode::isValidValue($error)) {
 		$error = ResponseCode::SERVER_ERROR;
 		$description = 'ResponseCode enum incorrect';
 	}
 
-	header('Content-Type: application/json');
-	header('HTTP/1.1 ' . $error['code']);
-	echo json_encode([
-		'error' => $error['description'],
-		'error_description' => $description
-	]);
-	return;
+	return response(
+		$error,
+		null,
+		json_encode([
+			'error' => $error['description'],
+			'error_description' => $description
+		])
+	);
 }
 
 // https://stackoverflow.com/a/2955878
@@ -102,6 +119,14 @@ function process_request () {
 		$summary = substr($summary, 0, 157);
 		if (strlen($summary) === 157) $summary .= '...';
 	}
+
+	// Use photo if file is not provided
+	// TODO: Manage uploaded files with `multipart/form-data`, and set the
+	// post type depending on the uploaded file's mime type (eg. `image/jpg`
+	// or `video/mp4`)
+	if ($photo !== '' && $photo !== null) {
+		$type = 'photo';
+	}
 	
 	// Calculate the slug
 	if ($slug === '' || $slug === null) {
@@ -111,21 +136,42 @@ function process_request () {
 		$slug = date('omd') . '-' . slugify($slug);
 	}
 
+	// Turn the provided categories into a string
+	// TODO: Before this line, perform webmentions if a category is a URL
 	$categories = implode(',', $categories) . ',';
 
-	header('Content-Type: application/json');
-	echo json_encode([
-		'files' => $_FILES,
-		'h' => $h,
+	$db = new DB();
+	$post = new Post($db);
+	$existing = $post->count([
+		[
+			'column' => 'slug',
+			'operator' => SQLOP::EQUAL,
+			'value' => $slug,
+			'escape' => SQLEscape::SLUG
+		]
+	]);
+
+	if ($existing > 0) return show_error(ResponseCode::INVALID_REQUEST, "Post with slug '$slug' already exists");
+
+	$postId = $post->insert([
 		'name' => $name,
 		'summary' => $summary,
 		'content' => $content,
-		'photo' => $photo,
-		'url' => $url,
-		'categories' => $categories,
 		'type' => $type,
 		'slug' => $slug,
+		'published' => date('c'),
+		'tags' => $categories,
+		'url' => $photo,
+		'identity_id' => 1
 	]);
+
+	$postId = intval($postId);
+
+	if (is_int($postId) && $postId !== 0) {
+		return response(ResponseCode::CREATED, ml_post_permalink($slug), null);
+	} else {
+		return show_error(ResponseCode::SERVER_ERROR, 'Could not create entry. Unknown reason.');
+	}
 }
 
 process_request();
