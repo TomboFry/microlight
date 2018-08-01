@@ -185,8 +185,8 @@ function ml_base_url() {
 }
 
 // Returns an absolute URL to a specific post
-function ml_post_permalink ($Post) {
-	return ml_base_url() . '?post_slug=' . $Post->slug;
+function ml_post_permalink ($slug) {
+	return ml_base_url() . '?post_slug=' . $slug;
 }
 
 // Returns an absolute URL to the archive of a specific tag

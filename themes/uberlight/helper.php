@@ -7,7 +7,7 @@ if (!defined('MICROLIGHT')) die();
 function post ($post, $show_permalink = true) {
 	echo "<article class='h-entry'>";
 	if (ml_post_has_name($post)) {
-		if ($show_permalink) echo "<a href='" . ml_post_permalink($post) . "'>";
+		if ($show_permalink) echo "<a href='" . ml_post_permalink($post->slug) . "'>";
 		echo "<h2 class='p-name'>";
 		echo $post->name;
 		echo "</h2>";
@@ -44,7 +44,7 @@ function post ($post, $show_permalink = true) {
 	// Everything below this point is for metadata
 	?>
 	<footer>
-		<a class='u-url u-uid' href='<?php echo ml_post_permalink($post); ?>'>
+		<a class='u-url u-uid' href='<?php echo ml_post_permalink($post->slug); ?>'>
 			<time class='dt-published' datetime='<?php echo $post->published; ?>'>
 				<?php echo ml_date_pretty($post->published); ?>
 			</time>
