@@ -2,7 +2,7 @@
 
 define('MICROLIGHT', 'v0.0.1');
 
-require_once('includes/lib/enum.php');
+require_once('includes/config.php');
 
 abstract class ResponseCode extends BasicEnum {
 	// Success
@@ -34,10 +34,10 @@ function post($key) {
 	global $post;
 
 	if (isset($post[$key]) && !empty($post[$key])) return $post[$key];
-	return false;
+	return null;
 }
 
-function showError($error = ResponseCode::SERVER_ERROR, $description = '') {
+function show_error($error = ResponseCode::SERVER_ERROR, $description = '') {
 	if (!ResponseCode::isValidValue($error)) {
 		$error = ResponseCode::SERVER_ERROR;
 		$description = 'ResponseCode enum incorrect';
@@ -75,7 +75,7 @@ function slugify($text) {
 	return $text;
 }
 
-function processRequest () {
+function process_request () {
 	$h = post('h');
 	$name = post('name');
 	$content = post('content');
@@ -86,16 +86,16 @@ function processRequest () {
 
 	// Variables not necessarily set by the POST data
 	$type = 'article';
-	$slug = '';
+	$slug = $name;
 	
 	// h parameter is required
-	if ($h === false) return showError(ErrorCodes::INVALID_REQUEST, 'Field \'h\' required');
+	if ($h === null) return show_error(ErrorCodes::INVALID_REQUEST, 'Field \'h\' required');
 
 	// If a name is not provided, assume it's a note (for now)
-	if ($name === false) $type = 'note';
+	if ($name === null) $type = 'note';
 
 	// Create a summary from the content, if one was not provided
-	if ($summary === '' || $summary === false) {
+	if ($summary === '' || $summary === null) {
 		// Limit to 160 characters, add ellipsis if it's longer
 		$summary = preg_replace('/^\#(.*)\R+/', '', $content);
 		$summary = preg_split('/$\R?^/m', $summary)[0];
@@ -103,7 +103,8 @@ function processRequest () {
 		if (strlen($summary) === 157) $summary .= '...';
 	}
 	
-	if ($slug === '' || $slug === false) {
+	// Calculate the slug
+	if ($slug === '' || $slug === null) {
 		$slug = slugify(implode('-', array_slice(preg_split('/\s/m', $summary), 0, 5)));
 		$slug = date('omd') . '-' . $slug;
 	} else {
@@ -127,4 +128,4 @@ function processRequest () {
 	]);
 }
 
-processRequest();
+process_request();

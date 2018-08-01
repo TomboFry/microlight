@@ -22,7 +22,7 @@ abstract class SQLOP extends BasicEnum {
 
 abstract class SQLEscape extends BasicEnum {
 	// Any characters allowed, no checking
-	const NONE = '/^.*$/';
+	const NONE = '/.*/';
 
 	// At least one alphabetic or underscore character
 	const COLUMN = '/^[a-zA-Z_]+$/';
