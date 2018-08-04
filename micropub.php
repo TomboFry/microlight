@@ -18,11 +18,14 @@ abstract class ResponseCode extends BasicEnum {
 	const SERVER_ERROR = [ 'code' => 500, 'description' => 'server_error' ];
 }
 
-$method = $_SERVER['REQUEST_METHOD'];
-$content_type = $_SERVER['CONTENT_TYPE'];
-
 // Redirect to homepage if we're trying to load it in the browser
-if ($method !== 'POST') header('Location: /');
+$method = $_SERVER['REQUEST_METHOD'];
+if ($method !== 'POST') {
+	header('HTTP/1.1 301 Redirect');
+	header('Location: /');
+	return;
+}
+$content_type = $_SERVER['CONTENT_TYPE'];
 
 if ($content_type === 'application/json') {
 	$post = json_decode(file_get_contents('php://input'), true);
@@ -106,7 +109,7 @@ function process_request () {
 	$slug = $name;
 	
 	// h parameter is required
-	if ($h === null) return show_error(ErrorCodes::INVALID_REQUEST, 'Field \'h\' required');
+	if ($h === null) return show_error(ResponseCode::INVALID_REQUEST, 'Field \'h\' required');
 
 	// If a name is not provided, assume it's a note (for now)
 	if ($name === null) $type = 'note';
@@ -138,7 +141,9 @@ function process_request () {
 
 	// Turn the provided categories into a string
 	// TODO: Before this line, perform webmentions if a category is a URL
-	$categories = implode(',', $categories) . ',';
+	if ($categories !== '' && $categories !== null) {
+		$categories = implode(',', $categories) . ',';
+	}
 
 	$db = new DB();
 	$post = new Post($db);

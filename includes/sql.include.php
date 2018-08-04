@@ -32,7 +32,7 @@ abstract class SQLEscape extends BasicEnum {
 
 	// Either a list or a singular of at least one alphanumeric, underscore,
 	// hyphen, or space character, optionally surrounded by percent symbols
-	const TAG = '/^([a-zA-Z0-9_\- ]+|%([a-zA-Z0-9_\- ]+,)+%|([a-zA-Z0-9_\- ]+,)+)$/';
+	const TAG = '/^([a-zA-Z0-9_\- ]+|%([a-zA-Z0-9_\- ]+,)+%|([a-zA-Z0-9_\- ]+,)+|^$)$/';
 
 	// At least one alphabetic character
 	const TYPE = '/^[a-z]+$/';

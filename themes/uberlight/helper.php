@@ -26,7 +26,11 @@ function post ($post, $show_permalink = true) {
 		break;
 	case 'photo':
 		?>
-			<img class='u-photo' src='<?php echo $post->url; ?>'/>
+			<img
+				class='u-photo'
+				alt='<?php echo $post->name; ?>'
+				src='<?php echo $post->url; ?>'
+			/>
 		<?php
 		break;
 
