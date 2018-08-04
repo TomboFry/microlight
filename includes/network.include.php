@@ -59,3 +59,37 @@ function show_error($error = ResponseCode::SERVER_ERROR, $description = '') {
 	);
 }
 
+function request($url, $method = HTTPMethod::GET, $body = null) {
+	if ($url === null || $url === '') throw Error('Provide URL');
+	if (!HTTPMethod::isValidValue($method)) throw Error('Provide correct method');
+	if ($method === HTTPMethod::GET && $body !== null) throw Error('Cannot send body in GET request');
+
+	$curl = curl_init();
+	
+	$settings = array(
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_URL => $url
+	);
+
+	if ($body !== null) {
+		$settings[CURLOPT_POSTFIELDS] = http_build_query($body);
+	}
+	if ($method === HTTPMethod::POST) {
+		$settings[CURLOPT_POST] = true;
+	}
+	if ($method !== HTTPMethod::GET && $method !== HTTPMethod::POST) {
+		$settings[CURLOPT_CUSTOMREQUEST] = $method;
+	}
+
+	curl_setopt_array($curl, $settings);
+
+	$result = curl_exec($curl);
+	$errors = curl_error($curl);
+	curl_close($curl);
+
+	if ($result === false || $errors !== '') {
+		return $errors;
+	}
+
+	return $result;
+}
