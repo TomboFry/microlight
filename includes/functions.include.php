@@ -22,11 +22,11 @@ $me = null;
 $posts = null;
 
 function ml_get_not_blank ($var) {
-	return (isset($_GET[$var]) && $_GET[$var] !== "");
+	return (isset($_GET[$var]) && $_GET[$var] !== '');
 }
 
 function ml_post_not_blank ($var) {
-	return (isset($_POST[$var]) && $_POST[$var] !== "");
+	return (isset($_POST[$var]) && $_POST[$var] !== '');
 }
 
 function ml_showing () {
@@ -63,7 +63,7 @@ function ml_showing () {
 		if (ml_get_not_blank('page')) {
 			$pagination = $_GET['page'] - 1;
 			if ($pagination < 0) {
-				throw new Exception("Page $pagination cannot be less than 0");
+				throw new Exception('Page ' . $pagination . ' cannot be less than 0');
 			}
 		}
 	}
@@ -175,17 +175,24 @@ function ml_get_title () {
 	global $posts;
 	global $me;
 
-	$str = "";
+	$str = '';
 	if ($showing === Show::POST || $showing === Show::PAGE) {
-		$str .= $posts->name . Config::TITLE_SEPARATOR;
+		$str .= $posts->name !== ''
+			? $posts->name
+			: $posts->summary;
+		$str .= Config::TITLE_SEPARATOR;
 	}
 	$str .= $me->name;
 	return $str;
 }
 
-// Returns the full URL, including "http(s)"
+// Returns the full URL, including 'http(s)'
 function ml_base_url () {
-	return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . Config::ROOT;
+	return (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . Config::ROOT;
+}
+
+function ml_icon_url () {
+	return ml_base_url() . 'images/me.jpg';
 }
 
 // Returns an absolute URL to a specific post
@@ -198,17 +205,20 @@ function ml_tag_permalink ($tag) {
 	return ml_base_url() . '?post_tag=' . $tag;
 }
 
-function ml_current_page_permalink () {
+function ml_canonical_permalink () {
 	global $post_tag;
 	global $post_type;
 	global $search_query;
+	global $post_slug;
 	$str = ml_base_url() . '?';
 	if ($search_query !== '') {
-		$str .= "search_query=$search_query&";
+		$str .= 'search_query=' . $search_query . '&';
 	} elseif ($post_tag !== '' || $post_type !== '') {
 		$str = ml_base_url() . '?';
-		if ($post_tag !== '') $str .= "post_tag=$post_tag&";
-		if ($post_type !== '') $str .= "post_type=$post_type&";
+		if ($post_tag !== '') $str .= 'post_tag=' . $post_tag . '&';
+		if ($post_type !== '') $str .= 'post_type=' . $post_type . '&';
+	} elseif ($post_slug !== '') {
+		$str .= 'post_slug=' . $post_slug;
 	}
 	return $str;
 }
@@ -225,6 +235,45 @@ function ml_date_pretty ($date) {
 		Config::DATE_PRETTY,
 		strtotime($date)
 	);
+}
+
+// Add headers to <head /> tag in theme (highly recommended to use)
+function ml_page_headers () {
+	global $me;
+	global $showing;
+	global $posts;
+
+	if ($showing === Show::PAGE || $showing === Show::POST) {
+		$description = $posts->summary;
+		if ($posts->type === 'photo') {
+			$image = $posts->url;
+		} else {
+			$image = ml_icon_url();
+		}
+	} else {
+		$description = $me->note;
+		$image = ml_icon_url();
+	}
+	?>
+	<meta name='description' content='<?php echo $description; ?>' />
+	<meta name='generator' content='Microlight <?php echo MICROLIGHT; ?>' />
+	<meta name='author' content='<?php echo $me->name; ?>' />
+	<meta name='referrer' content='origin'>
+	<?php if (Config::OPEN_GRAPH === true): ?>
+		<meta name='twitter:card' content='summary' />
+		<meta property='og:url' content='<?php echo ml_canonical_permalink(); ?>' />
+		<meta property='og:title' content='<?php echo ml_get_title(); ?>' />
+		<meta property='og:description' content='<?php echo $description; ?>' />
+		<meta property='og:image' content='<?php echo $image; ?>' />
+	<?php endif; ?>
+	<title><?php echo ml_get_title(); ?></title>
+	<link rel='micropub' href='<?php echo ml_base_url() . 'micropub.php'; ?>' />
+	<link rel='authorization_endpoint' href='https://indielogin.com/auth' />
+	<link rel='token_endpoint' href='https://indielogin.com/auth' />
+	<link rel='icon' href='<?php echo $image; ?>'>
+	<link rel='apple-touch-icon-precomposed' href='<?php echo $image; ?>'>
+	<link rel='canonical' href='<?php echo ml_canonical_permalink(); ?>' />
+	<?php
 }
 
 function ml_pagination_enabled () {
@@ -256,12 +305,12 @@ function ml_pagination_right_enabled () {
 
 function ml_pagination_left_link () {
 	global $pagination;
-	return ml_current_page_permalink() . "page=$pagination";
+	return ml_canonical_permalink() . 'page=' . $pagination;
 }
 
 function ml_pagination_right_link () {
 	global $pagination;
-	return ml_current_page_permalink() . "page=" . ($pagination + 2);
+	return ml_canonical_permalink() . 'page=' . ($pagination + 2);
 }
 
 // Determines whether a location from the database are coordinates or an address

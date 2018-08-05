@@ -41,6 +41,12 @@ class Config {
 	// date.
 	// default: 'l jS F Y, h:i A'
 	const DATE_PRETTY = 'l jS F Y, H:i';
+
+	// Open Graph (boolean):
+	// Whether you would like to automatically add Open Graph tags (eg. Link
+	// previews for Facebook & Twitter) to your page.
+	// default: true
+	const OPEN_GRAPH = true;
 }
 
 /**********************************

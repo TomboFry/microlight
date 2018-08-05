@@ -208,7 +208,6 @@ if (isset($_POST['submit'])) {
 		.s {
 			padding: 16px;
 			border: 1px solid #184;
-			/* background-color: #4A3; */
 			color: #184;
 			border-radius: 6px;
 		}
@@ -228,8 +227,8 @@ if (isset($_POST['submit'])) {
 		}
 
 		#install:active {
-			margin-top: 2.5px;
-			border-bottom: 0.5px solid #184;
+			margin-top: 2px;
+			border-bottom: 1px solid #184;
 		}
 	</style>
 </head>
