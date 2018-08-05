@@ -4,10 +4,10 @@
 // Credit / Source: https://stackoverflow.com/a/254543
 
 abstract class BasicEnum {
-	private static $const_cache_array = NULL;
+	private static $const_cache_array = null;
 
-	private static function getConstants() {
-		if (self::$const_cache_array == NULL) {
+	private static function getConstants () {
+		if (self::$const_cache_array == null) {
 			self::$const_cache_array = [];
 		}
 		$called_class = get_called_class();
@@ -18,7 +18,7 @@ abstract class BasicEnum {
 		return self::$const_cache_array[$called_class];
 	}
 
-	public static function isValidName($name, $strict = false) {
+	public static function isValidName ($name, $strict = false) {
 		$constants = self::getConstants();
 
 		if ($strict) {
@@ -29,7 +29,7 @@ abstract class BasicEnum {
 		return in_array(strtolower($name), $keys);
 	}
 
-	public static function isValidValue($value, $strict = true) {
+	public static function isValidValue ($value, $strict = true) {
 		$values = array_values(self::getConstants());
 		return in_array($value, $values, $strict);
 	}

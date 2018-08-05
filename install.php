@@ -7,9 +7,9 @@ session_start();
 
 require_once('includes/config.php');
 
-function put_value ($val, $index = NULL) {
+function put_value ($val, $index = null) {
 	echo ml_post_not_blank($val)
-		? $index !== NULL
+		? $index !== null
 			? $_POST[$val][$index]
 			: $_POST[$val]
 		: '';
@@ -18,10 +18,11 @@ function put_value ($val, $index = NULL) {
 try {
 	$db = new DB();
 	$identity = new Identity($db);
-	if ($identity->find_one() !== NULL) {
+	if ($identity->find_one() !== null) {
 		header('Location: index.php');
 	}
-} catch (Exception $e) {}
+} catch (Exception $e) {
+}
 
 if (isset($_POST['submit'])) {
 	$errors = [];
@@ -40,10 +41,10 @@ if (isset($_POST['submit'])) {
 			$url = $_POST['sm_service_urls'][$index];
 			if (!empty($name) && empty($url)) {
 				array_push($errors, "Service '$name' requires a URL");
-			} else if (!empty($name) && !empty($url)) {
+			} elseif (!empty($name) && !empty($url)) {
 				array_push($services, [
 					'name' => $name,
-					'url' => $url
+					'url' => $url,
 				]);
 			}
 		}
@@ -71,14 +72,14 @@ if (isset($_POST['submit'])) {
 			$identity_id = $identity->insert([
 				'name' => $name,
 				'email' => $email,
-				'note' => $note
+				'note' => $note,
 			]);
 
 			foreach ($services as $key => $value) {
 				$relme->insert([
 					'name' => $value['name'],
 					'url' => $value['url'],
-					'identity_id' => $identity_id
+					'identity_id' => $identity_id,
 				]);
 			}
 
@@ -89,16 +90,16 @@ if (isset($_POST['submit'])) {
 	}
 } else {
 	if (empty($_SESSION['token'])) {
-		if (function_exists('random_bytes')){
+		if (function_exists('random_bytes')) {
 			$_SESSION['token'] = bin2hex(random_bytes(32));
-		} else if (function_exists('mcrypt_create_iv')) {
+		} elseif (function_exists('mcrypt_create_iv')) {
 			$_SESSION['token'] = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
-		} else if (function_exists('openssl_random_pseudo_bytes')) {
+		} elseif (function_exists('openssl_random_pseudo_bytes')) {
 			$_SESSION['token'] = bin2hex(openssl_random_pseudo_bytes(32));
 		} else {
 			// Not recommended, but if none of the above functions
 			// exist, well then...  ¯\_(ツ)_/¯
-			$_SESSION['token'] = md5(uniqid(rand(), TRUE)) . md5(uniqid(rand(), TRUE));
+			$_SESSION['token'] = md5(uniqid(rand(), true)) . md5(uniqid(rand(), true));
 		}
 	}
 }
@@ -116,6 +117,7 @@ if (isset($_POST['submit'])) {
 			padding: 0;
 			box-sizing: border-box;
 		}
+
 		body {
 			width: 100%;
 			padding: 64px;
@@ -124,19 +126,26 @@ if (isset($_POST['submit'])) {
 			color: #333;
 			line-height: 1;
 		}
+
 		body, input {
 			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 		}
+
 		h1 {
 			font-weight: 300;
 			font-size: 32pt;
 		}
 
 		body > * { margin-bottom: 16px }
+
 		a { color: #3fa9f5 }
+
 		a:hover { color: #3793d5 }
+
 		.p { line-height: 1.4em }
+
 		.i-left { border-right: 0 !important }
+
 		ul { margin-left: 24px }
 
 		.f {
@@ -144,11 +153,13 @@ if (isset($_POST['submit'])) {
 			width: 100%;
 			padding: 24px 0;
 		}
+
 		.f label {
 			display: block;
 			font-weight: 500;
 			margin-bottom: 8px;
 		}
+
 		.f input[type='text'], .f input[type='email'], .f input[type='url'] {
 			display: block;
 			width: 100%;
@@ -158,22 +169,26 @@ if (isset($_POST['submit'])) {
 			border: 1px solid #ccc;
 			color: #555;
 		}
+
 		#l input[type='text'], #l input[type='email'], #l input[type='url'] {
 			display: inline-block;
 			width: 50%;
 			margin-bottom: 8px;
 			font-size: 18px;
 		}
+
 		.d {
 			display: block;
 			margin-top: 8px;
 			font-size: 9pt;
 			color: #999;
 		}
+
 		.b {
 			margin-top: 0;
 			padding-bottom: 0;
 		}
+
 		.r {
 			color: #E34;
 			font-weight: 700;
@@ -181,6 +196,7 @@ if (isset($_POST['submit'])) {
 			font-size: 10pt;
 			float: right;
 		}
+
 		.w {
 			padding: 16px;
 			border: 1px solid #A12;
@@ -188,6 +204,7 @@ if (isset($_POST['submit'])) {
 			color: #E34;
 			border-radius: 6px;
 		}
+
 		.s {
 			padding: 16px;
 			border: 1px solid #184;
@@ -195,6 +212,7 @@ if (isset($_POST['submit'])) {
 			color: #184;
 			border-radius: 6px;
 		}
+
 		#install {
 			background: #4A3;
 			background: linear-gradient(#5B5, #4A3);
@@ -208,6 +226,7 @@ if (isset($_POST['submit'])) {
 			border-radius: 6px;
 			transition: margin-top 0.1s, border 0.1s;
 		}
+
 		#install:active {
 			margin-top: 2.5px;
 			border-bottom: 0.5px solid #184;
@@ -216,18 +235,18 @@ if (isset($_POST['submit'])) {
 </head>
 <body>
 	<h1>Install Microlight</h1>
-	<?php if (!empty($errors)) { ?>
+	<?php if (!empty($errors)): ?>
 	<div class='p w'>
 		Some errors occurred during installation:
 		<ul>
 		<?php
-			foreach($errors as $err) {
+			foreach ($errors as $err) {
 				echo "<li>$err</li>";
 			}
 		?>
 		</ul>
 	</div>
-	<?php } else if (isset($_POST['submit'])){ ?>
+	<?php elseif (isset($_POST['submit'])): ?>
 	<p class='p s'>
 		Installation successful! You can now create posts using a
 		micropub editor/publisher.
@@ -235,20 +254,26 @@ if (isset($_POST['submit'])) {
 	<a class='f' href="<?php echo ml_base_url(); ?>">&lt; Go Home</a>
 	</body></html>
 	<?php die(); ?>
-	<?php } else { ?>
+	<?php else: ?>
 	<p class='p w'>
 		You are viewing this page because Microlight has not been
 		completely set up. You will need to create an identity to begin
 		using Microlight.
 	</p>
-	<?php } ?>
+	<?php endif; ?>
 	<form action='' method='POST'>
 		<div class='f'>
 			<label for='name'>
 				Name
 				<span class='r'>required</span>
 			</label>
-			<input required type='text' name='name' id='name' value='<?php put_value('name'); ?>' />
+			<input
+				required
+				type='text'
+				name='name'
+				id='name'
+				value='<?php put_value('name'); ?>'
+			/>
 			<span class='d p'>
 				Who do you identify as? This will be displayed
 				prominently on your homepage and by every post
@@ -260,7 +285,13 @@ if (isset($_POST['submit'])) {
 				Email Address
 				<span class='r'>required</span>
 			</label>
-			<input required type='email' name='email' id='email' value='<?php put_value('email'); ?>' />
+			<input
+				required
+				type='email'
+				name='email'
+				id='email'
+				value='<?php put_value('email'); ?>'
+			/>
 			<span class='d p'>
 				Your email is not sent to me, it is simply to
 				display on your homepage as contact information.
@@ -272,7 +303,9 @@ if (isset($_POST['submit'])) {
 		<div class='f'>
 			<label for='note'>Note / Tagline</label>
 			<input type='text' name='note' id='note' />
-			<span class='d p'>Describe yourself. What makes you, you?</span>
+			<span class='d p'>
+				Describe yourself. What makes you, you?
+			</span>
 		</div>
 		<div class='f'>
 			<label for='l'>
@@ -327,13 +360,25 @@ if (isset($_POST['submit'])) {
 				these social media accounts (instead of email),
 				<a href='<?php echo ml_base_url(); ?>'>your
 				homepage</a> must appear on the accounts you
-				have specified. See <a target='_blank' href='https://indieweb.org/IndieAuth'>IndieAuth</a>
+				have specified. See
+				<a target='_blank' href='https://indieweb.org/IndieAuth'>
+					IndieAuth
+				</a>
 				for more information.
 			</span>
 		</div>
-		<input type='hidden' name='token' value='<?php echo $_SESSION['token']; ?>' />
+		<input
+			type='hidden'
+			name='token'
+			value='<?php echo $_SESSION['token']; ?>'
+		/>
 		<div class='f b'>
-			<input id='install' name='submit' type='submit' value='Install' />
+			<input
+				id='install'
+				name='submit'
+				type='submit'
+				value='Install'
+			/>
 		</div>
 	</form>
 </body>

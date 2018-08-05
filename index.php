@@ -7,7 +7,6 @@ define('MICROLIGHT', 'v0.0.1');
 require_once('includes/config.php');
 
 try {
-
 	// Determine what post to show
 	ml_showing();
 

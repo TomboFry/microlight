@@ -4,7 +4,8 @@ if (!defined('MICROLIGHT')) die();
 
 require_once('sql.include.php');
 
-class DBError extends Exception {}
+class DBError extends Exception {
+}
 
 class DB {
 	public $db;
@@ -15,7 +16,7 @@ class DB {
 		$this->sql = new SQL($this->db);
 	}
 
-	public function close() {
+	public function close () {
 		$this->db = null;
 	}
 }
@@ -25,7 +26,7 @@ class Model {
 	public $db;
 	public $sql;
 
-	function __construct(&$db, $table_name) {
+	function __construct (&$db, $table_name) {
 		$this->db = $db->db;
 		$this->sql = $db->sql;
 		$this->table_name = $table_name;
@@ -60,10 +61,10 @@ class Model {
 	function find_one ($where = [], $offset = 0) {
 		$results = $this->find($where, 1, $offset);
 		if (count($results) > 0) return $results[0];
-		return NULL;
+		return null;
 	}
 
-	function insert($properties) {
+	function insert ($properties) {
 		$sql = 'INSERT INTO ' . $this->table_name . $this->sql->insert($properties);
 		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
 		return $this->db->lastInsertId();
@@ -84,7 +85,7 @@ class Identity extends Model {
 		parent::__construct($db, $this->table_name);
 	}
 
-	function create_table() {
+	function create_table () {
 		// Create the table if it does not already exist
 		$this->db->exec($this->sql->create($this->table_name, [
 			[
@@ -114,7 +115,7 @@ class RelMe extends Model {
 		parent::__construct($db, $this->table_name);
 	}
 
-	function create_table() {
+	function create_table () {
 		// Create the table if it does not already exist
 		$this->db->exec($this->sql->create($this->table_name, [
 			[
@@ -145,7 +146,7 @@ class Post extends Model {
 		parent::__construct($db, $this->table_name);
 	}
 
-	function create_table() {
+	function create_table () {
 		// Create the table if it does not already exist
 		$this->db->exec($this->sql->create($this->table_name, [
 			[

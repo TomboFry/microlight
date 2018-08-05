@@ -27,15 +27,15 @@ require_once('helper.php');
 	</header>
 	<div class="<?php echo strtolower($showing); ?>">
 		<?php
-			if ($showing === Show::ERROR404) {
-				echo "That post could not be found.";
-			} else if ($showing === Show::ARCHIVE) {
-				foreach ($posts as $Post) {
-					echo post($Post);
-				}
-			} else if ($showing === Show::POST || $showing === Show::PAGE) {
-				echo post($posts, false);
+		if ($showing === Show::ERROR404) {
+			echo "That post could not be found.";
+		} elseif ($showing === Show::ARCHIVE) {
+			foreach ($posts as $Post) {
+				echo post($Post);
 			}
+		} elseif ($showing === Show::POST || $showing === Show::PAGE) {
+			echo post($posts, false);
+		}
 		?>
 	</div>
 	<?php if (ml_pagination_enabled()) { ?>

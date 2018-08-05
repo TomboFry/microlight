@@ -20,7 +20,7 @@ ul {
 	margin-left: 24px;
 }
 
-h1,h2 {
+h1, h2 {
 	margin-bottom: 16px;
 }
 
@@ -39,6 +39,7 @@ article {
 img {
 	max-width: 100%;
 }
+
 audio {
 	width: 100%;
 }

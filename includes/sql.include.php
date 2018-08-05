@@ -61,11 +61,11 @@ class SQL {
 	// Class variables and functions
 	private $db;
 
-	function __construct(&$db) {
+	function __construct (&$db) {
 		$this->db = $db;
 	}
 
-	public static function regex_test($regex, $test) {
+	public static function regex_test ($regex, $test) {
 		// If the regex doesn't match just throw an exception
 		if (!preg_match($regex, $test)) throw new Exception('Value "' . $test . '" invalid', 1);
 	}
@@ -115,10 +115,10 @@ class SQL {
 		return $acc;
 	}
 
-	public function create ($table_name, $properties, $foreign_keys = NULL) {
+	public function create ($table_name, $properties, $foreign_keys = null) {
 		$new_props = $this->propsToString($properties);
 		$full_string = "CREATE TABLE IF NOT EXISTS `$table_name` ($new_props";
-		if ($foreign_keys != NULL) {
+		if ($foreign_keys != null) {
 			$full_string .= $this->foreignKeyToString($foreign_keys);
 		}
 		$full_string .= ');';
@@ -157,7 +157,6 @@ class SQL {
 	public function insert ($properties) {
 		$keys = '';
 		$values = '';
-		$str = '';
 
 		foreach ($properties as $key => $value) {
 			// 1. Test the key (column name)
@@ -165,7 +164,7 @@ class SQL {
 
 			// 2. Determine if there is a specific column that needs
 			//    testing
-			$escape;
+			$escape = null;
 			switch ($key) {
 			case 'type':
 				$escape = SQLEscape::TYPE;

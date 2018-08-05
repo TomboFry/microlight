@@ -67,7 +67,7 @@ function post ($post, $show_permalink = true) {
 		$geo = ml_location_geo($post->location);
 		if (is_array($geo)):
 			$link = 'https://www.openstreetmap.org/?mlat=' . $geo['lat'] . '&mlon=' . $geo['long'];
-		?>
+			?>
 			<div class='h-geo'>
 				&#x1F4CD;
 				<a
@@ -80,7 +80,7 @@ function post ($post, $show_permalink = true) {
 			</div>
 		<?php
 		elseif (is_string($geo)):
-		?>
+			?>
 			<div class='h-adr'>
 				&#x1F4CD;
 				<a

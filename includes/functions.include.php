@@ -21,11 +21,11 @@ $db = null;
 $me = null;
 $posts = null;
 
-function ml_get_not_blank($var) {
+function ml_get_not_blank ($var) {
 	return (isset($_GET[$var]) && $_GET[$var] !== "");
 }
 
-function ml_post_not_blank($var) {
+function ml_post_not_blank ($var) {
 	return (isset($_POST[$var]) && $_POST[$var] !== "");
 }
 
@@ -78,7 +78,7 @@ function ml_database_setup () {
 
 	// Load Identity
 	$me = (new Identity($db))->find_one();
-	if ($me !== NULL) {
+	if ($me !== null) {
 		$me->links = (new RelMe($db))->find();
 		$me->home = ml_base_url();
 	}
@@ -102,14 +102,16 @@ function ml_load_posts () {
 	if ($post_slug !== '') {
 		$limit = 1;
 		$offset = 0;
-		$where = [[
-			'column' => 'slug',
-			'operator' => SQLOP::EQUAL,
-			'value' => $post_slug,
-			'escape' => SQLEscape::SLUG,
-		]];
-	} else if ($post_tag !== '' || $post_type !== '') {
-		if ($post_tag !== ''){
+		$where = [
+			[
+				'column' => 'slug',
+				'operator' => SQLOP::EQUAL,
+				'value' => $post_slug,
+				'escape' => SQLEscape::SLUG,
+			],
+		];
+	} elseif ($post_tag !== '' || $post_type !== '') {
+		if ($post_tag !== '') {
 			array_push($where, [
 				'column' => 'tags',
 				'operator' => SQLOP::LIKE,
@@ -125,13 +127,15 @@ function ml_load_posts () {
 				'escape' => SQLEscape::TYPE,
 			]);
 		}
-	} else if ($search_query !== '') {
-		$where = [[
-			'column' => 'name',
-			'operator' => SQLOP::LIKE,
-			'value' => "%$search_query%",
-			'escape' => SQLEscape::NONE,
-		]];
+	} elseif ($search_query !== '') {
+		$where = [
+			[
+				'column' => 'name',
+				'operator' => SQLOP::LIKE,
+				'value' => "%$search_query%",
+				'escape' => SQLEscape::NONE,
+			],
+		];
 	}
 
 	// Run the SQL query
@@ -166,7 +170,7 @@ function ml_get_name () {
 }
 
 // Returns the title, depending on whether you're on a single post or not.
-function ml_get_title() {
+function ml_get_title () {
 	global $showing;
 	global $posts;
 	global $me;
@@ -180,7 +184,7 @@ function ml_get_title() {
 }
 
 // Returns the full URL, including "http(s)"
-function ml_base_url() {
+function ml_base_url () {
 	return (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . Config::ROOT;
 }
 
@@ -194,14 +198,14 @@ function ml_tag_permalink ($tag) {
 	return ml_base_url() . '?post_tag=' . $tag;
 }
 
-function ml_current_page_permalink() {
+function ml_current_page_permalink () {
 	global $post_tag;
 	global $post_type;
 	global $search_query;
 	$str = ml_base_url() . '?';
 	if ($search_query !== '') {
 		$str .= "search_query=$search_query&";
-	} else if ($post_tag !== '' || $post_type !== '') {
+	} elseif ($post_tag !== '' || $post_type !== '') {
 		$str = ml_base_url() . '?';
 		if ($post_tag !== '') $str .= "post_tag=$post_tag&";
 		if ($post_type !== '') $str .= "post_type=$post_type&";
@@ -279,12 +283,12 @@ function ml_location_geo ($location) {
 		if ($lat > 180 || $lat < -180 || $long > 90 || $long < -90) {
 			return $location;
 		}
-		return [ 'lat' => $lat, 'long' => $long ];
+		return ['lat' => $lat, 'long' => $long];
 	} else {
 		return $location;
 	}
 }
 
-function ml_post_has_name($post) {
+function ml_post_has_name ($post) {
 	return $post->name !== null && $post->name !== '';
 }

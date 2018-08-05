@@ -20,7 +20,7 @@ if ($content_type === 'application/json') {
 	$post = $_POST;
 }
 
-function post($key) {
+function post ($key) {
 	global $post;
 
 	if (isset($post[$key]) && !empty($post[$key])) return $post[$key];
@@ -28,7 +28,7 @@ function post($key) {
 }
 
 // https://stackoverflow.com/a/2955878
-function slugify($text) {
+function slugify ($text) {
 	// replace non letter or digits by -
 	$text = preg_replace('~[^\pL\d]+~u', '-', $text);
 
@@ -62,9 +62,12 @@ function process_request () {
 	// Variables not necessarily set by the POST data
 	$type = 'article';
 	$slug = $name;
-	
+
 	// h parameter is required
-	if ($h === null) return show_error(ResponseCode::INVALID_REQUEST, 'Field \'h\' required');
+	if ($h === null) {
+		show_error(ResponseCode::INVALID_REQUEST, 'Field \'h\' required');
+		return;
+	}
 
 	// If a name is not provided, assume it's a note (for now)
 	if ($name === null) $type = 'note';
@@ -85,7 +88,7 @@ function process_request () {
 	if ($photo !== '' && $photo !== null) {
 		$type = 'photo';
 	}
-	
+
 	// Calculate the slug
 	if ($slug === '' || $slug === null) {
 		$slug = slugify(implode('-', array_slice(preg_split('/\s/m', $summary), 0, 5)));
@@ -107,11 +110,14 @@ function process_request () {
 			'column' => 'slug',
 			'operator' => SQLOP::EQUAL,
 			'value' => $slug,
-			'escape' => SQLEscape::SLUG
-		]
+			'escape' => SQLEscape::SLUG,
+		],
 	]);
 
-	if ($existing > 0) return show_error(ResponseCode::INVALID_REQUEST, "Post with slug '$slug' already exists");
+	if ($existing > 0) {
+		show_error(ResponseCode::INVALID_REQUEST, "Post with slug '$slug' already exists");
+		return;
+	}
 
 	$postId = $post->insert([
 		'name' => $name,
@@ -122,15 +128,17 @@ function process_request () {
 		'published' => date('c'),
 		'tags' => $categories,
 		'url' => $photo,
-		'identity_id' => 1
+		'identity_id' => 1,
 	]);
 
 	$postId = intval($postId);
 
 	if (is_int($postId) && $postId !== 0) {
-		return response(ResponseCode::CREATED, ml_post_permalink($slug), null);
+		response(ResponseCode::CREATED, ml_post_permalink($slug), null);
+		return;
 	} else {
-		return show_error(ResponseCode::SERVER_ERROR, 'Could not create entry. Unknown reason.');
+		show_error(ResponseCode::SERVER_ERROR, 'Could not create entry. Unknown reason.');
+		return;
 	}
 }
 
