@@ -210,16 +210,21 @@ function ml_canonical_permalink () {
 	global $post_type;
 	global $search_query;
 	global $post_slug;
-	$str = ml_base_url() . '?';
+
 	if ($search_query !== '') {
-		$str .= 'search_query=' . $search_query . '&';
+		$str = ml_base_url() . '?search_query=' . $search_query;
 	} elseif ($post_tag !== '' || $post_type !== '') {
 		$str = ml_base_url() . '?';
-		if ($post_tag !== '') $str .= 'post_tag=' . $post_tag . '&';
-		if ($post_type !== '') $str .= 'post_type=' . $post_type . '&';
+		$acc = [];
+		if ($post_tag !== '') array_push($acc, 'post_tag=' . $post_tag);
+		if ($post_type !== '') array_push($acc, 'post_type=' . $post_type);
+		$str .= implode('&', $acc);
 	} elseif ($post_slug !== '') {
-		$str .= 'post_slug=' . $post_slug;
+		$str = ml_base_url() . '?post_slug=' . $post_slug;
+	} else {
+		$str = ml_base_url();
 	}
+
 	return $str;
 }
 
