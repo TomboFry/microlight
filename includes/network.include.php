@@ -48,7 +48,7 @@ function show_error ($error = ResponseCode::SERVER_ERROR, $description = '') {
 		$description = 'ResponseCode enum incorrect';
 	}
 
-	return response(
+	response(
 		$error,
 		null,
 		json_encode([
@@ -56,9 +56,13 @@ function show_error ($error = ResponseCode::SERVER_ERROR, $description = '') {
 			'error_description' => $description,
 		])
 	);
+
+	return;
 }
 
 function request ($url, $method = HTTPMethod::GET, $body = null) {
+	// Throw errors before making the request if parameters have not been
+	// correctly provided.
 	if ($url === null || $url === '') throw Exception('Provide URL');
 	if (!HTTPMethod::isValidValue($method)) throw Exception('Provide correct method');
 	if ($method === HTTPMethod::GET && $body !== null) throw Exception('Cannot send body in GET request');
@@ -82,8 +86,11 @@ function request ($url, $method = HTTPMethod::GET, $body = null) {
 
 	curl_setopt_array($curl, $settings);
 
+	// Execute HTTP request using settings above
 	$result = curl_exec($curl);
 	$errors = curl_error($curl);
+
+	// Before returning anything, close the curl connection
 	curl_close($curl);
 
 	if ($result === false || $errors !== '') {

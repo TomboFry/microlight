@@ -3,8 +3,8 @@
 // This definition will prevent any files to be loaded outside of this file.
 define('MICROLIGHT', 'v0.0.1');
 
+chdir('..');
 session_start();
-
 require_once('includes/config.php');
 
 function put_value ($val, $index = null) {
@@ -19,7 +19,7 @@ try {
 	$db = new DB();
 	$identity = new Identity($db);
 	if ($identity->find_one() !== null) {
-		header('Location: index.php');
+		header('Location: ' . ml_base_url());
 	}
 } catch (Exception $e) {
 }
@@ -90,17 +90,7 @@ if (isset($_POST['submit'])) {
 	}
 } else {
 	if (empty($_SESSION['token'])) {
-		if (function_exists('random_bytes')) {
-			$_SESSION['token'] = bin2hex(random_bytes(32));
-		} elseif (function_exists('mcrypt_create_iv')) {
-			$_SESSION['token'] = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
-		} elseif (function_exists('openssl_random_pseudo_bytes')) {
-			$_SESSION['token'] = bin2hex(openssl_random_pseudo_bytes(32));
-		} else {
-			// Not recommended, but if none of the above functions
-			// exist, well then...  ¯\_(ツ)_/¯
-			$_SESSION['token'] = md5(uniqid(rand(), true)) . md5(uniqid(rand(), true));
-		}
+		$_SESSION['token'] = ml_generate_token();
 	}
 }
 ?>

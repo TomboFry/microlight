@@ -2,6 +2,7 @@
 
 define('MICROLIGHT', 'v0.0.1');
 
+chdir('..');
 require_once('includes/config.php');
 require_once('includes/network.include.php');
 

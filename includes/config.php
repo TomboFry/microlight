@@ -4,7 +4,9 @@ if (!defined('MICROLIGHT')) die();
 
 class Config {
 	/*
-	 * Modify these variables before installing on your website:
+	 * **Modify these variables before installing on your website:**
+	 * If there are any settings you don't understand or know what to set
+	 * to, leave them as the default.
 	 */
 
 	// DB File (string):

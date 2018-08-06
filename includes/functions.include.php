@@ -205,6 +205,9 @@ function ml_tag_permalink ($tag) {
 	return ml_base_url() . '?post_tag=' . $tag;
 }
 
+// Return an absolute, consistent URL that will point to the "official" URL for
+// the page currently being viewed
+// (see: https://en.wikipedia.org/wiki/Canonical_link_element)
 function ml_canonical_permalink () {
 	global $post_tag;
 	global $post_type;
@@ -272,9 +275,9 @@ function ml_page_headers () {
 		<meta property='og:image' content='<?php echo $image; ?>' />
 	<?php endif; ?>
 	<title><?php echo ml_get_title(); ?></title>
-	<link rel='micropub' href='<?php echo ml_base_url() . 'micropub.php'; ?>' />
 	<link rel='authorization_endpoint' href='https://indielogin.com/auth' />
 	<link rel='token_endpoint' href='https://indielogin.com/auth' />
+	<link rel='micropub' href='<?php echo ml_base_url() . 'routes/micropub.php'; ?>' />
 	<link rel='icon' href='<?php echo $image; ?>'>
 	<link rel='apple-touch-icon-precomposed' href='<?php echo $image; ?>'>
 	<link rel='canonical' href='<?php echo ml_canonical_permalink(); ?>' />
@@ -345,4 +348,18 @@ function ml_location_geo ($location) {
 
 function ml_post_has_name ($post) {
 	return $post->name !== null && $post->name !== '';
+}
+
+function ml_generate_token () {
+	if (function_exists('random_bytes')) {
+		return bin2hex(random_bytes(32));
+	} elseif (function_exists('mcrypt_create_iv')) {
+		return bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
+	} elseif (function_exists('openssl_random_pseudo_bytes')) {
+		return bin2hex(openssl_random_pseudo_bytes(32));
+	} else {
+		// Not recommended, but if none of the above functions
+		// exist, well then...  ¯\_(ツ)_/¯
+		return md5(uniqid(rand(), true)) . md5(uniqid(rand(), true));
+	}
 }
