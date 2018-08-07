@@ -275,9 +275,9 @@ function ml_page_headers () {
 		<meta property='og:image' content='<?php echo $image; ?>' />
 	<?php endif; ?>
 	<title><?php echo ml_get_title(); ?></title>
-	<link rel='authorization_endpoint' href='https://indielogin.com/auth' />
-	<link rel='token_endpoint' href='https://indielogin.com/auth' />
 	<link rel='micropub' href='<?php echo ml_base_url() . 'routes/micropub.php'; ?>' />
+	<link rel='authorization_endpoint' href='<?php echo Config::INDIEAUTH_PROVIDER; ?>' />
+	<link rel='token_endpoint' href='<?php echo Config::INDIEAUTH_TOKEN_ENDPOINT; ?>' />
 	<link rel='icon' href='<?php echo $image; ?>'>
 	<link rel='apple-touch-icon-precomposed' href='<?php echo $image; ?>'>
 	<link rel='canonical' href='<?php echo ml_canonical_permalink(); ?>' />
@@ -353,13 +353,54 @@ function ml_post_has_name ($post) {
 function ml_generate_token () {
 	if (function_exists('random_bytes')) {
 		return bin2hex(random_bytes(32));
-	} elseif (function_exists('mcrypt_create_iv')) {
-		return bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
 	} elseif (function_exists('openssl_random_pseudo_bytes')) {
 		return bin2hex(openssl_random_pseudo_bytes(32));
+	} elseif (function_exists('mcrypt_create_iv')) {
+		return bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
 	} else {
 		// Not recommended, but if none of the above functions
 		// exist, well then...  ¯\_(ツ)_/¯
 		return md5(uniqid(rand(), true)) . md5(uniqid(rand(), true));
+	}
+}
+
+function ml_validate_token () {
+	// Create the session if one does not exist already
+	if (session_id() === '') session_start();
+
+	// Use the GET parameters, if they are set...
+	$code = isset($_GET['code']) ? $_GET['code'] : null;
+	$state = isset($_GET['state']) ? $_GET['state'] : null;
+
+	function error ($reason) {
+		return [false, $reason];
+	}
+
+	// Make sure both code, state, AND session set state are provided
+	if ($code === null || $code === '') return error('Provide `code`');
+	if ($state === null || $state === '') return error('Provide `state`');
+	if (empty($_SESSION['state'])) return error('State not previously set. Try logging in again.');
+
+	// Make sure both states match
+	if (!hash_equals($_SESSION['state'], $state)) return error('States do not match. Cannot proceed.');
+
+	// Knowing everything is set, make a request to the token endpoint
+	$response = ml_http_request(Config::INDIEAUTH_TOKEN_ENDPOINT, HTTPMethod::POST, [
+		'code' => $code,
+		'redirect_uri' => ml_base_url() . 'routes/authcallback.php',
+		'client_id' => ml_base_url(),
+	]);
+
+	$me = $response['me'];
+
+	if (!empty($me)) {
+		if ($me === ml_base_url()) {
+			$_SESSION['access_token'] = $code;
+			return [true, []];
+		} else {
+			return error('Host URL not correct ("' . $me . '" !== "' . ml_base_url() . '")');
+		}
+	} else {
+		return error(implode('; ', $response));
 	}
 }

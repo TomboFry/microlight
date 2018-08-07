@@ -26,15 +26,15 @@ abstract class HTTPMethod extends BasicEnum {
 	const OPTIONS = 'OPTIONS';
 }
 
-function response ($response_code = ResponseCode::SERVER_ERROR, $location, $contents) {
+function response ($response_code = ResponseCode::SERVER_ERROR, $location = null, $contents = null) {
 	header('HTTP/1.1 ' . $response_code['code']);
 
-	if (!empty($location)) {
+	if (!empty($location) && $location !== null) {
 		header('Location: ' . $location);
 		return;
 	}
 
-	if (!empty($contents)) {
+	if (!empty($contents) && $contents !== null) {
 		header('Content-Type: application/json');
 		echo $contents;
 	}
@@ -60,7 +60,19 @@ function show_error ($error = ResponseCode::SERVER_ERROR, $description = '') {
 	return;
 }
 
-function request ($url, $method = HTTPMethod::GET, $body = null) {
+function ml_decode_form_data ($response) {
+	$new_response = [];
+	foreach (explode('&', $response) as $chunk) {
+		$param = explode("=", $chunk);
+
+		if ($param) {
+			$new_response[urldecode($param[0])] = isset($param[1]) ? urldecode($param[1]) : null;
+		}
+	}
+	return $new_response;
+}
+
+function ml_http_request ($url, $method = HTTPMethod::GET, $body = null) {
 	// Throw errors before making the request if parameters have not been
 	// correctly provided.
 	if ($url === null || $url === '') throw Exception('Provide URL');
@@ -90,11 +102,20 @@ function request ($url, $method = HTTPMethod::GET, $body = null) {
 	$result = curl_exec($curl);
 	$errors = curl_error($curl);
 
+	// Try to decode the response if it's FORM or JSON data
+	$response_type = curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
+
 	// Before returning anything, close the curl connection
 	curl_close($curl);
 
 	if ($result === false || $errors !== '') {
 		return $errors;
+	}
+
+	if ($response_type === 'application/json') {
+		return json_decode($result);
+	} elseif ($response_type === 'application/x-www-form-urlencoded') {
+		return ml_decode_form_data($result);
 	}
 
 	return $result;

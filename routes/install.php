@@ -3,9 +3,8 @@
 // This definition will prevent any files to be loaded outside of this file.
 define('MICROLIGHT', 'v0.0.1');
 
-chdir('..');
 session_start();
-require_once('includes/config.php');
+require_once('../includes/config.php');
 
 function put_value ($val, $index = null) {
 	echo ml_post_not_blank($val)
@@ -19,9 +18,12 @@ try {
 	$db = new DB();
 	$identity = new Identity($db);
 	if ($identity->find_one() !== null) {
+		unset($_SESSION['csrf_token']);
 		header('Location: ' . ml_base_url());
+		return;
 	}
 } catch (Exception $e) {
+	// If it failed, do nothing and carry on below.
 }
 
 if (isset($_POST['submit'])) {
@@ -30,9 +32,9 @@ if (isset($_POST['submit'])) {
 
 	try {
 		if (!ml_post_not_blank('token')) array_push($errors, 'CSRF Token required');
-		if (empty($_SESSION['token'])) array_push($errors, 'CSRF Token required');
+		if (empty($_SESSION['csrf_token'])) array_push($errors, 'CSRF Token required');
 
-		if (!hash_equals($_POST['token'], $_SESSION['token'])) array_push($errors, 'CSRF Token invalid');
+		if (!hash_equals($_POST['token'], $_SESSION['csrf_token'])) array_push($errors, 'CSRF Token invalid');
 
 		// Validate POST variables first
 		if (!ml_post_not_blank('name')) array_push($errors, 'Name required');
@@ -89,8 +91,8 @@ if (isset($_POST['submit'])) {
 		array_push($errors, $e->getMessage());
 	}
 } else {
-	if (empty($_SESSION['token'])) {
-		$_SESSION['token'] = ml_generate_token();
+	if (empty($_SESSION['csrf_token'])) {
+		$_SESSION['csrf_token'] = ml_generate_token();
 	}
 }
 ?>
@@ -359,7 +361,7 @@ if (isset($_POST['submit'])) {
 		<input
 			type='hidden'
 			name='token'
-			value='<?php echo $_SESSION['token']; ?>'
+			value='<?php echo $_SESSION['csrf_token']; ?>'
 		/>
 		<div class='f b'>
 			<input

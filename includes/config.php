@@ -49,6 +49,19 @@ class Config {
 	// previews for Facebook & Twitter) to your page.
 	// default: true
 	const OPEN_GRAPH = true;
+
+	// IndieAuth Provider (string):
+	// The URL pointing towards your preferred IndieAuth provider. This is
+	// important and used for creating posts on your website.
+	// default: 'https://indieauth.com/auth'
+	const INDIEAUTH_PROVIDER = 'https://indieauth.com/auth';
+
+	// IndieAuth Token Endpoint (string):
+	// Similarly to the IndieAuth provider, this URL (which may or may not
+	// be identical to the provider URL) is used to validate the token
+	// received from the IndieAuth provider you specified above.
+	// default: 'https://indieauth.com/auth'
+	const INDIEAUTH_TOKEN_ENDPOINT = 'https://indieauth.com/auth';
 }
 
 /**********************************
@@ -57,4 +70,5 @@ class Config {
 
 require_once('lib/enum.php');
 require_once('db.include.php');
+require_once('network.include.php');
 require_once('functions.include.php');
