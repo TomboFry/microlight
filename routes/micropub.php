@@ -4,13 +4,11 @@ define('MICROLIGHT', 'v0.0.1');
 
 chdir('..');
 require_once('includes/config.php');
-require_once('includes/network.include.php');
 
 // Redirect to homepage if we're trying to load it in the browser
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method !== 'POST') {
-	header('HTTP/1.1 301 Redirect');
-	header('Location: /');
+	ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
 	return;
 }
 $content_type = $_SERVER['CONTENT_TYPE'];
@@ -66,7 +64,7 @@ function process_request () {
 
 	// h parameter is required
 	if ($h === null) {
-		show_error(ResponseCode::INVALID_REQUEST, 'Field \'h\' required');
+		ml_http_error(HTTPStatus::INVALID_REQUEST, 'Field \'h\' required');
 		return;
 	}
 
@@ -116,7 +114,7 @@ function process_request () {
 	]);
 
 	if ($existing > 0) {
-		show_error(ResponseCode::INVALID_REQUEST, "Post with slug '$slug' already exists");
+		ml_http_error(HTTPStatus::INVALID_REQUEST, "Post with slug '$slug' already exists");
 		return;
 	}
 
@@ -135,10 +133,10 @@ function process_request () {
 	$postId = intval($postId);
 
 	if (is_int($postId) && $postId !== 0) {
-		response(ResponseCode::CREATED, ml_post_permalink($slug), null);
+		ml_http_response(HTTPStatus::CREATED, null, null, ml_post_permalink($slug));
 		return;
 	} else {
-		show_error(ResponseCode::SERVER_ERROR, 'Could not create entry. Unknown reason.');
+		ml_http_error(HTTPStatus::SERVER_ERROR, 'Could not create entry. Unknown reason.');
 		return;
 	}
 }

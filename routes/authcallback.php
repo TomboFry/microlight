@@ -4,7 +4,8 @@ define('MICROLIGHT', 'v0.0.1');
 
 session_start();
 
-require_once('../includes/config.php');
+chdir('..');
+require_once('includes/config.php');
 
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method !== 'GET') error('Use `GET` method');

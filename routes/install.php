@@ -3,8 +3,9 @@
 // This definition will prevent any files to be loaded outside of this file.
 define('MICROLIGHT', 'v0.0.1');
 
+chdir('..');
 session_start();
-require_once('../includes/config.php');
+require_once('includes/config.php');
 
 function put_value ($val, $index = null) {
 	echo ml_post_not_blank($val)

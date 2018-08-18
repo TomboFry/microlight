@@ -396,6 +396,7 @@ function ml_validate_token () {
 	if (!empty($me)) {
 		if ($me === ml_base_url()) {
 			$_SESSION['access_token'] = $code;
+			unset($_SESSION['state']);
 			return [true, []];
 		} else {
 			return error('Host URL not correct ("' . $me . '" !== "' . ml_base_url() . '")');
