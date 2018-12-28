@@ -36,6 +36,16 @@ abstract class HTTPContentType extends BasicEnum {
 	const MULTIPART = 'multipart/form-data';
 }
 
+/**
+ * Returns the HTTP request made with a response, setting the status code,
+ * contents, and redirection, if any.
+ *
+ * @param array $status Uses a HTTPStatus enum value
+ * @param array|null $contents
+ * @param string $content_type Uses a HTTPContentType enum value
+ * @param string|null $location Redirection location, if any
+ * @throws Exception
+ */
 function ml_http_response (
 	$status = HTTPStatus::SERVER_ERROR,
 	$contents = null,
@@ -70,6 +80,13 @@ function ml_http_response (
 	}
 }
 
+/**
+ * Returns the HTTP request made with a standardised, formatted error payload.
+ *
+ * @param array $error Uses HTTPStatus enum value
+ * @param string $description
+ * @throws Exception
+ */
 function ml_http_error ($error = HTTPStatus::SERVER_ERROR, $description = '') {
 	if (!HTTPStatus::isValidValue($error)) {
 		$error = HTTPStatus::SERVER_ERROR;
@@ -84,6 +101,12 @@ function ml_http_error ($error = HTTPStatus::SERVER_ERROR, $description = '') {
 	return;
 }
 
+/**
+ * Decode a formdata encoded string into an array of values
+ *
+ * @param string $response Formdata encoded request data
+ * @return array
+ */
 function ml_formdata_decode ($response) {
 	$new_response = [];
 	foreach (explode('&', $response) as $chunk) {
@@ -96,6 +119,15 @@ function ml_formdata_decode ($response) {
 	return $new_response;
 }
 
+/**
+ * Makes a HTTP(S) request using cURL, also processing the response data
+ *
+ * @param string|null $url
+ * @param string $method Uses a HTTPMethod enum value
+ * @param array|object $body An array or object that can be converted into a URL-encoded string
+ * @return array|mixed|string
+ * @throws Exception
+ */
 function ml_http_request ($url, $method = HTTPMethod::GET, $body = null) {
 	// Throw errors before making the request if parameters have not been
 	// correctly provided.
