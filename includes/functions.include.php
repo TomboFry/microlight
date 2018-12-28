@@ -164,7 +164,7 @@ function ml_load_posts () {
 				'column' => 'type',
 				'operator' => SQLOP::EQUAL,
 				'value' => $post_type,
-				'escape' => SQLEscape::TYPE,
+				'escape' => SQLEscape::POST_TYPE,
 			]);
 		}
 	} elseif ($search_query !== '') {

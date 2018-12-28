@@ -35,7 +35,11 @@ abstract class SQLEscape extends BasicEnum {
 	const TAG = '/^([a-zA-Z0-9_\- ]+|%([a-zA-Z0-9_\- ]+,)+%|([a-zA-Z0-9_\- ]+,)+|^$)$/';
 
 	// At least one alphabetic character
-	const TYPE = '/^[a-z]+$/';
+	const POST_TYPE = '/^[a-z]+$/';
+
+	// All capitals, always starting with a letter, then optionally more
+	// letters or spaces
+	const DB_TYPE = '/^[A-Z][A-Z ]*$/';
 
 	// Either `ASC` or `DESC`, and nothing else
 	const ORDER_DIRECTION = '/(ASC|DESC)/';
@@ -77,7 +81,7 @@ class SQL {
 			$column = $property['column'];
 
 			// Make sure "type" only contains uppercase characters or a space
-			SQL::regex_test('/^[A-Z][A-Z ]*$/', $type);
+			SQL::regex_test(SQLEscape::DB_TYPE, $type);
 
 			// Same again but the column name may have an underscore instead
 			SQL::regex_test(SQLEscape::COLUMN, $column);
@@ -167,7 +171,7 @@ class SQL {
 			$escape = null;
 			switch ($key) {
 			case 'type':
-				$escape = SQLEscape::TYPE;
+				$escape = SQLEscape::POST_TYPE;
 				break;
 			case 'tags':
 				$escape = SQLEscape::TAG;
