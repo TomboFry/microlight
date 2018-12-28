@@ -63,20 +63,39 @@ abstract class SQLType extends BasicEnum {
 
 class SQL {
 	// Class variables and functions
+	/** @var PDO $db */
 	private $db;
 
+	/**
+	 * SQL constructor
+	 *
+	 * @param PDO &$db A reference to the database (not a copy)
+	 */
 	function __construct (&$db) {
 		$this->db = $db;
 	}
 
+	/**
+	 * Checks that the specified value matches
+	 *
+	 * @param string $regex
+	 * @param string $test
+	 * @throws Exception
+	 */
 	public static function regex_test ($regex, $test) {
 		// If the regex doesn't match just throw an exception
 		if (!preg_match($regex, $test)) throw new Exception('Value "' . $test . '" invalid', 1);
 	}
 
+	/**
+	 * Convert an array of properties into an SQL formatted list
+	 *
+	 * @param array[] $properties
+	 * @return string
+	 */
 	private function propsToString ($properties) {
 		// `array_walk` loops over every property provided.
-		array_walk($properties, function ($property, $key) use (&$acc) {
+		array_walk($properties, function ($property, $index) use (&$acc) {
 			$type = $property['type'];
 			$column = $property['column'];
 
@@ -87,7 +106,7 @@ class SQL {
 			SQL::regex_test(SQLEscape::COLUMN, $column);
 
 			// Don't put a comma on the first element
-			if ($key !== 0) $acc .= ', ';
+			if ($index !== 0) $acc .= ', ';
 
 			// Append the column name and its type
 			$acc .= "`$column` $type";
@@ -96,6 +115,12 @@ class SQL {
 		return $acc;
 	}
 
+	/**
+	 * Create a string of SQL foreign keys based on given properties
+	 *
+	 * @param array[] $foreign_keys
+	 * @return string
+	 */
 	private function foreignKeyToString ($foreign_keys) {
 		// `array_walk` loops over every property provided.
 		array_walk($foreign_keys, function ($key_props) use (&$acc) {
@@ -119,6 +144,14 @@ class SQL {
 		return $acc;
 	}
 
+	/**
+	 * Generate an SQL query to create a table based on given properties
+	 *
+	 * @param string $table_name
+	 * @param array[] $properties
+	 * @param array[]|null $foreign_keys
+	 * @return string
+	 */
 	public function create ($table_name, $properties, $foreign_keys = null) {
 		$new_props = $this->propsToString($properties);
 		$full_string = "CREATE TABLE IF NOT EXISTS `$table_name` ($new_props";
@@ -129,6 +162,13 @@ class SQL {
 		return $full_string;
 	}
 
+	/**
+	 * Generate part of an SQL query to filter results using the `WHERE`
+	 * clause.
+	 *
+	 * @param array[] $conditions
+	 * @return string
+	 */
 	public function where ($conditions) {
 		array_walk($conditions, function ($condition, $index) use (&$acc) {
 			// Get condition properties
@@ -158,6 +198,13 @@ class SQL {
 		return $acc;
 	}
 
+	/**
+	 * Generates part of an SQL query for inserting values into a table
+	 *
+	 * @param string[] $properties
+	 * @return string
+	 * @throws Exception
+	 */
 	public function insert ($properties) {
 		$keys = '';
 		$values = '';
