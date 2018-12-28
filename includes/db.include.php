@@ -8,6 +8,10 @@ class DBError extends Exception {
 }
 
 class DB {
+	/**
+	 * @var PDO $pdo
+	 * @var SQL $sql
+	 */
 	public $db;
 	public $sql;
 
@@ -22,22 +26,47 @@ class DB {
 }
 
 class Model {
+	/**
+	 * @var string $table_name
+	 * @var PDO &$db
+	 * @var SQL $sql
+	 */
 	public $table_name = ''; // Inherited classes must set this.
 	public $db;
 	public $sql;
 
+	/**
+	 * Model constructor.
+	 *
+	 * @param PDO $db
+	 * @param string $table_name
+	 */
 	function __construct (&$db, $table_name) {
 		$this->db = $db->db;
 		$this->sql = $db->sql;
 		$this->table_name = $table_name;
 	}
 
-	// This should be run by the inherited classes
+	/**
+	 * To be overridden by inherited classes.
+	 *
+	 * @throws DBError
+	 */
 	function create_table () {
 		throw new DBError('Cannot create an empty table', 1);
 	}
 
-	// Main "SELECT" function, to fetch data from the DB
+	/**
+	 * Main "SELECT"-like function, which fetches data from the DB
+	 *
+	 * @param array[] $where
+	 * @param int $limit
+	 * @param int $offset
+	 * @param string $order_field
+	 * @param string $order_direction
+	 * @return array
+	 * @throws DBError
+	 */
 	function find ($where = [], $limit = -1, $offset = 0, $order_field = 'id', $order_direction = 'ASC') {
 		$sql = "SELECT * FROM `$this->table_name`";
 		$sql .= $this->sql->where($where);
@@ -56,20 +85,39 @@ class Model {
 		return $stmt->fetchAll();
 	}
 
-	// Essentially the same as the "find" function but will return a single
-	// object, instead of an array.
+	/**
+	 * The same as `find`, but only returns one result (or null)
+	 *
+	 * @param array $where
+	 * @param int $offset
+	 * @return array|null
+	 * @throws DBError
+	 */
 	function find_one ($where = [], $offset = 0) {
 		$results = $this->find($where, 1, $offset);
 		if (count($results) > 0) return $results[0];
 		return null;
 	}
 
+	/**
+	 * Inserts a new row into the database model
+	 *
+	 * @param string[] $properties
+	 * @return integer
+	 */
 	function insert ($properties) {
 		$sql = 'INSERT INTO ' . $this->table_name . $this->sql->insert($properties);
 		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
 		return $this->db->lastInsertId();
 	}
 
+	/**
+	 * Returns the number of rows in a particular table, with optional
+	 * filtering
+	 *
+	 * @param array[] $where
+	 * @return int
+	 */
 	function count ($where = []) {
 		$sql = "SELECT COUNT(id) as count FROM `$this->table_name`";
 		$sql .= $this->sql->where($where);
