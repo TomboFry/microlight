@@ -21,14 +21,33 @@ $db = null;
 $me = null;
 $posts = null;
 
-function ml_get_not_blank ($var) {
-	return (isset($_GET[$var]) && $_GET[$var] !== '');
+/**
+ * @param string $key
+ * @return bool
+ */
+function ml_get_not_blank ($key) {
+	return (isset($_GET[$key]) && $_GET[$key] !== '');
 }
 
-function ml_post_not_blank ($var) {
-	return (isset($_POST[$var]) && $_POST[$var] !== '');
+/**
+ * @param string $key
+ * @return bool
+ */
+function ml_post_not_blank ($key) {
+	return (isset($_POST[$key]) && $_POST[$key] !== '');
 }
 
+/**
+ * Determines what should be fetched from the DB and is shown to the user.
+ *
+ * @global string $post_slug
+ * @global string $post_tag
+ * @global string $post_type
+ * @global integer $pagination
+ * @global string $search_query
+ * @global Show $showing
+ * @throws Exception
+ */
 function ml_showing () {
 	global $post_slug;
 	global $post_tag;
@@ -69,6 +88,13 @@ function ml_showing () {
 	}
 }
 
+/**
+ * Sets up the database and fetches the current user
+ *
+ * @global DB $db
+ * @global Identity $me
+ * @throws DBError
+ */
 function ml_database_setup () {
 	global $db;
 	global $me;
@@ -84,6 +110,20 @@ function ml_database_setup () {
 	}
 }
 
+/**
+ * Load posts from the database, where the results depend on whether any search
+ * query or tags/slugs are specified.
+ *
+ * @global DB $db
+ * @global string $post_slug
+ * @global string $post_tag
+ * @global string $post_type
+ * @global string $search_query
+ * @global integer $post_total_count
+ * @global integer|null $pagination
+ * @global Show $showing
+ * @global Post|Post[] $posts
+ */
 function ml_load_posts () {
 	global $db;
 	global $post_slug;
@@ -157,19 +197,36 @@ function ml_load_posts () {
 	}
 }
 
-// Close DB connection
+/**
+ * Close DB connection
+ *
+ * @global DB $db
+ */
 function ml_database_close () {
 	global $db;
 	$db->close();
 }
 
+/**
+ * Gets the name of the identity created for this site
+ *
+ * @global Identity $me
+ * @return string
+ */
 function ml_get_name () {
 	global $me;
 
 	return $me->name;
 }
 
-// Returns the title, depending on whether you're on a single post or not.
+/**
+ * Returns the title, depending on whether you're on a single post or not.
+ *
+ * @global Show $showing
+ * @global Post|Post[] $posts
+ * @global Identity $me
+ * @return string
+ */
 function ml_get_title () {
 	global $showing;
 	global $posts;
@@ -186,33 +243,60 @@ function ml_get_title () {
 	return $str;
 }
 
-// Returns the full URL, including 'http(s)'
+/**
+ * Returns the full URL, including 'http(s)'
+ *
+ * @return string
+ */
 function ml_base_url () {
 	return (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . Config::ROOT;
 }
 
+/**
+ * Returns an absolute URL linking to a self-portrait
+ *
+ * @return string
+ */
 function ml_icon_url () {
 	return ml_base_url() . 'images/me.jpg';
 }
 
-// Returns an absolute URL to a specific post
+/**
+ * Returns an absolute URL to a specific post
+ *
+ * @param string $slug
+ * @return string
+ */
 function ml_post_permalink ($slug) {
 	return ml_base_url() . '?post_slug=' . $slug;
 }
 
-// Returns an absolute URL to the archive of a specific tag
+/**
+ * Returns an absolute URL to the archive of a specific tag
+ *
+ * @param string $tag
+ * @return string
+ */
 function ml_tag_permalink ($tag) {
 	return ml_base_url() . '?post_tag=' . $tag;
 }
 
-// Return an absolute, consistent URL that will point to the "official" URL for
-// the page currently being viewed
-// (see: https://en.wikipedia.org/wiki/Canonical_link_element)
+/**
+ * Return an absolute, consistent URL that will point to the "official" URL for
+ * the page currently being viewed
+ * (see: https://en.wikipedia.org/wiki/Canonical_link_element)
+ *
+ * @global string $post_slug
+ * @global string $post_tag
+ * @global string $post_type
+ * @global string $search_query
+ * @return string
+ */
 function ml_canonical_permalink () {
+	global $post_slug;
 	global $post_tag;
 	global $post_type;
 	global $search_query;
-	global $post_slug;
 
 	if ($search_query !== '') {
 		$str = ml_base_url() . '?search_query=' . $search_query;
@@ -231,13 +315,22 @@ function ml_canonical_permalink () {
 	return $str;
 }
 
-// Returns an absolute URL pointing towards the directory of the currently
-// selected theme
+/**
+ * Returns an absolute URL pointing towards the directory of the currently
+ * selected theme
+ *
+ * @return string
+ */
 function ml_get_theme_dir () {
 	return ml_base_url() . 'themes/' . Config::THEME;
 }
 
-// Prints an ISO8601 date in the format defined in the configuration
+/**
+ * Prints an ISO8601 date in the pretty format defined in the configuration
+ *
+ * @param string $date ISO8601 date
+ * @return false|string
+ */
 function ml_date_pretty ($date) {
 	return date(
 		Config::DATE_PRETTY,
@@ -245,7 +338,13 @@ function ml_date_pretty ($date) {
 	);
 }
 
-// Add headers to <head /> tag in theme (highly recommended to use)
+/**
+ * Add headers to `<head />` tag in theme (highly recommended to use)
+ *
+ * @global Identity $me
+ * @global Show $showing
+ * @global Post|Post[] $posts
+ */
 function ml_page_headers () {
 	global $me;
 	global $showing;
@@ -284,6 +383,14 @@ function ml_page_headers () {
 	<?php
 }
 
+/**
+ * Determines whether pagination buttons should even be shown at all, based on
+ * the type of page we're viewing.
+ *
+ * @global Show $showing
+ * @global integer $post_total_count
+ * @return bool
+ */
 function ml_pagination_enabled () {
 	global $showing;
 	global $post_total_count;
@@ -299,11 +406,24 @@ function ml_pagination_enabled () {
 	return true;
 }
 
+/**
+ * Determines whether we should show the previous page button or not
+ *
+ * @global integer $pagination
+ * @return bool
+ */
 function ml_pagination_left_enabled () {
 	global $pagination;
 	return $pagination > 0;
 }
 
+/**
+ * Determines whether we should show the next page button or not
+ *
+ * @global integer $pagination
+ * @global integer $post_total_count
+ * @return bool
+ */
 function ml_pagination_right_enabled () {
 	global $pagination;
 	global $post_total_count;
@@ -311,17 +431,37 @@ function ml_pagination_right_enabled () {
 	return $pagination < $total;
 }
 
+/**
+ * Returns an absolute URL to the previous page
+ *
+ * @global integer $pagination
+ * @return string
+ */
 function ml_pagination_left_link () {
 	global $pagination;
 	return ml_canonical_permalink() . 'page=' . $pagination;
 }
 
+/**
+ * Returns an absolute URL to the next page
+ *
+ * @global integer $pagination
+ * @return string
+ */
 function ml_pagination_right_link () {
 	global $pagination;
 	return ml_canonical_permalink() . 'page=' . ($pagination + 2);
 }
 
-// Determines whether a location from the database are coordinates or an address
+/**
+ * Determines whether a location from the database are coordinates or an
+ * address. If the former, they will be separated from the string into an array
+ * containing both `lat` and `long`, otherwise the original string will be
+ * returned.
+ *
+ * @param string|null $location
+ * @return string[]|string|null
+ */
 function ml_location_geo ($location) {
 	// Don't even try parsing if it's empty
 	if ($location === '' || $location === null) return $location;
@@ -346,10 +486,22 @@ function ml_location_geo ($location) {
 	}
 }
 
+/**
+ * Determines whether a post has a name or not
+ *
+ * @param Post $post
+ * @return bool
+ */
 function ml_post_has_name ($post) {
 	return $post->name !== null && $post->name !== '';
 }
 
+/**
+ * Generates a token to be used for both CSRF and authentication state
+ *
+ * @throws Exception
+ * @return string Randomly generated token
+ */
 function ml_generate_token () {
 	if (function_exists('random_bytes')) {
 		return bin2hex(random_bytes(32));
@@ -364,6 +516,13 @@ function ml_generate_token () {
 	}
 }
 
+/**
+ * Used to validate the authentication request, using the code and state from
+ * the GET parameters.
+ *
+ * @throws Exception
+ * @return array Where the contents are [success => bool, string[] => errors]
+ */
 function ml_validate_token () {
 	// Create the session if one does not exist already
 	if (session_id() === '') session_start();
