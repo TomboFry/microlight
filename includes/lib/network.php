@@ -177,3 +177,15 @@ function ml_http_request ($url, $method = HTTPMethod::GET, $body = null) {
 	return $result;
 }
 
+function ml_http_bearer () {
+	$headers = apache_request_headers();
+	if (array_key_exists('Authorization', $headers)) {
+		$bearer = $headers['Authorization'];
+		if (strpos($bearer, 'Bearer') === 0) {
+			return explode(' ', $bearer)[1];
+		}
+	}
+
+	return false;
+}
+
