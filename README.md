@@ -22,13 +22,14 @@ concepts. This means support for:
 	  post comments on your blog using their own website as an account
 * Owning your identity
 	* Your website is a corner of the internet **you own** - no company
-	  keeps ahold of the information you post to it
+	  keeps a-hold of the information you post to it
 
 ## Requirements
 
-* **PHP 5.6 or above**  
-  Being developed on PHP 7.1, although in theory should work on 5.6. I will test
-  it properly at some point!
+* **PHP 7 or above**  
+  While in theory microlight should work on PHP 5.6, this version is
+  [no longer supported](https://secure.php.net/supported-versions.php) by the
+  PHP group.
 * **PDO SQLite**  
   I would like it to be database agnostic, but I haven't gotten that far yet.
 * **Apache Rewrite Module (mod_rewrite)** (optional)  
