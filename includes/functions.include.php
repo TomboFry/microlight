@@ -123,6 +123,7 @@ function ml_database_setup () {
  * @global integer|null $pagination
  * @global Show $showing
  * @global Post|Post[] $posts
+ * @throws DBError
  */
 function ml_load_posts () {
 	global $db;
@@ -292,24 +293,34 @@ function ml_tag_permalink ($tag) {
  * @global string $search_query
  * @return string
  */
-function ml_canonical_permalink () {
+function ml_canonical_permalink ($suffix = '') {
 	global $post_slug;
 	global $post_tag;
 	global $post_type;
 	global $search_query;
 
+	$usedQuery = false;
+
 	if ($search_query !== '') {
 		$str = ml_base_url() . '?search_query=' . $search_query;
+		$usedQuery = true;
 	} elseif ($post_tag !== '' || $post_type !== '') {
 		$str = ml_base_url() . '?';
 		$acc = [];
 		if ($post_tag !== '') array_push($acc, 'post_tag=' . $post_tag);
 		if ($post_type !== '') array_push($acc, 'post_type=' . $post_type);
 		$str .= implode('&', $acc);
+		$usedQuery = true;
 	} elseif ($post_slug !== '') {
 		$str = ml_base_url() . '?post_slug=' . $post_slug;
+		$usedQuery = true;
 	} else {
 		$str = ml_base_url();
+	}
+
+	if (!empty($suffix)) {
+		if ($usedQuery === false) $str .= '?';
+		$str .= $suffix;
 	}
 
 	return $str;
@@ -439,7 +450,7 @@ function ml_pagination_right_enabled () {
  */
 function ml_pagination_left_link () {
 	global $pagination;
-	return ml_canonical_permalink() . 'page=' . $pagination;
+	return ml_canonical_permalink('page=' . $pagination);
 }
 
 /**
@@ -450,7 +461,7 @@ function ml_pagination_left_link () {
  */
 function ml_pagination_right_link () {
 	global $pagination;
-	return ml_canonical_permalink() . 'page=' . ($pagination + 2);
+	return ml_canonical_permalink('page=' . ($pagination + 2));
 }
 
 /**
