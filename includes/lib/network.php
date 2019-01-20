@@ -125,10 +125,11 @@ function ml_formdata_decode ($response) {
  * @param string|null $url
  * @param string $method Uses a HTTPMethod enum value
  * @param array|object $body An array or object that can be converted into a URL-encoded string
+ * @param array $headers If provided, the request will send these headers with the request
  * @return array|mixed|string
  * @throws Exception
  */
-function ml_http_request ($url, $method = HTTPMethod::GET, $body = null) {
+function ml_http_request ($url, $method = HTTPMethod::GET, $body = null, $headers = []) {
 	// Throw errors before making the request if parameters have not been
 	// correctly provided.
 	if ($url === null || $url === '') throw new Exception('Provide URL');
@@ -140,6 +141,7 @@ function ml_http_request ($url, $method = HTTPMethod::GET, $body = null) {
 	$settings = [
 		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_URL => $url,
+		CURLOPT_HTTPHEADER => $headers,
 	];
 
 	if ($body !== null) {
