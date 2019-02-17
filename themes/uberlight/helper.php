@@ -6,16 +6,16 @@ if (!defined('MICROLIGHT')) die();
 
 function post ($post, $show_permalink = true) {
 	echo "<article class='h-entry'>";
-	if (ml_post_has_name($post)) {
+	if (ml_post_has_title($post)) {
 		if ($show_permalink) echo "<a href='" . ml_post_permalink($post->slug) . "'>";
 		echo "<h2 class='p-name'>";
-		echo $post->name;
+		echo $post->title;
 		echo "</h2>";
 		if ($show_permalink) echo "</a>";
 	}
 
 	// Show different content for different post types
-	switch ($post->type) {
+	switch ($post->post_type) {
 	case 'audio':
 		?>
 			<audio class='u-audio' controls>
@@ -28,7 +28,7 @@ function post ($post, $show_permalink = true) {
 		?>
 			<img
 				class='u-photo'
-				alt='<?php echo $post->name; ?>'
+				alt='<?php echo $post->title; ?>'
 				src='<?php echo $post->url; ?>'
 			/>
 		<?php

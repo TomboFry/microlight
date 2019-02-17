@@ -162,7 +162,7 @@ function ml_load_posts () {
 		}
 		if ($post_type !== '') {
 			array_push($where, [
-				'column' => 'type',
+				'column' => 'post_type',
 				'operator' => SQLOP::EQUAL,
 				'value' => $post_type,
 				'escape' => SQLEscape::POST_TYPE,
@@ -235,8 +235,8 @@ function ml_get_title () {
 
 	$str = '';
 	if ($showing === Show::POST || $showing === Show::PAGE) {
-		$str .= $posts->name !== ''
-			? $posts->name
+		$str .= $posts->title !== ''
+			? $posts->title
 			: $posts->summary;
 		$str .= Config::TITLE_SEPARATOR;
 	}
@@ -363,7 +363,7 @@ function ml_page_headers () {
 
 	if ($showing === Show::PAGE || $showing === Show::POST) {
 		$description = $posts->summary;
-		if ($posts->type === 'photo') {
+		if ($posts->post_type === 'photo') {
 			$image = $posts->url;
 		} else {
 			$image = ml_icon_url();
@@ -503,8 +503,8 @@ function ml_location_geo ($location) {
  * @param Post $post
  * @return bool
  */
-function ml_post_has_name ($post) {
-	return $post->name !== null && $post->name !== '';
+function ml_post_has_title ($post) {
+	return $post->title !== null && $post->title !== '';
 }
 
 /**

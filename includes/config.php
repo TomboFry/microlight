@@ -12,7 +12,20 @@ class Config {
 	// DB File (string):
 	// The location of the SQLite database file, relative to root.
 	// default: 'microlight.db'
-	const DB_FILE = 'microlight.db';
+	const DB_NAME = 'microlight';
+
+	// Use MySQL (boolean):
+	// If false, microlight will use an SQLite database saved to file.
+	// If true, microlight will use a MySQL database with the username and
+	// password provided below
+	// default: false
+	const USE_MYSQL = false;
+
+	// MySQL Login Details (string):
+	// This only need to be set if you choose to use MySQL
+	const MYSQL_HOSTNAME = 'localhost';
+	const MYSQL_USERNAME = '';
+	const MYSQL_PASSWORD = '';
 
 	// Posts Per Page (integer):
 	// How many posts should be shown on the homepage or while searching

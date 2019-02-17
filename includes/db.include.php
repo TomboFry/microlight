@@ -16,7 +16,12 @@ class DB {
 	public $sql;
 
 	function __construct () {
-		$this->db = new PDO('sqlite:' . Config::DB_FILE);
+		$this->db = Config::USE_MYSQL == true
+			? new PDO(
+				sprintf('mysql:dbname=%s;host=%s', Config::DB_NAME, Config::MYSQL_HOSTNAME),
+				Config::MYSQL_USERNAME, Config::MYSQL_PASSWORD
+			)
+			: new PDO('sqlite:' . Config::DB_NAME . '.db');
 		$this->sql = new SQL($this->db);
 	}
 
@@ -67,7 +72,7 @@ class Model {
 	 * @return array
 	 * @throws DBError
 	 */
-	function find ($where = [], $limit = -1, $offset = 0, $order_field = 'id', $order_direction = 'ASC') {
+	function find ($where = [], $limit = NULL, $offset = 0, $order_field = 'id', $order_direction = 'ASC') {
 		$sql = "SELECT * FROM `$this->table_name`";
 		$sql .= $this->sql->where($where);
 
@@ -77,10 +82,10 @@ class Model {
 		$sql .= " ORDER BY `$order_field` $order_direction";
 
 		// Add limiting (mostly used for pagination)
-		$sql .= " LIMIT $limit OFFSET $offset";
+		if ($limit != NULL) $sql .= " LIMIT $limit OFFSET $offset";
 
 		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
-		if ($stmt === false) throw new DBError('Could not execute query', 0);
+		if ($stmt === false) throw new DBError(implode('; ', $this->db->errorInfo()), 0);
 
 		return $stmt->fetchAll();
 	}
@@ -203,7 +208,7 @@ class Post extends Model {
 			],
 			[
 				// Post Title
-				'column' => 'name',
+				'column' => 'title',
 				'type' => SQLType::TEXT_TYPE,
 			],
 			[
@@ -218,7 +223,7 @@ class Post extends Model {
 			],
 			[
 				// Post Type
-				'column' => 'type',
+				'column' => 'post_type',
 				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
 			],
 			[
