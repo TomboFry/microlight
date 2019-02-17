@@ -3,7 +3,6 @@
 // This definition will prevent any files to be loaded outside of this file.
 define('MICROLIGHT', 'v0.0.1');
 
-chdir('..');
 session_start();
 require_once('includes/config.php');
 
