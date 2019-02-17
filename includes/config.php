@@ -9,6 +9,23 @@ class Config {
 	 * to, leave them as the default.
 	 */
 
+	// Me:
+	//
+	const ME_NAME = 'Your Name Here';
+	const ME_EMAIL = 'email@example.com';
+	const ME_NOTE = 'Describe yourself.';
+
+	const IDENTITIES = [
+		[
+			'name' => 'Twitter',
+			'url' => 'https://twitter.com/USERNAME',
+		],
+		[
+			'name' => 'GitHub',
+			'url' => 'https://github.com/USERNAME',
+		],
+	];
+
 	// DB File (string):
 	// The location of the SQLite database file, relative to root.
 	// default: 'microlight.db'

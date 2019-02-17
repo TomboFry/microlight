@@ -54,6 +54,7 @@ abstract class SQLType extends BasicEnum {
 	// Actual SQLite Types
 	const PRIMARY_KEY_TYPE = 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE';
 	const TEXT_TYPE = 'TEXT';
+	const DATETIME_TYPE = 'DATETIME';
 	const INTEGER_TYPE = 'INTEGER';
 	const BOOL_TYPE = 'BOOLEAN';
 

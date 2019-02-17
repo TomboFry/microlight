@@ -18,7 +18,6 @@ $post_total_count = 0;
 $pagination = null;
 $showing = Show::ARCHIVE;
 $db = null;
-$me = null;
 $posts = null;
 
 /**
@@ -92,22 +91,13 @@ function ml_showing () {
  * Sets up the database and fetches the current user
  *
  * @global DB $db
- * @global Identity $me
  * @throws DBError
  */
 function ml_database_setup () {
 	global $db;
-	global $me;
 
 	// Set up a connection to the database
 	$db = new DB();
-
-	// Load Identity
-	$me = (new Identity($db))->find_one();
-	if ($me !== null) {
-		$me->links = (new RelMe($db))->find();
-		$me->home = ml_base_url();
-	}
 }
 
 /**
@@ -152,14 +142,12 @@ function ml_load_posts () {
 	if ($post_slug !== '') {
 		$limit = 1;
 		$offset = 0;
-		$where = [
-			[
-				'column' => 'slug',
-				'operator' => SQLOP::EQUAL,
-				'value' => $post_slug,
-				'escape' => SQLEscape::SLUG,
-			],
-		];
+		array_push($where, [
+			'column' => 'slug',
+			'operator' => SQLOP::EQUAL,
+			'value' => $post_slug,
+			'escape' => SQLEscape::SLUG,
+		]);
 	} elseif ($post_tag !== '' || $post_type !== '') {
 		if ($post_tag !== '') {
 			array_push($where, [
@@ -178,14 +166,12 @@ function ml_load_posts () {
 			]);
 		}
 	} elseif ($search_query !== '') {
-		$where = [
-			[
-				'column' => 'name',
-				'operator' => SQLOP::LIKE,
-				'value' => "%$search_query%",
-				'escape' => SQLEscape::NONE,
-			],
-		];
+		array_push($where, [
+			'column' => 'title',
+			'operator' => SQLOP::LIKE,
+			'value' => "%$search_query%",
+			'escape' => SQLEscape::NONE,
+		]);
 	}
 
 	// Run the SQL query
@@ -218,38 +204,26 @@ function ml_database_close () {
 }
 
 /**
- * Gets the name of the identity created for this site
- *
- * @global Identity $me
- * @return string
- */
-function ml_get_name () {
-	global $me;
-
-	return $me->name;
-}
-
-/**
  * Returns the title, depending on whether you're on a single post or not.
  *
  * @global Show $showing
  * @global Post|Post[] $posts
- * @global Identity $me
  * @return string
  */
 function ml_get_title () {
 	global $showing;
 	global $posts;
-	global $me;
 
 	$str = '';
+
 	if ($showing === Show::POST || $showing === Show::PAGE) {
 		$str .= $posts->title !== ''
 			? $posts->title
 			: $posts->summary;
 		$str .= Config::TITLE_SEPARATOR;
 	}
-	$str .= $me->name;
+
+	$str .= Config::ME_NAME;
 	return $str;
 }
 
@@ -371,12 +345,10 @@ function ml_date_pretty ($date) {
 /**
  * Add headers to `<head />` tag in theme (highly recommended to use)
  *
- * @global Identity $me
  * @global Show $showing
  * @global Post|Post[] $posts
  */
 function ml_page_headers () {
-	global $me;
 	global $showing;
 	global $posts;
 
@@ -388,13 +360,13 @@ function ml_page_headers () {
 			$image = ml_icon_url();
 		}
 	} else {
-		$description = $me->note;
+		$description = Config::ME_NOTE;
 		$image = ml_icon_url();
 	}
 	?>
 	<meta name='description' content='<?php echo $description; ?>' />
 	<meta name='generator' content='Microlight <?php echo MICROLIGHT; ?>' />
-	<meta name='author' content='<?php echo $me->name; ?>' />
+	<meta name='author' content='<?php echo Config::ME_NAME; ?>' />
 	<meta name='referrer' content='origin'>
 	<?php if (Config::OPEN_GRAPH === true): ?>
 		<meta name='twitter:card' content='summary' />

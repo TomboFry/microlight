@@ -131,67 +131,6 @@ class Model {
 	}
 }
 
-class Identity extends Model {
-	public $table_name = 'identity';
-
-	function __construct (&$db) {
-		parent::__construct($db, $this->table_name);
-	}
-
-	function create_table () {
-		// Create the table if it does not already exist
-		$this->db->exec($this->sql->create($this->table_name, [
-			[
-				'column' => 'id',
-				'type' => SQLType::PRIMARY_KEY_TYPE,
-			],
-			[
-				'column' => 'name',
-				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
-			],
-			[
-				'column' => 'email',
-				'type' => SQLType::TEXT_TYPE,
-			],
-			[
-				'column' => 'note',
-				'type' => SQLType::TEXT_TYPE,
-			],
-		]));
-	}
-}
-
-class RelMe extends Model {
-	public $table_name = 'relme';
-
-	function __construct (&$db) {
-		parent::__construct($db, $this->table_name);
-	}
-
-	function create_table () {
-		// Create the table if it does not already exist
-		$this->db->exec($this->sql->create($this->table_name, [
-			[
-				'column' => 'id',
-				'type' => SQLType::PRIMARY_KEY_TYPE,
-			],
-			[
-				'column' => 'name',
-				'type' => SQLType::TEXT_TYPE,
-			],
-			[
-				'column' => 'url',
-				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
-			],
-		], [
-			[
-				'table' => 'identity',
-				'reference' => 'id',
-			],
-		]));
-	}
-}
-
 class Post extends Model {
 	public $table_name = 'post';
 
@@ -239,17 +178,17 @@ class Post extends Model {
 			[
 				// Date/Time ISO8601
 				'column' => 'published',
-				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
+				'type' => SQLType::DATETIME_TYPE . SQLType::MOD_NOT_NULL,
 			],
 			[
 				// Date/Time ISO8601
 				'column' => 'updated',
-				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
+				'type' => SQLType::DATETIME_TYPE,
 			],
 			[
 				// Comma separated tags
 				'column' => 'tags',
-				'type' => SQLType::TEXT_TYPE,
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
 			],
 			[
 				// "lat,long", otherwise "Address"
@@ -263,17 +202,10 @@ class Post extends Model {
 				'column' => 'url',
 				'type' => SQLType::TEXT_TYPE,
 			],
-		], [
-			// A post must be made by an identity, although there
-			// should only ever be one identity.
-			[
-				'table' => 'identity',
-				'reference' => 'id',
-			],
 		]));
 	}
 
-	function find ($where = [], $limit = -1, $offset = 0, $order_field = 'id', $order_direction = 'DESC') {
+	function find ($where = [], $limit = -1, $offset = 0, $order_field = 'published', $order_direction = 'DESC') {
 		$results = parent::find($where, $limit, $offset, $order_field, $order_direction);
 
 		// Process each result

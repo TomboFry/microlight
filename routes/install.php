@@ -17,8 +17,8 @@ function put_value ($val, $index = null) {
 
 try {
 	$db = new DB();
-	$identity = new Identity($db);
-	if ($identity->find_one() !== null) {
+	$posts = new Post($db);
+	if ($posts->find_one() !== null) {
 		unset($_SESSION['csrf_token']);
 		header('Location: ' . ml_base_url());
 		return;
@@ -60,31 +60,11 @@ if (isset($_POST['submit'])) {
 			// Connect to DB
 			$db = new DB();
 
-			// Create identity table
-			$identity = new Identity($db);
-			$identity->create_table();
-
-			// Create RelMe table
-			$relme = new RelMe($db);
-			$relme->create_table();
-
 			// Create posts table
 			$post = new Post($db);
 			$post->create_table();
 
-			$identity_id = $identity->insert([
-				'name' => $name,
-				'email' => $email,
-				'note' => $note,
-			]);
-
-			foreach ($services as $key => $value) {
-				$relme->insert([
-					'name' => $value['name'],
-					'url' => $value['url'],
-					'identity_id' => $identity_id,
-				]);
-			}
+			// TODO: Create identity config file based on user's input
 
 			session_destroy();
 		}
@@ -353,9 +333,7 @@ if (isset($_POST['submit'])) {
 				<a href='<?php echo ml_base_url(); ?>'>your
 				homepage</a> must appear on the accounts you
 				have specified. See
-				<a target='_blank' href='https://indieweb.org/IndieAuth'>
-					IndieAuth
-				</a>
+				<a target='_blank' href='https://indieweb.org/IndieAuth'>IndieAuth</a>
 				for more information.
 			</span>
 		</div>

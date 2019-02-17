@@ -103,21 +103,21 @@ function post ($post, $show_permalink = true) {
 	<?php
 }
 
-function links ($me) {
+function links () {
 	echo "<ul>";
 
 	// Display Email at the top
 	echo "<li>";
-	echo "<a rel='me' class='u-email' href='mailto:$me->email'>";
-	echo $me->email;
+	echo "<a rel='me' class='u-email' href='mailto:" . Config::ME_EMAIL . "'>";
+	echo Config::ME_EMAIL;
 	echo "</a>";
 	echo "</li>";
 
 	// Display all links underneath
-	foreach ($me->links as $value) {
+	foreach (Config::IDENTITIES as $value) {
 		echo "<li>";
-		echo "<a rel='me' target='_blank' href='$value->url'>";
-		echo $value->name;
+		echo "<a rel='me' target='_blank' href='" . $value['url'] . "'>";
+		echo $value['name'];
 		echo "</a>";
 		echo "</li>";
 	}
