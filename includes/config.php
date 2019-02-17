@@ -10,11 +10,20 @@ class Config {
 	 */
 
 	// Me:
-	//
+	// This information will be displayed on the homepage, so people know whose
+	// website they're actually looking at.
 	const ME_NAME = 'Your Name Here';
 	const ME_EMAIL = 'email@example.com';
 	const ME_NOTE = 'Describe yourself.';
 
+	// Identities:
+	// Your "identities" are other websites where you have a profile. Where
+	// possible, these identities will also be used to help you login to
+	// micropub editors so you can actually create posts for your site.
+	// Format: [
+	//     'name' => 'Platform Name (eg. Twitter)',
+	//     'url' => 'Full URL to your profile (eg. https://twitter.com/...)'
+	// ];
 	const IDENTITIES = [
 		[
 			'name' => 'Twitter',
@@ -39,7 +48,7 @@ class Config {
 	const USE_MYSQL = false;
 
 	// MySQL Login Details (string):
-	// This only need to be set if you choose to use MySQL
+	// This only need to be set if you choose to use MySQL (above)
 	const MYSQL_HOSTNAME = 'localhost';
 	const MYSQL_USERNAME = '';
 	const MYSQL_PASSWORD = '';
