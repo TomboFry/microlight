@@ -232,8 +232,18 @@ class Post extends Model {
 				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL . SQLType::MOD_UNIQUE,
 			],
 			[
+				// To be shown to users
+				'column' => 'public',
+				'type' => SQLType::BOOL_TYPE . SQLType::MOD_NOT_NULL,
+			],
+			[
 				// Date/Time ISO8601
 				'column' => 'published',
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
+			],
+			[
+				// Date/Time ISO8601
+				'column' => 'updated',
 				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
 			],
 			[

@@ -136,7 +136,16 @@ function ml_load_posts () {
 	global $showing;
 	global $posts;
 
-	$where = [];
+	$where = [
+		// ALWAYS ONLY show public posts
+		[
+			'column' => 'public',
+			'operator' => SQLOP::EQUAL,
+			'value' => 1,
+			'escape' => SQLEscape::NONE,
+		]
+	];
+
 	$limit = Config::POSTS_PER_PAGE;
 	$offset = Config::POSTS_PER_PAGE * $pagination;
 
@@ -280,6 +289,16 @@ function ml_post_permalink ($slug) {
  */
 function ml_tag_permalink ($tag) {
 	return ml_base_url() . '?post_tag=' . $tag;
+}
+
+/**
+ * Returns an absolute URL to the archive of a specific post type
+ *
+ * @param string $post_type
+ * @return string
+ */
+function ml_type_permalink ($post_type) {
+	return ml_base_url() . '?post_type=' . $post_type;
 }
 
 /**

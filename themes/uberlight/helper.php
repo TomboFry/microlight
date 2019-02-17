@@ -54,6 +54,9 @@ function post ($post, $show_permalink = true) {
 			</time>
 		</a>
 		<div class='tags'>
+			<a href='<?php echo ml_type_permalink($post->post_type); ?>'><?php
+				echo $post->post_type;
+			?></a>;
 			<?php
 			foreach ($post->tags as $key) {
 				echo "<a class='p-category' href='" . ml_tag_permalink($key) . "'>" . $key . "</a>; ";

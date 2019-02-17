@@ -55,6 +55,7 @@ abstract class SQLType extends BasicEnum {
 	const PRIMARY_KEY_TYPE = 'INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE';
 	const TEXT_TYPE = 'TEXT';
 	const INTEGER_TYPE = 'INTEGER';
+	const BOOL_TYPE = 'BOOLEAN';
 
 	// Modifiers
 	const MOD_NOT_NULL = ' NOT NULL';
@@ -227,6 +228,7 @@ class SQL {
 				$escape = SQLEscape::SLUG;
 				break;
 			case 'published':
+			case 'updated':
 				$escape = SQLEscape::ISO8601;
 				break;
 			default:
