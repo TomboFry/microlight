@@ -109,5 +109,6 @@ class Config {
 
 require_once('lib/enum.php');
 require_once('lib/network.php');
+require_once('lib/slug.php');
 require_once('db.include.php');
 require_once('functions.include.php');

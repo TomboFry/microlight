@@ -9,16 +9,6 @@ if (!defined('MICROLIGHT')) die();
  * @throws Exception
  */
 function process_request () {
-	// Don't allow user in without a valid bearer token
-	$bearer = ml_http_bearer();
-	if ($bearer === false) {
-		$bearer = post('access_token');
-		if ($bearer === null) {
-			ml_http_error(HTTPStatus::UNAUTHORIZED, 'Bearer token has not been provided');
-			return;
-		}
-	}
-
 	$h = post('h');
 	$name = post('name');
 	$content = post('content');
@@ -59,15 +49,12 @@ function process_request () {
 
 	// Calculate the slug
 	if ($slug === '' || $slug === null) {
-		// Take the first 5 words from the summary
-		$slug = slugify(implode('-', array_slice(preg_split('/\s/m', $summary), 0, 5)));
-
-		// Add the date to the start of the slug
-		$slug = date('omd') . '-' . $slug;
+		// Take the first 10 words from the summary
+		$slug = slugify(implode('-', array_slice(preg_split('/\s/m', $summary), 0, 10)));
 	} else {
 		// Alternatively, if the slug is already populated (take from
-		// the post's name), slugify it and add the date to the start.
-		$slug = date('omd') . '-' . slugify($slug);
+		// the post's name), slugify it.
+		$slug = slugify($slug);
 	}
 
 	// Turn the provided categories into a string

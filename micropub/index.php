@@ -27,40 +27,31 @@ function get ($key) {
 	return null;
 }
 
-// https://stackoverflow.com/a/2955878
-function slugify ($text) {
-	// replace non letter or digits by -
-	$text = preg_replace('~[^\pL\d]+~u', '-', $text);
-
-	// transliterate
-	$text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
-
-	// remove unwanted characters
-	$text = preg_replace('~[^-\w]+~', '', $text);
-
-	// trim
-	$text = trim($text, '-');
-
-	// remove duplicate -
-	$text = preg_replace('~-+~', '-', $text);
-
-	// lowercase
-	$text = strtolower($text);
-
-	return $text;
-}
-
 require_once('get.php');
 require_once('post.php');
+require_once('auth.php');
 
-if ($method === 'GET') {
-	if (get('q') === 'config') {
+$bearer = get_access_token();
+
+// If there is no token, end processing early with a warning.
+if (empty($bearer)) {
+	ml_http_error(HTTPStatus::UNAUTHORIZED, 'Bearer token has not been provided');
+	return;
+}
+
+switch ($method) {
+case 'GET':
+	switch (get('q')) {
+	case 'config':
 		ml_http_response(HTTPStatus::OK, query_config());
-	} else if (get('q') === 'syndicate-to') {
+		return;
+	case 'syndicate-to':
 		ml_http_response(HTTPStatus::OK, query_syndicate_to());
-	} else {
-		ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
+		return;
 	}
-} else if ($method === 'POST') {
+	ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
+	return;
+case 'POST':
 	process_request();
+	break;
 }
