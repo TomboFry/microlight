@@ -101,6 +101,13 @@ class Config {
 	// received from the IndieAuth provider you specified above.
 	// default: 'https://tokens.indieauth.com/token'
 	const INDIEAUTH_TOKEN_ENDPOINT = 'https://tokens.indieauth.com/token';
+
+	// Homepage Feed Post Types (string array):
+	// Restricts the homepage to displaying only the following post types
+	// default: [ 'note', 'article', 'photo', 'like', 'repost', ]
+	const HOMEPAGE_POST_TYPES = [
+		'note', 'article', 'photo', 'like', 'repost',
+	];
 }
 
 /**********************************

@@ -13,11 +13,13 @@ require_once('lib/enum.php');
 
 abstract class SQLOP extends BasicEnum {
 	const EQUAL = '=';
+	const NEQUAL = '!=';
 	const LIKE = 'LIKE';
 	const GT = '>';
 	const GTE = '>=';
 	const LT = '<';
 	const LTE = '<=';
+	const IN = 'IN';
 }
 
 abstract class SQLEscape extends BasicEnum {
@@ -187,15 +189,30 @@ class SQL {
 				throw new Exception("Escape type \"$escape\" invalid");
 			}
 			SQL::regex_test(SQLEscape::COLUMN, $column);
-			SQL::regex_test($escape, $value);
-			$value = $this->db->quote($value);
+
+			// If we are querying based on an array, perform the regex and quote
+			// functions on each value inside the array instead of the whole
+			// value.
+			if (is_array($value)) {
+				foreach ($value as $key => $subvalue) {
+					SQL::regex_test($escape, $subvalue);
+					$value[$key] = $this->db->quote($subvalue);
+				}
+			} else {
+				SQL::regex_test($escape, $value);
+				$value = $this->db->quote($value);
+			}
 
 			if ($index > 0) {
 				$acc .= ' AND';
 			} else {
 				$acc .= ' WHERE';
 			}
-			$acc .= " `$column` $operator $value";
+			if (is_array($value) === true) {
+				$acc .= " `$column` $operator (" . implode(",", $value) . ")";
+			} else {
+				$acc .= " `$column` $operator $value";
+			}
 		});
 		return $acc;
 	}

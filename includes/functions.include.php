@@ -172,6 +172,13 @@ function ml_load_posts () {
 			'value' => "%$search_query%",
 			'escape' => SQLEscape::NONE,
 		]);
+	} else {
+		array_push($where, [
+			'column' => 'post_type',
+			'operator' => SQLOP::IN,
+			'value' => Config::HOMEPAGE_POST_TYPES,
+			'escape' => SQLEscape::POST_TYPE,
+		]);
 	}
 
 	// Run the SQL query
