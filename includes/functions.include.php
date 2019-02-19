@@ -376,7 +376,7 @@ function ml_page_headers () {
 		<meta property='og:image' content='<?php echo $image; ?>' />
 	<?php endif; ?>
 	<title><?php echo ml_get_title(); ?></title>
-	<link rel='micropub' href='<?php echo ml_base_url() . 'routes/micropub.php'; ?>' />
+	<link rel='micropub' href='<?php echo ml_base_url() . 'micropub/index.php'; ?>' />
 	<link rel='authorization_endpoint' href='<?php echo Config::INDIEAUTH_PROVIDER; ?>' />
 	<link rel='token_endpoint' href='<?php echo Config::INDIEAUTH_TOKEN_ENDPOINT; ?>' />
 	<link rel='icon' href='<?php echo $image; ?>'>

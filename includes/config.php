@@ -99,8 +99,8 @@ class Config {
 	// Similarly to the IndieAuth provider, this URL (which may or may not
 	// be identical to the provider URL) is used to validate the token
 	// received from the IndieAuth provider you specified above.
-	// default: 'https://indieauth.com/auth'
-	const INDIEAUTH_TOKEN_ENDPOINT = 'https://indieauth.com/auth';
+	// default: 'https://tokens.indieauth.com/token'
+	const INDIEAUTH_TOKEN_ENDPOINT = 'https://tokens.indieauth.com/token';
 }
 
 /**********************************

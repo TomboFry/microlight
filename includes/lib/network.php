@@ -186,8 +186,8 @@ function ml_http_bearer () {
 		if (strpos($bearer, 'Bearer') === 0) {
 			return explode(' ', $bearer)[1];
 		}
+		return $bearer;
 	}
 
 	return false;
 }
-
