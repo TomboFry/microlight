@@ -259,7 +259,7 @@ function ml_icon_url () {
  * @return string
  */
 function ml_post_permalink ($slug) {
-	return ml_base_url() . '?post_slug=' . $slug;
+	return ml_base_url() . '?post_slug=' . urlencode($slug);
 }
 
 /**
@@ -269,7 +269,7 @@ function ml_post_permalink ($slug) {
  * @return string
  */
 function ml_tag_permalink ($tag) {
-	return ml_base_url() . '?post_tag=' . $tag;
+	return ml_base_url() . '?post_tag=' . urlencode($tag);
 }
 
 /**
@@ -279,7 +279,7 @@ function ml_tag_permalink ($tag) {
  * @return string
  */
 function ml_type_permalink ($post_type) {
-	return ml_base_url() . '?post_type=' . $post_type;
+	return ml_base_url() . '?post_type=' . urlencode($post_type);
 }
 
 /**
@@ -302,17 +302,17 @@ function ml_canonical_permalink ($suffix = '') {
 	$usedQuery = false;
 
 	if ($search_query !== '') {
-		$str = ml_base_url() . '?search_query=' . $search_query;
+		$str = ml_base_url() . '?search_query=' . urlencode($search_query);
 		$usedQuery = true;
 	} elseif ($post_tag !== '' || $post_type !== '') {
 		$str = ml_base_url() . '?';
 		$acc = [];
-		if ($post_tag !== '') array_push($acc, 'post_tag=' . $post_tag);
-		if ($post_type !== '') array_push($acc, 'post_type=' . $post_type);
+		if ($post_tag !== '') array_push($acc, 'post_tag=' . urlencode($post_tag));
+		if ($post_type !== '') array_push($acc, 'post_type=' . urlencode($post_type));
 		$str .= implode('&', $acc);
 		$usedQuery = true;
 	} elseif ($post_slug !== '') {
-		$str = ml_base_url() . '?post_slug=' . $post_slug;
+		$str = ml_base_url() . '?post_slug=' . urlencode($post_slug);
 		$usedQuery = true;
 	} else {
 		$str = ml_base_url();
