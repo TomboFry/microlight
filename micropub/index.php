@@ -39,6 +39,11 @@ if (empty($bearer)) {
 	return;
 }
 
+if (validate_token($bearer) === false) {
+	ml_http_error(HTTPStatus::FORBIDDEN, 'Bearer token is invalid or does not exist');
+	return;
+}
+
 switch ($method) {
 case 'GET':
 	switch (get('q')) {
