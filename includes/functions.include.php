@@ -319,7 +319,11 @@ function ml_canonical_permalink ($suffix = '') {
 	}
 
 	if (!empty($suffix)) {
-		if ($usedQuery === false) $str .= '?';
+		if ($usedQuery === false) {
+			$str .= '?';
+		} else {
+			$str .= '&';
+		}
 		$str .= $suffix;
 	}
 
