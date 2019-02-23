@@ -109,10 +109,12 @@ class Model {
 	 *
 	 * @param string[] $properties
 	 * @return integer
+	 * @throws DBError
 	 */
 	function insert ($properties) {
 		$sql = 'INSERT INTO ' . $this->table_name . $this->sql->insert($properties);
 		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
+		if ($stmt === false) throw new DBError(implode('; ', $this->db->errorInfo()), 0);
 		return $this->db->lastInsertId();
 	}
 
@@ -196,9 +198,8 @@ class Post extends Model {
 				'type' => SQLType::TEXT_TYPE,
 			],
 			[
-				// If the post directly refers to a specific
-				// location on the internet, here is where to
-				// put it.
+				// If the post directly refers to a specific location on the
+				// internet, here is where to put it.
 				'column' => 'url',
 				'type' => SQLType::TEXT_TYPE,
 			],
