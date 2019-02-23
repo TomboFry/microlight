@@ -3,101 +3,202 @@
 if (!defined('MICROLIGHT')) die();
 
 /**
- * The main Micropub API logic. This takes the POST request and processes all
- * its variables to create a post (or not, if malformed).
+ * Validates the `published` or `updated` field
  *
+ * @param string|null $date The date at which the post should be published/updated
+ * @return string|false Return the date in ISO8601 if valid, otherwise false
+ */
+function validate_date ($date) {
+	if ($date === null) {
+		// Use the current timestamp, if not provided.
+		return gmdate("c");
+	} else {
+		$date = strtotime($date);
+		if ($date !== false) return date('c', $date);
+		return false;
+	}
+}
+
+/**
+ * If not provided, the summary will be taken from the first 160 characters of
+ * the actual content. It is assumed that `content` has already been validated.
+ *
+ * @param string|null $summary
+ * @param string $content
+ * @return string
+ */
+function validate_summary ($summary, $content) {
+	if (empty($summary)) {
+		// Summary should be a snippet from the content, limited to 160 chars.
+		// It's 157 here because if it reaches that value we will append an
+		// ellipsis to bring it to the total 160.
+		$summary = substr($content, 0, 157);
+		$summary = preg_replace('/\s+/', ' ', $summary);
+		if (strlen($summary) === 157) $summary .= "...";
+	}
+
+	return $summary;
+}
+
+/**
+ * Ensures that every category provided is a valid alphanumeric string,
+ * otherwise returning false.
+ *
+ * @param string[] $category
+ * @return string|false
+ */
+function validate_category ($category) {
+	if (empty($category)) return [];
+	if (is_array($category) === false) return false;
+	foreach ($category as $key => $value) {
+		if (!mb_check_encoding($value, 'ASCII')) return false;
+		if (!preg_match('/^[a-zA-Z0-9_\- ]+$/', $value)) return false;
+	}
+
+	return $category;
+}
+
+/**
+ * Generates a slug based on either the name (if provided), or the post's
+ * summary.
+ *
+ * @param string|null $name The post's currently working name
+ * @param string $summary Post's summary, assumed to already be validated
+ * @return string The final slug to be used for this post
+ */
+function generate_slug ($name, $summary) {
+	if (empty($name)) {
+		// Take the first 10 words from the summary
+		return slugify(implode('-', array_slice(preg_split('/\s/m', $summary), 0, 10)));
+	}
+
+	// Alternatively, if the name is already populated, slugify it.
+	return slugify($name);
+}
+
+/**
+ * Inserts a post into the database, returning any errors if they occur,
+ * otherwise returning a 201 CREATED response to the new post.
+ *
+ * @param array $post
+ * @return void
  * @throws Exception
  */
-function process_request () {
-	$h = post('h');
+function insert_post ($post) {
+	$slug = $post['slug'];
+
+	try {
+		$db = new DB();
+		$db_post = new Post($db);
+		$existing = $db_post->count([
+			[
+				'column' => 'slug',
+				'operator' => SQLOP::EQUAL,
+				'value' => $slug,
+				'escape' => SQLEscape::SLUG,
+			],
+		]);
+
+		if ($existing > 0) {
+			ml_http_error(
+				HTTPStatus::INVALID_REQUEST,
+				'Post with slug `' . $slug . '` already exists'
+			);
+			return;
+		}
+
+		$postId = $db_post->insert($post);
+		$postId = intval($postId);
+
+		if (is_int($postId) && $postId !== 0) {
+			ml_http_response(
+				HTTPStatus::CREATED,
+				null,
+				null,
+				ml_post_permalink($slug)
+			);
+			return;
+		} else {
+			ml_http_error(
+				HTTPStatus::SERVER_ERROR,
+				'Could not create entry. Unknown reason.'
+			);
+			return;
+		}
+	} catch (DBError $e) {
+		error_log('Post could not be inserted...');
+		ml_http_error(HTTPStatus::SERVER_ERROR, $e->getMessage());
+	}
+}
+
+/**
+ * The main logic for the Micropub `h=entry` request. Takes various POST values
+ * and converts them into an object suitable for the microlight database.
+ * Any errors will be returned to the user.
+ *
+ * @return void
+ * @throws Exception
+ */
+function post_create_entry () {
+	// POST values
 	$name = post('name');
-	$content = post('content');
 	$summary = post('summary');
-	$photo = post('photo');
-	$url = post('url');
-	$categories = post('category');
+	$content = post('content');
+	$published = post('published');
+	$category = post('category');
 
-	// Variables not necessarily set by the POST data
-	$type = 'article';
-	$slug = $name;
+	// Internally calculated values
+	$post_type = 'article';
+	$post_slug = '';
+	$post_public = true;
 
-	// h parameter is required
-	if ($h === null) {
-		ml_http_error(HTTPStatus::INVALID_REQUEST, 'Field \'h\' required');
+	// VALIDATION / PROCESSING
+
+	if (empty($name)) $post_type = 'note';
+
+	$published = validate_date($published);
+	if ($published === false) {
+		ml_http_error(
+			HTTPStatus::INVALID_REQUEST,
+			'Invalid `published` value'
+		);
 		return;
 	}
 
-	// If a name is not provided, assume it's a note (for now)
-	if ($name === null) $type = 'note';
+	$summary = validate_summary($summary, $content);
+	$post_slug = generate_slug($name, $summary);
 
-	// Create a summary from the content, if one was not provided
-	if ($summary === '' || $summary === null) {
-		// Limit to 160 characters, add ellipsis if it's longer
-		$summary = preg_replace('/^\#(.*)\R+/', '', $content);
-		$summary = preg_split('/$\R?^/m', $summary)[0];
-		$summary = substr($summary, 0, 157);
-		if (strlen($summary) === 157) $summary .= '...';
-	}
-
-	// Use photo if file is not provided
-	// TODO: Manage uploaded files with `multipart/form-data`, and set the
-	// post type depending on the uploaded file's mime type (eg. `image/jpg`
-	// or `video/mp4`)
-	if ($photo !== '' && $photo !== null) {
-		$type = 'photo';
-	}
-
-	// Calculate the slug
-	if ($slug === '' || $slug === null) {
-		// Take the first 10 words from the summary
-		$slug = slugify(implode('-', array_slice(preg_split('/\s/m', $summary), 0, 10)));
-	} else {
-		// Alternatively, if the slug is already populated (take from
-		// the post's name), slugify it.
-		$slug = slugify($slug);
-	}
-
-	// Turn the provided categories into a string
-	// TODO: Before this line, perform webmentions if a category is a URL
-	if ($categories !== '' && $categories !== null) {
-		$categories = implode(',', $categories) . ',';
-	}
-
-	$db = new DB();
-	$post = new Post($db);
-	$existing = $post->count([
-		[
-			'column' => 'slug',
-			'operator' => SQLOP::EQUAL,
-			'value' => $slug,
-			'escape' => SQLEscape::SLUG,
-		],
-	]);
-
-	if ($existing > 0) {
-		ml_http_error(HTTPStatus::INVALID_REQUEST, "Post with slug '$slug' already exists");
+	$category = validate_category($category);
+	if ($category === false) {
+		ml_http_error(
+			HTTPStatus::INVALID_REQUEST,
+			'Invalid `category` value'
+		);
 		return;
 	}
 
-	$postId = $post->insert([
-		'name' => $name,
+	// Check for a 'private' category specified.
+	// If present, remove it from the categories and make the post invisible to
+	// the archive.
+	$private_category_key = array_search('private', $category, true);
+	if ($private_category_key !== false) {
+		array_splice($category, $private_category_key, 1);
+		$post_public = false;
+	}
+	$category = implode(',', $category);
+	if (strlen($category) > 0) $category .= ',';
+
+	$post = [
+		'title' => $name,
 		'summary' => $summary,
 		'content' => $content,
-		'type' => $type,
-		'slug' => $slug,
-		'published' => date('c'),
-		'tags' => $categories,
-		'url' => $photo,
-		'identity_id' => 1,
-	]);
+		'post_type' => $post_type,
+		'slug' => $post_slug,
+		'published' => $published,
+		'tags' => $category,
+		'public' => $post_public,
+	];
 
-	$postId = intval($postId);
-
-	if (is_int($postId) && $postId !== 0) {
-		ml_http_response(HTTPStatus::CREATED, null, null, ml_post_permalink($slug));
-		return;
-	} else {
-		ml_http_error(HTTPStatus::SERVER_ERROR, 'Could not create entry. Unknown reason.');
-		return;
-	}
+	insert_post($post);
+	return;
 }

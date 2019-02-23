@@ -63,6 +63,11 @@ case 'GET':
 	ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
 	return;
 case 'POST':
-	process_request();
-	break;
+	switch (post('h')) {
+	case 'entry':
+		post_create_entry();
+		return;
+	}
+	ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
+	return;
 }
