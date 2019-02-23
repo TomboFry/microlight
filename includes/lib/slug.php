@@ -18,13 +18,12 @@ function slugify ($text) {
 	// trim
 	$text = trim($text, '-');
 
-	// remove duplicate -
-	$text = preg_replace('~-+~', '-', $text);
-
 	// lowercase
 	$text = strtolower($text);
 
-	// Return the slug, adding at the date at the start, and limiting
-	// it to 64 characters.
-	return date('omd') . '-' . substr($text, 0, 64);
+	// Add the date to the start, and limiting it to 64 characters.
+	$text = date('omd') . '-' . substr($text, 0, 64);
+
+	// remove duplicate -
+	return preg_replace('~-+~', '-', $text);
 }
