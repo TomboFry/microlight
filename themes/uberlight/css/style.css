@@ -11,6 +11,22 @@ body {
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
+a {
+	color: #333;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: #ff4700;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	line-height: 1.1;
+	/* https://www.client9.com/css-system-font-stack-serif-medium-v1/ */
+	/* font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "URW Palladio L", serif; */
+}
+
 p, .e-content, img {
 	line-height: 20px;
 	margin-bottom: 10px;
@@ -20,18 +36,38 @@ ul {
 	margin-left: 24px;
 }
 
-h1, h2 {
-	margin-bottom: 16px;
-}
-
 header {
 	padding: 32px 32px 16px;
 }
 
 article {
-	padding: 16px 16px 0;
-	margin-top: 16px;
-	border-top: 1px solid #ccc;
+	padding: 32px;
+}
+
+article h2.p-name {
+	margin-bottom: 16px;
+}
+
+.page article h2.p-name {
+	font-weight: 700;
+	font-style: italic;
+	font-size: 28pt;
+	margin-bottom: 16px;
+}
+
+.page article .e-content {
+	font-size: 12pt;
+	line-height: 1.618;
+	margin-bottom: 16px;
+}
+
+.dt-published-link {
+	display: block;
+	color: #666;
+	text-decoration: none;
+	font-size: 11pt;
+	font-weight: 500;
+	margin-bottom: 16px;
 }
 
 img {
@@ -40,4 +76,60 @@ img {
 
 audio {
 	width: 100%;
+}
+
+.tags {
+	text-align: right;
+	float: right;
+	font-size: 11pt;
+	max-width: 50%;
+}
+
+.tags a {
+	font-weight: 700;
+	color: #666;
+	text-decoration: none;
+	text-transform: lowercase;
+	margin-left: 6px;
+	white-space: nowrap;
+}
+
+.tags a:before {
+	content: '#';
+	color: #999;
+}
+
+.pagination {
+	display: block;
+	margin: 16px 0;
+}
+.pagination:after {
+	clear: both;
+	content: '';
+	float: none;
+	display: block;
+}
+
+.pagination-left, .pagination-right {
+	width: 50%;
+	width: calc(50% - 16px);
+	display: inline-block;
+	padding: 16px;
+	text-align: center;
+	border-radius: 8px;
+	text-decoration: none;
+	border: 1px solid #eee;
+	font-weight: 700;
+}
+
+.pagination-left:hover, .pagination-right:hover {
+	background-color: #eee;
+}
+
+.pagination-left {
+	float: left;
+}
+
+.pagination-right {
+	float: right;
 }

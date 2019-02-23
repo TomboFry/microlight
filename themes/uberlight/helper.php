@@ -48,21 +48,21 @@ function post ($post, $show_permalink = true) {
 	// Everything below this point is for metadata
 	?>
 	<footer>
-		<a class='u-url u-uid' href='<?php echo ml_post_permalink($post->slug); ?>'>
+		<div class='tags'>
+			<a href='<?php echo ml_type_permalink($post->post_type); ?>'><?php
+				echo $post->post_type;
+			?></a>
+			<?php
+			foreach ($post->tags as $key) {
+				echo "<a class='p-category' href='" . ml_tag_permalink($key) . "'>" . $key . "</a> ";
+			}
+			?>
+		</div>
+		<a class='u-url u-uid dt-published-link' href='<?php echo ml_post_permalink($post->slug); ?>'>
 			<time class='dt-published' datetime='<?php echo $post->published; ?>'>
 				<?php echo ml_date_pretty($post->published); ?>
 			</time>
 		</a>
-		<div class='tags'>
-			<a href='<?php echo ml_type_permalink($post->post_type); ?>'><?php
-				echo $post->post_type;
-			?></a>;
-			<?php
-			foreach ($post->tags as $key) {
-				echo "<a class='p-category' href='" . ml_tag_permalink($key) . "'>" . $key . "</a>; ";
-			}
-			?>
-		</div>
 	<?php
 
 	// Print Location
