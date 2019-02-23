@@ -8,9 +8,15 @@ require_once('includes/config.php');
 // Redirect to homepage if we're trying to load it in the browser
 $method = $_SERVER['REQUEST_METHOD'];
 $content_type = $_SERVER['CONTENT_TYPE'];
+if (empty($content_type)) $content_type = $_SERVER['HTTP_CONTENT_TYPE'];
 
 if ($content_type === 'application/json') {
-	$post = json_decode(file_get_contents('php://input'), true);
+	// TODO: Process JSON requests as well.
+	// This has been disabled temporarily because all JSON requests require
+	// items to be contained within an array.
+	ml_http_error(HTTPStatus::INVALID_REQUEST, 'JSON not supported');
+	return;
+	// $post = json_decode(file_get_contents('php://input'), true);
 } else {
 	$post = $_POST;
 }
