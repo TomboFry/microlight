@@ -1,7 +1,5 @@
 # microlight (or µLight, or µlite, etc)
 
-**Please note:** Not currently suitable for use in production.
-
 ## Why?
 
 Microlight is a blogging engine based on [IndieWeb](https://indieweb.org)-based
@@ -26,16 +24,18 @@ concepts. This means support for:
 
 ## Requirements
 
-* **PHP 7 or above**
+* **PHP 7 or above**  
   While in theory microlight should work on PHP 5.6, this version is
   [no longer supported](https://secure.php.net/supported-versions.php) by the
   PHP group, and so I will not be testing it on any version below 7.
-* **PDO MySQL/SQLite**
+* **PDO MySQL/SQLite**  
   Currently, the table creation functions are written purely for SQLite (this
   will be added for MySQL shortly), although fetch posts and inserting posts
   are fully functional using MySQL.
-* **Apache Rewrite Module (mod_rewrite)** (optional)
-  While this is not required, post permalinks are going to look *much* nicer.
+* **Apache Rewrite Module (mod_rewrite)** (optional)  
+  While this is not required, post permalinks are going to look *much* nicer.  
+  Please note, however, this has not yet been implemented, so URLs still look
+  quite ugly.
 
 ## Installation
 
