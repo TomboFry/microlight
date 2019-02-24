@@ -19,11 +19,15 @@ require_once('helper.php');
 <body>
 	<header class="p-author vcard hcard h-card">
 		<h1>
-			<a href="<?php echo ml_base_url(); ?>" class="p-name u-url uid fn" rel="me">
-				<?php echo Config::ME_NAME; ?>
-			</a>
+			<a
+				href="<?php echo ml_base_url(); ?>"
+				class="p-name u-url uid fn" rel="me"
+			><?php echo Config::ME_NAME; ?></a>
 		</h1>
-		<?php echo links(); ?>
+		<?php if (!empty(Config::ME_NOTE)): ?>
+		<p class='p-note'><?php echo Config::ME_NOTE; ?></p>
+		<?php endif;
+		echo links(); ?>
 	</header>
 	<div class="<?php echo strtolower($showing); ?>">
 		<?php

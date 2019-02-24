@@ -40,6 +40,10 @@ header {
 	padding: 32px 32px 16px;
 }
 
+.p-note {
+	margin-top: 16px;
+}
+
 article {
 	padding: 32px;
 }
@@ -91,7 +95,6 @@ audio {
 	text-decoration: none;
 	text-transform: lowercase;
 	margin-left: 6px;
-	white-space: nowrap;
 }
 
 .tags a:before {
