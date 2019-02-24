@@ -104,7 +104,7 @@ function post ($post, $show_permalink = true) {
 }
 
 function links () {
-	echo "<ul>";
+	echo "<ul class='me-links'>";
 
 	// Display Email at the top
 	echo "<li>";

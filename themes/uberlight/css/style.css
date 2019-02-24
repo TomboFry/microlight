@@ -44,6 +44,24 @@ header {
 	margin-top: 16px;
 }
 
+.me-links {
+	list-style-type: none;
+	margin-left: 0;
+	margin-top: 16px;
+}
+.me-links li {
+	display: inline-block;
+	margin-right: 12px;
+}
+.me-links li:not(:last-child):after {
+	content: '';
+	width: 12px;
+	margin-left: 12px;
+	border-top: 1px solid #ccc;
+	display: inline-block;
+	vertical-align: middle;
+}
+
 article {
 	padding: 32px;
 }
