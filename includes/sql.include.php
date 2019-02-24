@@ -11,6 +11,9 @@ if (!defined('MICROLIGHT')) die();
 
 require_once('lib/enum.php');
 
+// All ASCII characters except comma
+const TAG_CHARS = '[\x00-\x7F]';
+
 abstract class SQLOP extends BasicEnum {
 	const EQUAL = '=';
 	const NEQUAL = '!=';
@@ -34,7 +37,7 @@ abstract class SQLEscape extends BasicEnum {
 
 	// Either a list or a singular of at least one alphanumeric, underscore,
 	// hyphen, or space character, optionally surrounded by percent symbols
-	const TAG = '/^([a-zA-Z0-9_\- ]+|%([a-zA-Z0-9_\- ]+,)+%|([a-zA-Z0-9_\- ]+,)+|^$)$/';
+	const TAG = '/^('. TAG_CHARS. '+|%('. TAG_CHARS. '+,)+%|('. TAG_CHARS. '+,)+|^$)$/';
 
 	// At least one alphabetic character
 	const POST_TYPE = '/^[a-z]+$/';
