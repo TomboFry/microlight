@@ -14,16 +14,103 @@ function put_value ($val, $index = null) {
 		: '';
 }
 
-try {
-	$db = new DB();
-	$posts = new Post($db);
-	if ($posts->find_one() !== null) {
-		unset($_SESSION['csrf_token']);
-		header('Location: ' . ml_base_url());
-		return;
+/**
+ * Determines whether microlight has actually been installed.
+ * Checks for user configuration and that the database can be queried.
+ *
+ * @return bool
+ */
+function is_installed () {
+	if (!file_exists('includes/user.config.php')) {
+		return false;
 	}
-} catch (Exception $e) {
-	// If it failed, do nothing and carry on below.
+
+	if (!file_exists(Config::DB_NAME . '.db')) {
+		return false;
+	}
+
+	try {
+		$db = new DB();
+		$posts = new Post($db);
+		if ($posts->find_one() === null) {
+			return false;
+		}
+	} catch (Exception $e) {
+		return false;
+	}
+
+	return true;
+}
+
+function quote ($string) {
+	return preg_replace('/[\']/', '\\\'', $string);
+}
+
+/**
+ * Creates the user configuration file
+ *
+ * @param string $name
+ * @param string $email
+ * @param string $note
+ * @param array $identities
+ * @return bool Successful or not
+ */
+function create_user_config ($name, $email, $note, $identities) {
+	if (empty($name) || empty($email)) return false;
+
+	// Escape quote characters
+	$name = quote($name);
+	$email = quote($email);
+
+	// Create the contents of the `user.config.php` file
+	$contents = '<?php
+if (!defined(\'MICROLIGHT\')) die();
+
+// You may edit these values at any time.
+class User {
+	const NAME = \'' . $name . '\';
+	const EMAIL = \'' . $email .'\';
+';
+
+	// Add note, if provided
+	if (!empty($note)) {
+		$note = quote($note);
+		$contents .= '	const NOTE = \'' . $note . '\';
+';
+	}
+
+	// Add identities, if provided
+	if (is_array($identities) && count($identities) > 0) {
+		$contents .= '	const IDENTITIES = [
+';
+		foreach ($identities as $identity) {
+			$id_name = quote($identity['name']);
+			$id_url = quote($identity['url']);
+
+			$contents .= '		[
+			\'name\' => \'' . $id_name . '\',
+			\'url\' => \'' . $id_url . '\',
+		],
+';
+		}
+		$contents .= '	];
+';
+	}
+
+	// Add the final closing curly bracket
+	$contents .= '}';
+
+	if (file_put_contents('includes/user.config.php', $contents) === false) {
+		return false;
+	}
+
+	return true;
+}
+
+if (is_installed()) {
+	unset($_SESSION['csrf_token']);
+	header('Location: ' . ml_base_url());
+	return;
 }
 
 if (isset($_POST['submit'])) {
@@ -31,9 +118,11 @@ if (isset($_POST['submit'])) {
 	$services = [];
 
 	try {
+		// Ensure both tokens were provided
 		if (!ml_post_not_blank('token')) array_push($errors, 'CSRF Token required');
 		if (empty($_SESSION['csrf_token'])) array_push($errors, 'CSRF Token required');
 
+		// Make sure they're equal
 		if (!hash_equals($_POST['token'], $_SESSION['csrf_token'])) array_push($errors, 'CSRF Token invalid');
 
 		// Validate POST variables first
@@ -63,7 +152,13 @@ if (isset($_POST['submit'])) {
 			$post = new Post($db);
 			$post->create_table();
 
-			// TODO: Create identity config file based on user's input
+			if (create_user_config($name, $email, $note, $services) === false) {
+				throw new Exception (
+					'Could not create `user.config.php`. ' +
+					'Check your file permissions, and that the file doesn\'t ' +
+					'already exist.'
+				);
+			}
 
 			session_destroy();
 		}
@@ -116,7 +211,13 @@ if (isset($_POST['submit'])) {
 
 		.p { line-height: 1.4em }
 
-		.i-left { border-right: 0 !important }
+		.i-left {
+			border-right: 0 !important;
+			width: 40% !important;
+		}
+		.i-right {
+			width: 60% !important;
+		}
 
 		ul { margin-left: 24px }
 
@@ -294,6 +395,7 @@ if (isset($_POST['submit'])) {
 						type='url'
 						placeholder='URL'
 						name='sm_service_urls[]'
+						class='i-right'
 						value='<?php put_value('sm_service_urls', 0); ?>'
 					/>
 				</div>
@@ -308,6 +410,7 @@ if (isset($_POST['submit'])) {
 						type='url'
 						placeholder='URL'
 						name='sm_service_urls[]'
+						class='i-right'
 						value='<?php put_value('sm_service_urls', 1); ?>'
 					/>
 				</div>
@@ -322,6 +425,7 @@ if (isset($_POST['submit'])) {
 						type='url'
 						placeholder='URL'
 						name='sm_service_urls[]'
+						class='i-right'
 						value='<?php put_value('sm_service_urls', 2); ?>'
 					/>
 				</div>
