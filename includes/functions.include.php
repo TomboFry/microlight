@@ -230,7 +230,7 @@ function ml_get_title () {
 		$str .= Config::TITLE_SEPARATOR;
 	}
 
-	$str .= Config::ME_NAME;
+	$str .= User::NAME;
 	return $str;
 }
 
@@ -371,13 +371,13 @@ function ml_page_headers () {
 			$image = ml_icon_url();
 		}
 	} else {
-		$description = Config::ME_NOTE;
+		$description = User::NOTE;
 		$image = ml_icon_url();
 	}
 	?>
 	<meta name='description' content='<?php echo $description; ?>' />
 	<meta name='generator' content='Microlight <?php echo MICROLIGHT; ?>' />
-	<meta name='author' content='<?php echo Config::ME_NAME; ?>' />
+	<meta name='author' content='<?php echo User::NAME; ?>' />
 	<meta name='referrer' content='origin'>
 	<?php if (Config::OPEN_GRAPH === true): ?>
 		<meta name='twitter:card' content='summary' />

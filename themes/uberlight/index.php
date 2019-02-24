@@ -22,10 +22,10 @@ require_once('helper.php');
 			<a
 				href="<?php echo ml_base_url(); ?>"
 				class="p-name u-url uid fn" rel="me"
-			><?php echo Config::ME_NAME; ?></a>
+			><?php echo User::NAME; ?></a>
 		</h1>
-		<?php if (!empty(Config::ME_NOTE)): ?>
-		<p class='p-note'><?php echo Config::ME_NOTE; ?></p>
+		<?php if (!empty(User::NOTE)): ?>
+		<p class='p-note'><?php echo User::NOTE; ?></p>
 		<?php endif;
 		echo links(); ?>
 	</header>

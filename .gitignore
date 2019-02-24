@@ -4,3 +4,4 @@ error.log
 uploads/
 /info.php
 .idea/
+user.config.php

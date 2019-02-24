@@ -9,35 +9,9 @@ class Config {
 	 * to, leave them as the default.
 	 */
 
-	// Me:
-	// This information will be displayed on the homepage, so people know whose
-	// website they're actually looking at.
-	const ME_NAME = 'Your Name Here';
-	const ME_EMAIL = 'email@example.com';
-	const ME_NOTE = 'Describe yourself.';
-
-	// Identities:
-	// Your "identities" are other websites where you have a profile. Where
-	// possible, these identities will also be used to help you login to
-	// micropub editors so you can actually create posts for your site.
-	// Format: [
-	//     'name' => 'Platform Name (eg. Twitter)',
-	//     'url' => 'Full URL to your profile (eg. https://twitter.com/...)'
-	// ];
-	const IDENTITIES = [
-		[
-			'name' => 'Twitter',
-			'url' => 'https://twitter.com/USERNAME',
-		],
-		[
-			'name' => 'GitHub',
-			'url' => 'https://github.com/USERNAME',
-		],
-	];
-
 	// DB File (string):
-	// The location of the SQLite database file, relative to root.
-	// default: 'microlight.db'
+	// The location of the SQLite file or MySQL database, relative to root.
+	// default: 'microlight'
 	const DB_NAME = 'microlight';
 
 	// Use MySQL (boolean):

@@ -108,13 +108,13 @@ function links () {
 
 	// Display Email at the top
 	echo "<li>";
-	echo "<a rel='me' class='u-email' href='mailto:" . Config::ME_EMAIL . "'>";
-	echo Config::ME_EMAIL;
+	echo "<a rel='me' class='u-email' href='mailto:" . User::EMAIL . "'>";
+	echo User::EMAIL;
 	echo "</a>";
 	echo "</li>";
 
 	// Display all links underneath
-	foreach (Config::IDENTITIES as $value) {
+	foreach (User::IDENTITIES as $value) {
 		echo "<li>";
 		echo "<a rel='me' target='_blank' href='" . $value['url'] . "'>";
 		echo $value['name'];
