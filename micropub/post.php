@@ -77,6 +77,51 @@ function generate_slug ($name, $summary) {
 }
 
 /**
+ * Determines the post type depending on whether other optional fields to POST
+ * were provided.
+ *
+ * @return array|false If a valid post type was detected, an array containing
+ *                     "type" and "url" keys, otherwise false.
+ */
+function validate_post_type () {
+	$bookmark_of = post('bookmark-of');
+	if (!empty($bookmark_of)) {
+		return [
+			'type' => 'bookmark',
+			'url' => $bookmark_of,
+		];
+	}
+
+	// TODO: The following post types should perform webmentions when valid.
+
+	$in_reply_to = post('in-reply-to');
+	if (!empty($in_reply_to)) {
+		return [
+			'type' => 'reply',
+			'url' => $in_reply_to,
+		];
+	}
+
+	$like_of = post('like-of');
+	if (!empty($like_of)) {
+		return [
+			'type' => 'like',
+			'url' => $like_of,
+		];
+	}
+
+	$repost_of = post('repost-of');
+	if (!empty($repost_of)) {
+		return [
+			'type' => 'repost',
+			'url' => $repost_of,
+		];
+	}
+
+	return false;
+}
+
+/**
  * Inserts a post into the database, returning any errors if they occur,
  * otherwise returning a 201 CREATED response to the new post.
  *
@@ -151,6 +196,7 @@ function post_create_entry () {
 	$post_type = 'article';
 	$post_slug = '';
 	$post_public = true;
+	$post_url = null;
 
 	// VALIDATION / PROCESSING
 
@@ -188,6 +234,14 @@ function post_create_entry () {
 	$category = implode(',', $category);
 	if (strlen($category) > 0) $category .= ',';
 
+	// Determine post type if `in-reply-to`, `like-of`, `repost-of` or
+	// `bookmark-of` URLs are provided.
+	$new_post_type = validate_post_type();
+	if ($new_post_type !== false) {
+		$post_type = $new_post_type['type'];
+		$post_url = $new_post_type['url'];
+	}
+
 	$post = [
 		'title' => $name,
 		'summary' => $summary,
@@ -197,6 +251,7 @@ function post_create_entry () {
 		'published' => $published,
 		'tags' => $category,
 		'public' => $post_public,
+		'url' => $post_url
 	];
 
 	insert_post($post);
