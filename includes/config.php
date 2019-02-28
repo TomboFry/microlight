@@ -78,9 +78,9 @@ class Config {
 
 	// Homepage Feed Post Types (string array):
 	// Restricts the homepage to displaying only the following post types
-	// default: [ 'note', 'article', 'photo', 'like', 'repost', ]
+	// default: [ 'note', 'article', 'photo', 'like', 'repost', 'reply', 'bookmark' ]
 	const HOMEPAGE_POST_TYPES = [
-		'note', 'article', 'photo', 'like', 'repost',
+		'note', 'article', 'photo', 'like', 'repost', 'reply', 'bookmark'
 	];
 }
 
