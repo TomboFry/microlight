@@ -249,7 +249,7 @@ function ml_base_url () {
  * @return string
  */
 function ml_icon_url () {
-	return ml_base_url() . 'images/me.jpg';
+	return ml_base_url() . 'uploads/me.jpg';
 }
 
 /**

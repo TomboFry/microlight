@@ -4,57 +4,36 @@
 // file from within microlight itself.
 if (!defined('MICROLIGHT')) die();
 
-require_once('helper.php');
+// Contains various elements for this page
+require_once('elements.php');
+
+// Contains everything needed to display a single post
+require_once('entry.php');
 
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<?php ml_page_headers(); ?>
-	<link rel='stylesheet' href='<?php echo ml_get_theme_dir(); ?>/css/style.css' />
-</head>
+<?php html_head(); ?>
 <body>
-	<header class="p-author vcard hcard h-card">
-		<h1>
-			<a
-				href="<?php echo ml_base_url(); ?>"
-				class="p-name u-url uid fn" rel="me"
-			><?php echo User::NAME; ?></a>
-		</h1>
-		<?php if (!empty(User::NOTE)): ?>
-		<p class='p-note'><?php echo User::NOTE; ?></p>
-		<?php endif;
-		echo links(); ?>
-	</header>
+	<?php html_author(); ?>
 	<div class="<?php echo strtolower($showing); ?>">
 		<?php
-		if ($showing === Show::ERROR404) {
-			echo "That post could not be found.";
-		} elseif ($showing === Show::ARCHIVE) {
-			foreach ($posts as $Post) {
-				echo post($Post);
-			}
-		} elseif ($showing === Show::POST || $showing === Show::PAGE) {
-			echo post($posts, false);
+		switch ($showing) {
+			case Show::ERROR404:
+				echo 'That post could not be found.';
+				break;
+			case Show::ARCHIVE:
+				foreach ($posts as $Post) {
+					entry($Post);
+				}
+				break;
+			case Show::POST:
+			case Show::PAGE:
+				entry($posts, false);
+				break;
 		}
 		?>
 	</div>
-	<?php if (ml_pagination_enabled()) { ?>
-	<div class='pagination'>
-		<?php if (ml_pagination_left_enabled()) { ?>
-		<a class='pagination-left' href='<?php echo ml_pagination_left_link(); ?>'>
-			&lt;&lt; Newer
-		</a>
-		<?php } ?>
-		<?php if (ml_pagination_right_enabled()) { ?>
-		<a class='pagination-right' href='<?php echo ml_pagination_right_link(); ?>'>
-			Older &gt;&gt;
-		</a>
-		<?php } ?>
-	</div>
-	<?php } ?>
+	<?php html_pagination(); ?>
 </body>
 </html>
