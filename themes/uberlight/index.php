@@ -8,7 +8,7 @@ if (!defined('MICROLIGHT')) die();
 require_once('elements.php');
 
 // Contains everything needed to display a single post
-require_once('entry.php');
+require_once('entry/index.php');
 
 ?>
 <!DOCTYPE html>

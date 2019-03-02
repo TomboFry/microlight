@@ -66,11 +66,11 @@ article {
 	padding: 32px;
 }
 
-article h2.p-name {
+article h2 {
 	margin-bottom: 16px;
 }
 
-.page article h2.p-name {
+.page article h2 {
 	font-weight: 700;
 	font-style: italic;
 	font-size: 28pt;
