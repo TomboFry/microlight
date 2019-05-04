@@ -45,7 +45,7 @@ function validate_summary ($summary, $content) {
  * otherwise returning false.
  *
  * @param string[] $category
- * @return string|false
+ * @return string[]|false
  */
 function validate_category ($category) {
 	if (empty($category)) return [];
@@ -84,6 +84,14 @@ function generate_slug ($name, $summary) {
  *                     "type" and "url" keys, otherwise false.
  */
 function validate_post_type () {
+	$photo = post('photo');
+	if (!empty($photo) && filter_var($photo, FILTER_VALIDATE_URL) !== false) {
+		return [
+			'type' => 'photo',
+			'url' => $photo
+		];
+	}
+
 	$bookmark_of = post('bookmark-of');
 	if (!empty($bookmark_of)) {
 		return [
