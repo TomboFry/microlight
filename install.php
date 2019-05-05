@@ -5,6 +5,7 @@ define('MICROLIGHT', 'v0.0.1');
 
 session_start();
 require_once('includes/config.php');
+require_once('includes/lib/media.php');
 
 function put_value ($val, $index = null) {
 	echo ml_post_not_blank($val)
@@ -140,6 +141,11 @@ if (isset($_POST['submit'])) {
 			}
 		}
 
+		// Attempt to upload/resize profile picture
+		if (isset($_FILES['photo'])) {
+			$image = new ImageResizer($_FILES['photo'], 'me', 'image/jpg');
+		}
+
 		if (count($errors) === 0) {
 			$name = $_POST['name'];
 			$email = $_POST['email'];
@@ -162,7 +168,7 @@ if (isset($_POST['submit'])) {
 
 			session_destroy();
 		}
-	} catch (Exception $e) {
+	} catch (\Throwable $e) {
 		array_push($errors, $e->getMessage());
 	}
 } else {
@@ -333,7 +339,7 @@ if (isset($_POST['submit'])) {
 		using Microlight.
 	</p>
 	<?php endif; ?>
-	<form action='' method='POST'>
+	<form action='' method='POST' enctype="multipart/form-data">
 		<div class='f'>
 			<label for='name'>
 				Name
@@ -365,11 +371,29 @@ if (isset($_POST['submit'])) {
 				value='<?php put_value('email'); ?>'
 			/>
 			<span class='d p'>
-				Your email is not sent to me, it is simply to
+				Your email is not sent anywhere, it is simply to
 				display on your homepage as contact information.
 				Also, if no social media profiles are provided
 				below, you will still be able to log into this
 				blog to administer it.
+			</span>
+		</div>
+		<div class='f'>
+			<label for='name'>
+				Photo
+			</label>
+			<input
+				required
+				type='file'
+				name='photo'
+				id='photo'
+				accept='image/*'
+			/>
+			<span class='d p'>
+				What do you look like? This will act as your
+				"profile picture", and be used when interacting
+				with other websites. Optional, but highly
+				recommended.
 			</span>
 		</div>
 		<div class='f'>
