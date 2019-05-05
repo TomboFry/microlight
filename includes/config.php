@@ -34,8 +34,8 @@ class Config {
 
 	// Theme (string):
 	// The folder name of the theme you would like to use for this blog
-	// default: 'uberlight'
-	const THEME = 'uberlight';
+	// default: 'microlight-default'
+	const THEME = 'microlight-default';
 
 	// Title Separator (string):
 	// What splits up your name and the post name in the title bar
