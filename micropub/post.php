@@ -200,6 +200,9 @@ function post_create_entry () {
 	$published = post('published');
 	$category = post('category');
 
+	// Extensions
+	$slug_override = post('mp-slug');
+
 	// Internally calculated values
 	$post_type = 'article';
 	$post_slug = '';
@@ -220,7 +223,12 @@ function post_create_entry () {
 	}
 
 	$summary = validate_summary($summary, $content);
-	$post_slug = generate_slug($name, $summary);
+
+	if ($slug_override !== null) {
+		$post_slug = $slug_override;
+	} else {
+		$post_slug = generate_slug($name, $summary);
+	}
 
 	$category = validate_category($category);
 	if ($category === false) {
