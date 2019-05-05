@@ -57,7 +57,7 @@ function ml_showing () {
 
 	if (ml_get_not_blank('post_slug')) {
 		$post_slug = $_GET['post_slug'];
-		$showing = Show::PAGE;
+		$showing = Show::POST;
 	} else {
 		$showing = Show::ARCHIVE;
 		$pagination = 0;
