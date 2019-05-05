@@ -107,7 +107,7 @@ class ImageResizer
 		}
 	}
 
-	public function get_url () {
+	public function get_permalink () {
 		return ml_base_url() . $this->filename;
 	}
 
