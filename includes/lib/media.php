@@ -57,9 +57,14 @@ class UploadException extends Exception {
 	}
 }
 
+abstract class ImageType extends BasicEnum {
+	const PNG = 'image/png';
+	const JPG = 'image/jpg';
+	const JPEG = 'image/jpeg';
+	const GIF = 'image/gif'; // jif
+}
 
-class ImageResizer
-{
+class ImageResizer {
 	private $image;
 	private $width;
 	private $height;
@@ -67,18 +72,23 @@ class ImageResizer
 	private $height_src;
 	private $filename;
 
+	private $filename_override;
+	private $mimetype_override;
+
 	/**
 	 * Load and resize an uploaded file
 	 * @param array $file
+	 * @param string $filename_override If set, the image will be forcibly saved here
+	 * @param string $mimetype_override If set, the image will be forcibly saved with this type
 	 * @return ImageResizer
 	 */
-	function __construct ($file, $filename_override = null) {
+	function __construct ($file, $filename_override = null, $mimetype_override = null) {
 		if (empty($file['tmp_name'])) {
 			throw new Exception('Filename was not provided');
 		}
 
 		// Check file type (allow images only)
-		if (!$this->is_valid_type($file)) {
+		if (!ImageType::isValidValue($file['type'])) {
 			throw new Exception('Image was not provided');
 		}
 
@@ -98,8 +108,15 @@ class ImageResizer
 			throw new Exception('Image could not be resized');
 		}
 
+		$this->filename_override = $filename_override;
+		$this->mimetype_override = $mimetype_override;
+
+		if ($this->mimetype_override !== null && !ImageType::isValidValue($this->mimetype_override)) {
+			throw new Exception('Image type override is invalid');
+		}
+
 		// Set upload path
-		$this->set_upload_path($file, $filename_override);
+		$this->set_upload_path($file);
 
 		// Save image to uploads directory
 		if (!$this->save($file)) {
@@ -109,14 +126,6 @@ class ImageResizer
 
 	public function get_permalink () {
 		return ml_base_url() . $this->filename;
-	}
-
-	private function is_valid_type ($file) {
-		$allowed_mime_types = [
-			'image/jpg', 'image/jpeg', 'image/gif', 'image/png',
-		];
-
-		return in_array($file['type'], $allowed_mime_types);
 	}
 
 	private function dimensions ($file) {
@@ -155,16 +164,19 @@ class ImageResizer
 
 	private function load ($file) {
 		switch ($file['type']) {
-		case 'image/jpg':
-		case 'image/jpeg':
+		case ImageType::JPG:
+		case ImageType::JPEG:
 			$this->image = @imagecreatefromjpeg($file['tmp_name']);
 			break;
-		case 'image/gif':
+
+		case ImageType::GIF:
 			$this->image = @imagecreatefromgif($file['tmp_name']);
 			break;
-		case 'image/png':
+
+		case ImageType::PNG:
 			$this->image = @imagecreatefrompng($file['tmp_name']);
 			break;
+
 		default:
 			$this->image = false;
 			break;
@@ -201,9 +213,19 @@ class ImageResizer
 		// Assume unsuccessful
 		$success = false;
 
-		switch ($file['type']) {
-		case 'image/jpg':
-		case 'image/jpeg':
+		$type = $file['type'];
+
+		// Allow manual override of output filetype
+		if (
+			$this->mimetype_override !== null &&
+			ImageType::isValidValue($this->mimetype_override)
+		) {
+			$type = $this->mimetype_override;
+		}
+
+		switch ($type) {
+		case ImageType::JPG:
+		case ImageType::JPEG:
 			$quality = 70; // Use 70% quality
 			if (imagetypes() & IMG_JPG) {
 				$success = imagejpeg($this->image, $this->filename, $quality);
@@ -212,7 +234,7 @@ class ImageResizer
 			}
 			break;
 
-		case 'image/gif':
+		case ImageType::GIF:
 			if (imagetypes() & IMG_GIF) {
 				$success = imagegif($this->image, $this->filename);
 			} else {
@@ -220,7 +242,7 @@ class ImageResizer
 			}
 			break;
 
-		case 'image/png':
+		case ImageType::PNG:
 			$compression = 9; // Use most compression. PNG is lossless after all
 			if (imagetypes() & IMG_PNG) {
 				$success = imagepng($this->image, $this->filename, $compression);
@@ -241,19 +263,25 @@ class ImageResizer
 		return $success;
 	}
 
-	private function set_upload_path ($file, $filename_override) {
-		$extension = strrchr($file['name'], '.');
+	private function set_upload_path ($file) {
+		if ($this->mimetype_override !== null && ImageType::isValidValue($this->mimetype_override)) {
+			$extension = $this->mimetype_override;
+		} else {
+			$extension = $file['type'];
+		}
+		$extension = substr(strrchr($extension, '/'), 1);
 
-		if (isset($filename_override) && $filename_override !== null) {
-			return 'uploads/' . $filename_override . $extension;
+		if ($this->filename_override !== null) {
+			$this->filename = 'uploads/' . $this->filename_override . '.' . $extension;
+			return;
 		}
 
-		$this->filename = 'uploads/' . md5(uniqid(rand(), true)) . $extension;
+		$this->filename = 'uploads/' . md5(uniqid(rand(), true)) . '.' . $extension;
 
 		// Make sure the local file does not already exist
 		while (file_exists($this->filename)) {
 			// Set the filename to a random alphanumeric string
-			$this->filename = 'uploads/' . md5(uniqid(rand(), true)) . $extension;
+			$this->filename = 'uploads/' . md5(uniqid(rand(), true)) . '.' . $extension;
 		}
 	}
 }
