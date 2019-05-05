@@ -13,6 +13,7 @@ abstract class HTTPStatus extends BasicEnum {
 	const NO_CONTENT = ['code' => 204, 'description' => 'No Content'];
 	// Misc
 	const REDIRECT = ['code' => 301, 'description' => 'Redirect'];
+	const METHOD_NOT_ALLOWED = ['code' => 405, 'description' => 'Method Not Allowed'];
 	// Errors (specific to Micropub)
 	const FORBIDDEN = ['code' => 403, 'description' => 'forbidden'];
 	const UNAUTHORIZED = ['code' => 401, 'description' => 'unauthorized'];

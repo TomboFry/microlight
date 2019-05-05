@@ -82,6 +82,12 @@ class Config {
 	const HOMEPAGE_POST_TYPES = [
 		'note', 'article', 'photo', 'like', 'repost', 'reply', 'bookmark'
 	];
+
+	// Max Image Width (integer):
+	// If images uploaded via the media endpoint are larger than this dimension,
+	// they should be resized down to this dimension.
+	// default: 1920
+	const MEDIA_IMAGE_WIDTH = 1920;
 }
 
 /**********************************
