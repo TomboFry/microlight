@@ -276,12 +276,12 @@ class ImageResizer {
 			return;
 		}
 
-		$this->filename = 'uploads/' . md5(uniqid(rand(), true)) . '.' . $extension;
+		$this->filename = 'uploads/' . ml_generate_token() . '.' . $extension;
 
 		// Make sure the local file does not already exist
 		while (file_exists($this->filename)) {
 			// Set the filename to a random alphanumeric string
-			$this->filename = 'uploads/' . md5(uniqid(rand(), true)) . '.' . $extension;
+			$this->filename = 'uploads/' . ml_generate_token() . '.' . $extension;
 		}
 	}
 }
