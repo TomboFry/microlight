@@ -138,7 +138,7 @@ class ImageResizer
 		}
 
 		// Resize based on height
-		if ($height_src > $max_width) {
+		if ($height_src > $max_width && $height_src > $width_src) {
 			$ratio = $max_width / $height_src;
 
 			$height = $max_width;
