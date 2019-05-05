@@ -80,10 +80,11 @@ class User {
 ';
 	}
 
+	// Open identities section, even if there are no identities provided
+	$contents .= '	const IDENTITIES = [
+';
 	// Add identities, if provided
 	if (is_array($identities) && count($identities) > 0) {
-		$contents .= '	const IDENTITIES = [
-';
 		foreach ($identities as $identity) {
 			$id_name = quote($identity['name']);
 			$id_url = quote($identity['url']);
@@ -94,9 +95,11 @@ class User {
 		],
 ';
 		}
-		$contents .= '	];
-';
 	}
+
+	// Close identities section
+	$contents .= '	];
+';
 
 	// Add the final closing curly bracket
 	$contents .= '}';
