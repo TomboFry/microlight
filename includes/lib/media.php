@@ -98,6 +98,9 @@ class ImageResizer
 			throw new Exception('Image could not be resized');
 		}
 
+		// Set upload path
+		$this->set_upload_path($file);
+
 		// Save image to uploads directory
 		if (!$this->save($file)) {
 			throw new Exception('Image could not be saved to file');
@@ -195,8 +198,7 @@ class ImageResizer
 	}
 
 	private function save ($file) {
-		// Put into uploads folder with random ID prepended to original filename
-		$this->filename = 'uploads/' . substr(md5(uniqid(rand(), true)), 0, 16) . '-' . $file['name'];
+		// Assume unsuccessful
 		$success = false;
 
 		switch ($file['type']) {
@@ -237,5 +239,17 @@ class ImageResizer
 		imagedestroy($this->image);
 
 		return $success;
+	}
+
+	private function set_upload_path ($file) {
+		$extension = strrchr($file['name'], '.');
+
+		$this->filename = 'uploads/' . md5(uniqid(rand(), true)) . $extension;
+
+		// Make sure the local file does not already exist
+		while (file_exists($this->filename)) {
+			// Set the filename to a random alphanumeric string
+			$this->filename = 'uploads/' . md5(uniqid(rand(), true)) . $extension;
+		}
 	}
 }
