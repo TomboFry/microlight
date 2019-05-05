@@ -72,7 +72,7 @@ class ImageResizer
 	 * @param array $file
 	 * @return ImageResizer
 	 */
-	function __construct ($file) {
+	function __construct ($file, $filename_override = null) {
 		if (empty($file['tmp_name'])) {
 			throw new Exception('Filename was not provided');
 		}
@@ -99,7 +99,7 @@ class ImageResizer
 		}
 
 		// Set upload path
-		$this->set_upload_path($file);
+		$this->set_upload_path($file, $filename_override);
 
 		// Save image to uploads directory
 		if (!$this->save($file)) {
@@ -241,8 +241,12 @@ class ImageResizer
 		return $success;
 	}
 
-	private function set_upload_path ($file) {
+	private function set_upload_path ($file, $filename_override) {
 		$extension = strrchr($file['name'], '.');
+
+		if (isset($filename_override) && $filename_override !== null) {
+			return 'uploads/' . $filename_override . $extension;
+		}
 
 		$this->filename = 'uploads/' . md5(uniqid(rand(), true)) . $extension;
 
