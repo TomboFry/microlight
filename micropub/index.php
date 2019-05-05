@@ -11,7 +11,6 @@ if (!ml_api_post()) return;
 
 require_once('get.php');
 require_once('post.php');
-require_once('auth.php');
 
 $bearer = ml_api_access_token();
 
