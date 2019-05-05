@@ -22,7 +22,7 @@ function query_config () {
 	// "new ArrayObject()" returns "{}" when JSON encoded
 	// Source: https://stackoverflow.com/a/16665216
 	return [
-		'media-endpoint' => ml_base_url() . 'media',
+		'media-endpoint' => ml_base_url() . 'media/index.php',
 		'syndicate-to' => syndicate_to(),
 	];
 }
