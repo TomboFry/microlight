@@ -21,7 +21,7 @@ try {
 	ml_database_setup();
 	ml_load_posts();
 	ml_database_close();
-} catch (Exception $e) {
+} catch (\Throwable $e) {
 	echo "<h1>Error</h1>";
 	echo "<p><strong>Message:</strong> {$e->getMessage()}</p>";
 	echo "<p><strong>Code:</strong> {$e->getCode()}</p>";

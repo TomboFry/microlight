@@ -50,24 +50,29 @@ if (validate_token($bearer) === false) {
 	return;
 }
 
-switch ($method) {
-case 'GET':
-	switch (get('q')) {
-	case 'config':
-		ml_http_response(HTTPStatus::OK, query_config());
+try {
+	switch ($method) {
+	case 'GET':
+		switch (get('q')) {
+		case 'config':
+			ml_http_response(HTTPStatus::OK, query_config());
+			return;
+		case 'syndicate-to':
+			ml_http_response(HTTPStatus::OK, query_syndicate_to());
+			return;
+		}
+		ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
 		return;
-	case 'syndicate-to':
-		ml_http_response(HTTPStatus::OK, query_syndicate_to());
+	case 'POST':
+		switch (post('h')) {
+		case 'entry':
+			post_create_entry();
+			return;
+		}
+		ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
 		return;
 	}
-	ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
-	return;
-case 'POST':
-	switch (post('h')) {
-	case 'entry':
-		post_create_entry();
-		return;
-	}
-	ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
+} catch (\Throwable $err) {
+	ml_http_error(HTTPStatus::INVALID_REQUEST, $err->getMessage());
 	return;
 }
