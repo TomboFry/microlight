@@ -4,10 +4,20 @@ if (!defined('MICROLIGHT')) die();
 
 $post = null;
 
+/**
+ * Retrieve the HTTP method used, usually `GET` or `POST`
+ *
+ * @return void
+ */
 function ml_api_method () {
 	return $_SERVER['REQUEST_METHOD'];
 }
 
+/**
+ * Retrieve the Content-Type header provided in the request
+ *
+ * @return string
+ */
 function ml_api_content_type () {
 	$content_type = $_SERVER['CONTENT_TYPE'];
 	if (empty($content_type)) $content_type = $_SERVER['HTTP_CONTENT_TYPE'];
@@ -15,34 +25,47 @@ function ml_api_content_type () {
 	return $content_type;
 }
 
-function ml_api_post () {
+/**
+ * Decode POST body values, depending on whether JSON was provided.
+ *
+ * @return bool
+ */
+function ml_api_post_decode () {
 	global $post;
 
 	if (ml_api_content_type() === 'application/json') {
-		// TODO: Process JSON requests as well.
-		// This has been disabled temporarily because all JSON requests require
-		// items to be contained within an array.
-		ml_http_error(HTTPStatus::INVALID_REQUEST, 'JSON not supported');
-		return false;
-		// $post = json_decode(file_get_contents('php://input'), true);
+		$post = json_decode(file_get_contents('php://input'), true);
 	} else {
 		$post = $_POST;
-		return true;
 	}
+
+	return true;
 }
 
-function post ($key) {
+/**
+ * Retrieve a POST value, if provided, otherwise `null`
+ *
+ * @param string $key
+ * @return mixed|null
+ */
+function ml_api_post ($key) {
 	global $post;
 
 	if ($post === null) {
-		throw new Exception('Post data has not be initialised. Make sure ml_api_post has been called.');
+		throw new Exception('Post data has not be initialised. Make sure ml_api_post_decode has been called.');
 	}
 
 	if (isset($post[$key]) && !empty($post[$key])) return $post[$key];
 	return null;
 }
 
-function get ($key) {
+/**
+ * Retrieve a GET value, if provided, otherwise `null`
+ *
+ * @param string $key
+ * @return mixed|null
+ */
+function ml_api_get ($key) {
 	if (isset($_GET[$key]) && !empty($_GET[$key])) return $_GET[$key];
 	return null;
 }
@@ -58,7 +81,7 @@ function ml_api_access_token () {
 	$bearer = ml_http_bearer();
 
 	if ($bearer === false) {
-		$bearer = post('access_token');
+		$bearer = ml_api_post('access_token');
 	}
 
 	return $bearer;

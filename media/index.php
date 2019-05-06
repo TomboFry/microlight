@@ -13,7 +13,7 @@ if (ml_api_method() !== "POST") {
 }
 
 // Initialise POST
-if (!ml_api_post()) return;
+if (!ml_api_post_decode()) return;
 
 $bearer = ml_api_access_token();
 

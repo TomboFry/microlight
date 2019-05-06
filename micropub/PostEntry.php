@@ -31,17 +31,17 @@ class PostEntry {
 	 * @return void
 	 */
 	function parse_form () {
-		$this->name = post('name');
-		$this->summary = post('summary');
-		$this->content = post('content');
-		$this->published = post('published');
-		$this->category = post('category');
-		$this->photo = post('photo');
-		$this->bookmark_of = post('bookmark-of');
-		$this->in_reply_to = post('in-reply-to');
-		$this->like_of = post('like-of');
-		$this->repost_of = post('repost-of');
-		$this->mp_slug = post('mp-slug');
+		$this->name = ml_api_post('name');
+		$this->summary = ml_api_post('summary');
+		$this->content = ml_api_post('content');
+		$this->published = ml_api_post('published');
+		$this->category = ml_api_post('category');
+		$this->photo = ml_api_post('photo');
+		$this->bookmark_of = ml_api_post('bookmark-of');
+		$this->in_reply_to = ml_api_post('in-reply-to');
+		$this->like_of = ml_api_post('like-of');
+		$this->repost_of = ml_api_post('repost-of');
+		$this->mp_slug = ml_api_post('mp-slug');
 	}
 
 	/**

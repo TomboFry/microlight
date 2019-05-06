@@ -7,7 +7,7 @@ require_once('includes/config.php');
 require_once('includes/api.include.php');
 
 // Initialise POST
-if (!ml_api_post()) return;
+if (!ml_api_post_decode()) return;
 
 require_once('get.php');
 require_once('post.php');
@@ -28,7 +28,7 @@ if (ml_api_validate_token($bearer) === false) {
 try {
 	switch (ml_api_method()) {
 	case 'GET':
-		switch (get('q')) {
+		switch (ml_api_get('q')) {
 		case 'config':
 			ml_http_response(HTTPStatus::OK, query_config());
 			return;
@@ -39,7 +39,7 @@ try {
 		ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
 		return;
 	case 'POST':
-		switch (post('h')) {
+		switch (ml_api_post('h')) {
 		case 'entry':
 			post_create_entry();
 			return;
