@@ -140,6 +140,7 @@ function insert_post ($post) {
 	try {
 		$db = new DB();
 		$db_post = new Post($db);
+		
 		$existing = $db_post->count([
 			[
 				'column' => 'slug',
@@ -149,11 +150,28 @@ function insert_post ($post) {
 			],
 		]);
 
-		if ($existing > 0) {
-			ml_http_error(
-				HTTPStatus::INVALID_REQUEST,
-				'Post with slug `' . $slug . '` already exists'
-			);
+		// Loop through suffixed slugs until one doesn't exist, or until we've
+		// tried 50 times, in which case return an error.
+		$suffix = 1;
+		while ($existing > 0 || $suffix > 50) {
+			$new_slug = $slug . '-' . $suffix;
+
+			$existing = $db_post->count([
+				[
+					'column' => 'slug',
+					'operator' => SQLOP::EQUAL,
+					'value' => $new_slug,
+					'escape' => SQLEscape::SLUG,
+				],
+			]);
+
+			// Overwrite the existing slug with the new slug
+			$post['slug'] = $new_slug;
+			$suffix += 1;
+		}
+
+		if ($suffix > 50) {
+			ml_http_error(HTTPStatus::INVALID_REQUEST, 'This slug is used by too many slugs');
 			return;
 		}
 
@@ -165,7 +183,7 @@ function insert_post ($post) {
 				HTTPStatus::CREATED,
 				null,
 				null,
-				ml_post_permalink($slug)
+				ml_post_permalink($post['slug'])
 			);
 			return;
 		} else {
