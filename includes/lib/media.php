@@ -259,7 +259,7 @@ class ImageResizer {
 	}
 
 	private static function generate_filename () {
-		return md5(uniqid(rand()), true) . md5(uniqid(rand()), true);
+		return md5(uniqid(rand(), true)) . md5(uniqid(rand(), true));
 	}
 
 	private function set_upload_path ($file) {
