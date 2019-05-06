@@ -95,6 +95,8 @@ class User {
 		],
 ';
 		}
+	} else {
+		$contents .= '		//	[ \'name\' => \'\', \'url\' => \'\' ],';
 	}
 
 	// Close identities section
