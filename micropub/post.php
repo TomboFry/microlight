@@ -32,12 +32,13 @@ function validate_summary ($summary, $content) {
 		// Summary should be a snippet from the content, limited to 160 chars.
 		// It's 157 here because if it reaches that value we will append an
 		// ellipsis to bring it to the total 160.
-		$summary = substr($content, 0, 157);
+		$summary = strip_tags($content);
+		$summary = substr($summary, 0, 157);
 		$summary = preg_replace('/\s+/', ' ', $summary);
 		if (strlen($summary) === 157) $summary .= "...";
 	}
 
-	return $summary;
+	return strip_tags($summary);
 }
 
 /**
