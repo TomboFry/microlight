@@ -188,16 +188,11 @@ class ImageResizer {
 	private function resize () {
 		$destination = imagecreatetruecolor($this->width, $this->height);
 		$success = imagecopyresampled(
-			$destination,                       // New image
+			$destination,                      // New image
 			$this->image,                       // Old image
-			0,
-			0,
-			0,
-			0,                         // Image origin coords
-			$this->width,
-			$this->height,        // New image size
-			$this->width_src,
-			$this->height_src // Old image size
+			0, 0, 0, 0,                         // Image origin coords
+			$this->width, $this->height,        // New image size
+			$this->width_src, $this->height_src // Old image size
 		);
 
 		if (!$success) return false;
@@ -263,7 +258,12 @@ class ImageResizer {
 		return $success;
 	}
 
+	private static function generate_filename () {
+		return md5(uniqid(rand()), true) . md5(uniqid(rand()), true);
+	}
+
 	private function set_upload_path ($file) {
+		// Change extension if overriding output format
 		if ($this->mimetype_override !== null && ImageType::isValidValue($this->mimetype_override)) {
 			$extension = $this->mimetype_override;
 		} else {
@@ -271,17 +271,19 @@ class ImageResizer {
 		}
 		$extension = substr(strrchr($extension, '/'), 1);
 
+		// Override filename
 		if ($this->filename_override !== null) {
 			$this->filename = 'uploads/' . $this->filename_override . '.' . $extension;
 			return;
 		}
 
-		$this->filename = 'uploads/' . ml_generate_token() . '.' . $extension;
+		// Generate a random filename
+		$this->filename = 'uploads/' . self::generate_filename() . '.' . $extension;
 
 		// Make sure the local file does not already exist
 		while (file_exists($this->filename)) {
 			// Set the filename to a random alphanumeric string
-			$this->filename = 'uploads/' . ml_generate_token() . '.' . $extension;
+			$this->filename = 'uploads/' . self::generate_filename() . '.' . $extension;
 		}
 	}
 }

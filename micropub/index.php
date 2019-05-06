@@ -4,7 +4,7 @@ define('MICROLIGHT', 'v0.0.1');
 
 chdir('..');
 require_once('includes/config.php');
-require_once('includes/lib/api.php');
+require_once('includes/api.include.php');
 
 // Initialise POST
 if (!ml_api_post()) return;
