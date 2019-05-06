@@ -38,6 +38,15 @@ ul {
 
 header {
 	padding: 32px 32px 16px;
+	max-width: 640px;
+	margin: 0 auto;
+}
+
+header .u-photo {
+	float: left;
+	width: 160px;
+	margin-right: 16px;
+	border-radius: 50%;
 }
 
 .p-note {

@@ -253,6 +253,15 @@ function ml_icon_url () {
 }
 
 /**
+ * Determines whether the user has uploaded a self-portrait
+ *
+ * @return bool
+ */
+function ml_user_has_icon () {
+	return file_exists('uploads/me.jpg');
+}
+
+/**
  * Returns an absolute URL to a specific post
  *
  * @param string $slug

@@ -44,6 +44,9 @@ function html_author_links () {
 
 function html_author () {
 	echo "<header class='p-author vcard hcard h-card'>";
+		if (ml_user_has_icon()) {
+			echo "<img class='u-photo' alt='" . User::NAME . "' src='" . ml_icon_url() . "' />";
+		}
 		echo "<h1>";
 			echo "<a href='";
 			echo ml_base_url();

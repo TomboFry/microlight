@@ -262,6 +262,10 @@ class ImageResizer {
 		return md5(uniqid(rand(), true)) . md5(uniqid(rand(), true));
 	}
 
+	public static function upload_dir () {
+		return 'uploads/';
+	}
+
 	private function set_upload_path ($file) {
 		// Change extension if overriding output format
 		if ($this->mimetype_override !== null && ImageType::isValidValue($this->mimetype_override)) {
@@ -273,17 +277,17 @@ class ImageResizer {
 
 		// Override filename
 		if ($this->filename_override !== null) {
-			$this->filename = 'uploads/' . $this->filename_override . '.' . $extension;
+			$this->filename = self::upload_dir() . $this->filename_override . '.' . $extension;
 			return;
 		}
 
 		// Generate a random filename
-		$this->filename = 'uploads/' . self::generate_filename() . '.' . $extension;
+		$this->filename = self::upload_dir() . self::generate_filename() . '.' . $extension;
 
 		// Make sure the local file does not already exist
 		while (file_exists($this->filename)) {
 			// Set the filename to a random alphanumeric string
-			$this->filename = 'uploads/' . self::generate_filename() . '.' . $extension;
+			$this->filename = self::upload_dir() . self::generate_filename() . '.' . $extension;
 		}
 	}
 }
