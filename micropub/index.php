@@ -11,6 +11,7 @@ if (!ml_api_post_decode()) return;
 
 require_once('get.php');
 require_once('post.php');
+require_once('PostEntry.php');
 
 $bearer = ml_api_access_token();
 
@@ -39,12 +40,10 @@ try {
 		ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
 		return;
 	case 'POST':
-		switch (ml_api_post('h')) {
-		case 'entry':
-			post_create_entry();
-			return;
-		}
-		ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
+		$is_json = ml_api_content_type() === 'application/json';
+		$entry = new PostEntry($is_json);
+		post_create_entry($entry);
+
 		return;
 	}
 } catch (\Throwable $err) {

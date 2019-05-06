@@ -2,8 +2,6 @@
 
 if (!defined('MICROLIGHT')) die();
 
-require_once('PostEntry.php');
-
 /**
  * Validates the `published` or `updated` field
  *
@@ -187,13 +185,11 @@ function insert_post ($post) {
  * and converts them into an object suitable for the microlight database.
  * Any errors will be returned to the user.
  *
+ * @param PostEntry $entry
  * @return void
  * @throws Exception
  */
-function post_create_entry ($is_json = false) {
-	// Parse values into a class
-	$entry = new PostEntry($is_json);
-
+function post_create_entry ($entry) {
 	// Internally calculated values
 	$post_type = 'article';
 	$post_slug = '';

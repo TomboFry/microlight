@@ -101,6 +101,8 @@ class SQL {
 	 * @return string
 	 */
 	private function propsToString ($properties) {
+		$acc = null;
+
 		// `array_walk` loops over every property provided.
 		array_walk($properties, function ($property, $index) use (&$acc) {
 			$type = $property['type'];
@@ -129,6 +131,8 @@ class SQL {
 	 * @return string
 	 */
 	private function foreignKeyToString ($foreign_keys) {
+		$acc = null;
+
 		// `array_walk` loops over every property provided.
 		array_walk($foreign_keys, function ($key_props) use (&$acc) {
 			// The table to refer to
@@ -177,6 +181,8 @@ class SQL {
 	 * @return string
 	 */
 	public function where ($conditions) {
+		$acc = null;
+
 		array_walk($conditions, function ($condition, $index) use (&$acc) {
 			// Get condition properties
 			$column = $condition['column'];
@@ -211,12 +217,14 @@ class SQL {
 			} else {
 				$acc .= ' WHERE';
 			}
+
 			if (is_array($value) === true) {
 				$acc .= " `$column` $operator (" . implode(",", $value) . ")";
 			} else {
 				$acc .= " `$column` $operator $value";
 			}
 		});
+
 		return $acc;
 	}
 

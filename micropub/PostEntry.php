@@ -2,7 +2,7 @@
 
 if (!defined('MICROLIGHT')) die();
 
-require_once('../includes/api.include.php');
+require_once('includes/api.include.php');
 
 class PostEntry {
 	public $name;
@@ -31,6 +31,10 @@ class PostEntry {
 	 * @return void
 	 */
 	function parse_form () {
+		if (ml_api_post('h') !== 'entry') {
+			throw new Exception('h must equal entry (for now)');
+		}
+
 		$this->name = ml_api_post('name');
 		$this->summary = ml_api_post('summary');
 		$this->content = ml_api_post('content');
@@ -51,6 +55,47 @@ class PostEntry {
 	 * @throws Exception
 	 */
 	function parse_json () {
-		throw new Exception('Parsing JSON has not yet been implemented');
+		global $post;
+
+		$type = ml_api_post_json($post, 'type', true);
+		if ($type !== 'h-entry') {
+			throw new Exception('`type` must equal `h-entry` for now.');
+		}
+
+		// Get all post properties from within properties
+		$props = ml_api_post_json($post, 'properties', false);
+
+		// Get all easy values here
+		$this->name = ml_api_post_json($props, 'name', true);
+		$this->summary = ml_api_post_json($props, 'summary', true);
+		$this->published = ml_api_post_json($props, 'published', true);
+		$this->category = ml_api_post_json($props, 'category', false);
+		$this->photo = ml_api_post_json($props, 'photo', true);
+		$this->bookmark_of = ml_api_post_json($props, 'bookmark-of', true);
+		$this->in_reply_to = ml_api_post_json($props, 'in-reply-to', true);
+		$this->like_of = ml_api_post_json($props, 'like-of', true);
+		$this->repost_of = ml_api_post_json($props, 'repost-of', true);
+		$this->mp_slug = ml_api_post_json($props, 'mp-slug', true);
+
+		// Parse content - May either be in text form or HTML, so figure it out
+		$content = ml_api_post_json($props, 'content', true);
+
+		// We know that if the single element in $content is an array, it
+		// probably has the `html` or `value` keys inside
+		if (is_array($content)) {
+			$html = ml_api_post_json($content, 'html', false);
+			$value = ml_api_post_json($content, 'value', false);
+
+			if ($html !== null) {
+				$this->content = $html;
+			} else if ($value !== null) {
+				$this->content = $value;
+			} else {
+				// Couldn't find content?
+				$this->content = '';
+			}
+		} else {
+			$this->content = $content;
+		}
 	}
 }

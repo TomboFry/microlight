@@ -60,6 +60,29 @@ function ml_api_post ($key) {
 }
 
 /**
+ * Retrieve a POST value in microformats2 syntax, if provided, otherwise null
+ *
+ * @param array $post
+ * @param string $key
+ * @param bool $is_single
+ * @return mixed|null
+ */
+function ml_api_post_json ($post, $key, $is_single = false) {
+	if (!is_array($post)) return null;
+	if (!isset($post[$key])) return null;
+	if (empty($post[$key])) return null;
+
+	// A lot of microformats2 items are intentionally single element arrays.
+	// I'm not sure why, but if we know it's supposed to, parse it here.
+	if ($is_single === true) {
+		if (count($post[$key]) !== 1) return null;
+		return $post[$key][0];
+	}
+
+	return $post[$key];
+}
+
+/**
  * Retrieve a GET value, if provided, otherwise `null`
  *
  * @param string $key
