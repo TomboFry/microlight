@@ -2,6 +2,8 @@
 
 if (!defined('MICROLIGHT')) die();
 
+require_once('PostEntry.php');
+
 /**
  * Validates the `published` or `updated` field
  *
@@ -79,50 +81,46 @@ function generate_slug ($name, $summary) {
 /**
  * Determines the post type depending on whether other optional fields to POST
  * were provided.
- *
+ * 
+ * @param PostEntry $entry
  * @return array|false If a valid post type was detected, an array containing
  *                     "type" and "url" keys, otherwise false.
  */
-function validate_post_type () {
-	$photo = post('photo');
-	if (!empty($photo) && filter_var($photo, FILTER_VALIDATE_URL) !== false) {
+function validate_post_type ($entry) {
+	if (!empty($entry->photo) && filter_var($entry->photo, FILTER_VALIDATE_URL) !== false) {
 		return [
 			'type' => 'photo',
-			'url' => $photo
+			'url' => $entry->photo
 		];
 	}
 
-	$bookmark_of = post('bookmark-of');
-	if (!empty($bookmark_of)) {
+	if (!empty($entry->bookmark_of)) {
 		return [
 			'type' => 'bookmark',
-			'url' => $bookmark_of,
+			'url' => $entry->bookmark_of,
 		];
 	}
 
 	// TODO: The following post types should perform webmentions when valid.
 
-	$in_reply_to = post('in-reply-to');
-	if (!empty($in_reply_to)) {
+	if (!empty($entry->in_reply_to)) {
 		return [
 			'type' => 'reply',
-			'url' => $in_reply_to,
+			'url' => $entry->in_reply_to,
 		];
 	}
 
-	$like_of = post('like-of');
-	if (!empty($like_of)) {
+	if (!empty($entry->like_of)) {
 		return [
 			'type' => 'like',
-			'url' => $like_of,
+			'url' => $entry->like_of,
 		];
 	}
 
-	$repost_of = post('repost-of');
-	if (!empty($repost_of)) {
+	if (!empty($entry->repost_of)) {
 		return [
 			'type' => 'repost',
-			'url' => $repost_of,
+			'url' => $entry->repost_of,
 		];
 	}
 
@@ -192,16 +190,9 @@ function insert_post ($post) {
  * @return void
  * @throws Exception
  */
-function post_create_entry () {
-	// POST values
-	$name = post('name');
-	$summary = post('summary');
-	$content = post('content');
-	$published = post('published');
-	$category = post('category');
-
-	// Extensions
-	$slug_override = post('mp-slug');
+function post_create_entry ($is_json = false) {
+	// Parse values into a class
+	$entry = new PostEntry($is_json);
 
 	// Internally calculated values
 	$post_type = 'article';
@@ -211,10 +202,10 @@ function post_create_entry () {
 
 	// VALIDATION / PROCESSING
 
-	if (empty($name)) $post_type = 'note';
+	if (empty($entry->name)) $post_type = 'note';
 
-	$published = validate_date($published);
-	if ($published === false) {
+	$entry->published = validate_date($entry->published);
+	if ($entry->published === false) {
 		ml_http_error(
 			HTTPStatus::INVALID_REQUEST,
 			'Invalid `published` value'
@@ -222,16 +213,16 @@ function post_create_entry () {
 		return;
 	}
 
-	$summary = validate_summary($summary, $content);
+	$entry->summary = validate_summary($entry->summary, $entry->content);
 
-	if ($slug_override !== null) {
-		$post_slug = $slug_override;
+	if ($entry->mp_slug !== null) {
+		$post_slug = $entry->mp_slug;
 	} else {
-		$post_slug = generate_slug($name, $summary);
+		$post_slug = generate_slug($entry->name, $entry->summary);
 	}
 
-	$category = validate_category($category);
-	if ($category === false) {
+	$entry->category = validate_category($entry->category);
+	if ($entry->category === false) {
 		ml_http_error(
 			HTTPStatus::INVALID_REQUEST,
 			'Invalid `category` value'
@@ -242,30 +233,30 @@ function post_create_entry () {
 	// Check for a 'private' category specified.
 	// If present, remove it from the categories and make the post invisible to
 	// the archive.
-	$private_category_key = array_search('private', $category, true);
+	$private_category_key = array_search('private', $entry->category, true);
 	if ($private_category_key !== false) {
-		array_splice($category, $private_category_key, 1);
+		array_splice($entry->category, $private_category_key, 1);
 		$post_public = false;
 	}
-	$category = implode(',', $category);
-	if (strlen($category) > 0) $category .= ',';
+	$entry->category = implode(',', $entry->category);
+	if (strlen($entry->category) > 0) $entry->category .= ',';
 
 	// Determine post type if `in-reply-to`, `like-of`, `repost-of` or
 	// `bookmark-of` URLs are provided.
-	$new_post_type = validate_post_type();
+	$new_post_type = validate_post_type($entry);
 	if ($new_post_type !== false) {
 		$post_type = $new_post_type['type'];
 		$post_url = $new_post_type['url'];
 	}
 
 	$post = [
-		'title' => $name,
-		'summary' => $summary,
-		'content' => $content,
+		'title' => $entry->name,
+		'summary' => $entry->summary,
+		'content' => $entry->content,
 		'post_type' => $post_type,
 		'slug' => $post_slug,
-		'published' => $published,
-		'tags' => $category,
+		'published' => $entry->published,
+		'tags' => $entry->category,
 		'public' => $post_public,
 		'url' => $post_url
 	];
