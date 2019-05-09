@@ -66,6 +66,7 @@ abstract class ImageType extends BasicEnum {
 
 class ImageResizer {
 	private $image;
+	private $type;
 	private $width;
 	private $height;
 	private $width_src;
@@ -87,8 +88,12 @@ class ImageResizer {
 			throw new Exception('Filename was not provided');
 		}
 
+		if (!$this->get_type($file)) {
+			throw new Exception('Invalid file type');
+		}
+
 		// Check file type (allow images only)
-		if (!ImageType::isValidValue($file['type'])) {
+		if (!ImageType::isValidValue($this->type)) {
 			throw new Exception('Image was not provided');
 		}
 
@@ -128,6 +133,37 @@ class ImageResizer {
 		return ml_base_url() . $this->filename;
 	}
 
+	// Source: https://www.php.net/manual/en/function.finfo-open.php#112617
+	// This function reads the first 6 bytes of the uploaded file and determines
+	// the file type based on its contents.
+	private function get_type ($file) {
+		$fh = fopen($file['tmp_name'],'rb');
+
+		if ($fh) {
+			$bytes6 = fread($fh,6);
+			fclose($fh);
+
+			if ($bytes6 === false) return false;
+
+			if (substr($bytes6,0,3) == "\xff\xd8\xff") {
+				$this->type = ImageType::JPG;
+				return true;
+			}
+			if ($bytes6 == "\x89PNG\x0d\x0a") {
+				$this->type = ImageType::PNG;
+				return true;
+			}
+			if ($bytes6 == "GIF87a" || $bytes6 == "GIF89a") {
+				$this->type = ImageType::GIF;
+				return true;
+			}
+
+			return false;
+		}
+
+		return false;
+	}
+
 	private function dimensions ($file) {
 		$dimensions = getimagesize($file['tmp_name']);
 		if ($dimensions === false) return false;
@@ -163,7 +199,7 @@ class ImageResizer {
 	}
 
 	private function load ($file) {
-		switch ($file['type']) {
+		switch ($this->type) {
 		case ImageType::JPG:
 		case ImageType::JPEG:
 			$this->image = @imagecreatefromjpeg($file['tmp_name']);
@@ -208,7 +244,7 @@ class ImageResizer {
 		// Assume unsuccessful
 		$success = false;
 
-		$type = $file['type'];
+		$type = $this->type;
 
 		// Allow manual override of output filetype
 		if (
@@ -271,7 +307,7 @@ class ImageResizer {
 		if ($this->mimetype_override !== null && ImageType::isValidValue($this->mimetype_override)) {
 			$extension = $this->mimetype_override;
 		} else {
-			$extension = $file['type'];
+			$extension = $this->type;
 		}
 		$extension = substr(strrchr($extension, '/'), 1);
 
