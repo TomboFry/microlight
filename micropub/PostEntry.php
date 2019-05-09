@@ -31,10 +31,6 @@ class PostEntry {
 	 * @return void
 	 */
 	function parse_form () {
-		if (ml_api_post('h') !== 'entry') {
-			throw new Exception('h must equal entry (for now)');
-		}
-
 		$this->name = ml_api_post('name');
 		$this->summary = ml_api_post('summary');
 		$this->content = ml_api_post('content');
@@ -56,11 +52,6 @@ class PostEntry {
 	 */
 	function parse_json () {
 		global $post;
-
-		$type = ml_api_post_json($post, 'type', true);
-		if ($type !== 'h-entry') {
-			throw new Exception('`type` must equal `h-entry` for now.');
-		}
 
 		// Get all post properties from within properties
 		$props = ml_api_post_json($post, 'properties', false);
