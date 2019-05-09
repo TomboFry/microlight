@@ -2,6 +2,8 @@
 
 if (!defined('MICROLIGHT')) die();
 
+require_once('includes/lib/media.php');
+
 /**
  * Validates the `published` or `updated` field
  *
@@ -90,6 +92,16 @@ function validate_post_type ($entry) {
 		return [
 			'type' => 'photo',
 			'url' => $entry->photo
+		];
+	}
+
+	// Perhaps an image was uploaded in the request itself
+	if (is_array($_FILES['photo'])) {
+		$photo = new ImageResizer($_FILES['photo']);
+
+		return [
+			'type' => 'photo',
+			'url' => $photo->get_permalink()
 		];
 	}
 
