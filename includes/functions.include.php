@@ -71,10 +71,6 @@ function ml_showing () {
 		}
 
 		if (ml_get_not_blank('search_query')) {
-			// Override other two fields if Search Query is present
-			$post_tag = '';
-			$post_type = '';
-
 			$search_query = $_GET['search_query'];
 		}
 
@@ -148,7 +144,7 @@ function ml_load_posts () {
 			'value' => $post_slug,
 			'escape' => SQLEscape::SLUG,
 		]);
-	} elseif ($post_tag !== '' || $post_type !== '') {
+	} elseif ($post_tag !== '' || $post_type !== '' || $search_query !== '') {
 		if ($post_tag !== '') {
 			array_push($where, [
 				'column' => 'tags',
@@ -157,6 +153,7 @@ function ml_load_posts () {
 				'escape' => SQLEscape::TAG,
 			]);
 		}
+
 		if ($post_type !== '') {
 			array_push($where, [
 				'column' => 'post_type',
@@ -165,13 +162,15 @@ function ml_load_posts () {
 				'escape' => SQLEscape::POST_TYPE,
 			]);
 		}
-	} elseif ($search_query !== '') {
-		array_push($where, [
-			'column' => 'title',
-			'operator' => SQLOP::LIKE,
-			'value' => "%$search_query%",
-			'escape' => SQLEscape::NONE,
-		]);
+
+		if ($search_query !== '') {
+			array_push($where, [
+				'column' => 'title',
+				'operator' => SQLOP::LIKE,
+				'value' => "%$search_query%",
+				'escape' => SQLEscape::NONE,
+			]);
+		}
 	} else {
 		array_push($where, [
 			'column' => 'post_type',
