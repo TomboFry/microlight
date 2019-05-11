@@ -28,6 +28,12 @@ if (ml_api_validate_token($bearer) === false) {
 	return;
 }
 
+// Require `media` in scope
+if (!in_array(TokenScope::MEDIA, $auth->scope)) {
+	ml_http_error(HTTPStatus::INSUFFICIENT_SCOPE, 'Token is missing `media` scope');
+	return;
+}
+
 try {
 	if (!isset($_FILES['file'])) {
 		throw new Exception('Provide an image named `file`');

@@ -43,15 +43,19 @@ try {
 			return;
 		}
 
-		ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
-		return;
-
 	case 'POST':
 		// Micropub can either have actions via the `action` value, or assume
 		// an entity is being created via the `type` (if JSON) or `h` (if form
-		// encoded) values. Yeah, gets a little inconvenient 
+		// encoded) values. Yeah, gets a little inconvenient with all the
+		// different edge cases.
+
 		switch (ml_api_post('action')) {
 		case 'delete':
+			if (!in_array(TokenScope::DELETE, $auth->scope)) {
+				ml_http_error(HTTPStatus::INSUFFICIENT_SCOPE, 'Token is missing `delete` scope');
+				return;
+			}
+
 			$url = ml_api_post('url');
 			$slug = ml_slug_from_url($url);
 
@@ -70,6 +74,11 @@ try {
 			break;
 		}
 
+		if (!in_array(TokenScope::CREATE, $auth->scope)) {
+			ml_http_error(HTTPStatus::INSUFFICIENT_SCOPE, 'Token is missing `create` scope');
+			return;
+		}
+
 		$is_json = ml_api_content_type() === 'application/json';
 
 		$type = $is_json === true
@@ -83,11 +92,11 @@ try {
 			post_create_entry($entry);
 			return;
 		}
-
-		ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
-		return;
 	}
 } catch (\Throwable $err) {
 	ml_http_error(HTTPStatus::INVALID_REQUEST, $err->getMessage());
 	return;
 }
+
+ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());
+return;

@@ -2,7 +2,17 @@
 
 if (!defined('MICROLIGHT')) die();
 
+require_once('lib/enum.php');
+
+abstract class TokenScope extends BasicEnum {
+	const CREATE = 'create';
+	const UPDATE = 'update';
+	const DELETE = 'delete';
+	const MEDIA = 'media';
+}
+
 $post = null;
+$auth = null;
 
 /**
  * Retrieve the HTTP method used, usually `GET` or `POST`
@@ -118,6 +128,8 @@ function ml_api_access_token () {
  * @return boolean `true`, if the access token is valid, otherwise `false`
  */
 function ml_api_validate_token ($token) {
+	global $auth;
+
 	$headers = [
 		'Authorization: Bearer ' . $token,
 		'Content-Type: application/json',
@@ -132,5 +144,10 @@ function ml_api_validate_token ($token) {
 	);
 
 	if (empty($response->me)) return false;
-	if ($response->me === ml_base_url()) return true;
+	if ($response->me !== ml_base_url()) return false;
+
+	$auth = $response;
+	$auth->scope = explode(' ', $auth->scope);
+
+	return true;
 }
