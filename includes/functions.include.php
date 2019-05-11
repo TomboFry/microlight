@@ -507,6 +507,23 @@ function ml_post_has_title ($post) {
 }
 
 /**
+ * Determine the slug of a single post based on the URL
+ * @param string $url
+ * @return string Post slug
+ */
+function ml_slug_from_url($url) {
+	if (empty($url) || $url === null) throw new Exception('URL not provided');
+
+	// Permalink structure. Ideally, should not be hardcoded here.
+	$url_prefix = ml_base_url() . '?post_slug=';
+
+	$pos = strpos($url, $url_prefix);
+	if ($pos === false) throw new Exception('Invalid post URL');
+
+	return substr($url, $pos + strlen($url_prefix));
+}
+
+/**
  * Generates a token to be used for both CSRF and authentication state
  *
  * @throws Exception

@@ -37,15 +37,8 @@ function query_config () {
  * @return array
  */
 function query_source () {
-	// Permalink structure. Ideally, should not be hardcoded here.
-	$url_prefix = ml_base_url() . '?post_slug=';
 	$url = ml_api_get('url');
-
-	$pos = strpos($url, $url_prefix);
-	if ($pos === false) throw new Exception('Invalid post URL');
-
-	// Determine the slug based on the provided URL
-	$slug = substr($url, $pos + strlen($url_prefix));
+	$slug = ml_slug_from_url($url);
 
 	$db = new DB();
 	$post = new Post($db);
