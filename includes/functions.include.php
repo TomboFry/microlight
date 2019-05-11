@@ -310,15 +310,15 @@ function ml_canonical_permalink ($suffix = '') {
 	$queries = [];
 
 	if ($search_query !== '' || $post_tag !== '' || $post_type !== '') {
-		if ($search_query !== '') $queries[] = 'search_query=' . urlencode($search_query);
-		if ($post_tag !== '')     $queries[] = 'post_tag=' . urlencode($post_tag);
-		if ($post_type !== '')    $queries[] = 'post_type=' . urlencode($post_type);
+		if ($search_query !== '') array_push($queries, 'search_query=' . urlencode($search_query));
+		if ($post_tag !== '')     array_push($queries, 'post_tag=' . urlencode($post_tag));
+		if ($post_type !== '')    array_push($queries, 'post_type=' . urlencode($post_type));
 	} elseif ($post_slug !== '') {
-		$queries[] = 'post_slug=' . urlencode($post_slug);
+		array_push($queries, 'post_slug=' . urlencode($post_slug));
 	}
 
 	if (!empty($suffix)) {
-		$queries[] = $suffix;
+		array_push($queries, $suffix);
 	}
 	
 	$str = ml_base_url() . '?';
