@@ -37,6 +37,10 @@ try {
 		case 'syndicate-to':
 			ml_http_response(HTTPStatus::OK, query_syndicate_to());
 			return;
+
+		case 'source':
+			ml_http_response(HTTPStatus::OK, query_source());
+			return;
 		}
 
 		ml_http_response(HTTPStatus::REDIRECT, null, null, ml_base_url());

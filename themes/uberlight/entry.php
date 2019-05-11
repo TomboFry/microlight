@@ -28,7 +28,6 @@ function entry ($post, $show_permalink = true) {
 
 /**
  * Show the title, if there is one
- *
  * @param Post $post
  * @param bool $show_permalink
  * @return void
@@ -49,6 +48,11 @@ function entry_title ($post, $show_permalink = true) {
 	}
 }
 
+/**
+ * Show the post's footer, including any tags, the date/time, and the type
+ * @param Post $post
+ * @return void
+ */
 function entry_footer ($post) {
 	$type_link = ml_type_permalink($post->post_type);
 	$post_link = ml_post_permalink($post->slug);

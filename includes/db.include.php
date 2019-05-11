@@ -220,4 +220,55 @@ class Post extends Model {
 
 		return $results;
 	}
+
+	/**
+	 * Convert a post into the microformats2 structure
+	 * @param Post $post
+	 * @return array
+	 */
+	static function to_microformats ($post) {
+		$body = [
+			'type' => 'h-entry',
+			'properties' => [
+				'name' => [ $post->title ],
+				'summary' => [ $post->summary ],
+				'content' => [[
+					'value' => strip_tags($post->content),
+					'html' => $post->content,
+				]],
+				'category' => $post->tags,
+				'published' => [ $post->published ],
+			],
+		];
+
+		if ($post->updated !== null) {
+			$body['properties']['updated'] = [ $post->updated ];
+		}
+
+		switch ($post->post_type) {
+		case 'photo':
+			$body['properties']['photo'] = [ $post->url ];
+			break;
+		case 'audio':
+			$body['properties']['audio'] = [ $post->url ];
+			break;
+		case 'video':
+			$body['properties']['video'] = [ $post->url ];
+			break;
+		case 'like':
+			$body['properties']['like-of'] = [ $post->url ];
+			break;
+		case 'bookmark':
+			$body['properties']['bookmark-of'] = [ $post->url ];
+			break;
+		case 'reply':
+			$body['properties']['in-reply-to'] = [ $post->url ];
+			break;
+		case 'repost':
+			$body['properties']['repost-of'] = [ $post->url ];
+			break;
+		}
+
+		return $body;
+	}
 }
