@@ -10,7 +10,7 @@ require_once('includes/api.include.php');
 if (!ml_api_post_decode()) return;
 
 require_once('get.php');
-require_once('post.php');
+require_once('post/index.php');
 require_once('PostEntry.php');
 
 $bearer = ml_api_access_token();

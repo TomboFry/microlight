@@ -52,7 +52,14 @@ function validate_summary ($summary, $content) {
  */
 function validate_category ($category) {
 	if (empty($category)) return [];
-	if (is_array($category) === false) return false;
+	if (is_array($category) === false) {
+		if (is_string($category)) {
+			$category = [ $category ];
+		} else {
+			return false;
+		}
+	};
+
 	foreach ($category as $key => $value) {
 		if (!mb_check_encoding($value, 'ASCII')) return false;
 		if (!preg_match('/^[a-zA-Z0-9_\- ]+$/', $value)) return false;
@@ -290,16 +297,4 @@ function post_create_entry ($entry) {
 
 	insert_post($post);
 	return;
-}
-
-function post_delete_post ($slug) {
-	$db = new DB();
-	$post = new Post($db);
-
-	$where = [ SQL::where_create('slug', $slug, SQLOP::EQUAL, SQLEscape::SLUG) ];
-
-	// Check if the post exists before trying to delete it
-	if ($post->count($where) === 0) throw new Exception('Post does not exist');
-
-	return $post->delete($where);
 }
