@@ -52,7 +52,17 @@ try {
 		// encoded) values. Yeah, gets a little inconvenient 
 		switch (ml_api_post('action')) {
 		case 'delete':
-			// TODO: Delete post - should return early
+			$url = ml_api_post('url');
+			$slug = ml_slug_from_url($url);
+
+			$success = post_delete_post($slug);
+
+			if ($success === true) {
+				ml_http_response(HTTPStatus::NO_CONTENT);
+				return;
+			} else {
+				throw new Exception($success);
+			}
 			break;
 
 		case 'update':

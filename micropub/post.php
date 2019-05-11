@@ -291,3 +291,20 @@ function post_create_entry ($entry) {
 	insert_post($post);
 	return;
 }
+
+function post_delete_post ($slug) {
+	$db = new DB();
+	$post = new Post($db);
+
+	$where = [[
+		'column' => 'slug',
+		'operator' => SQLOP::EQUAL,
+		'value' => $slug,
+		'escape' => SQLEscape::SLUG,
+	]];
+
+	// Check if the post exists before trying to delete it
+	if ($post->count($where) === 0) throw new Exception('Post does not exist');
+
+	return $post->delete($where);
+}
