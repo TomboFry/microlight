@@ -94,6 +94,15 @@ class SQL {
 		if (!preg_match($regex, $test)) throw new Exception('Value "' . $test . '" invalid', 1);
 	}
 
+	public static function where_create ($column, $value, $operator = SQLOP::EQUAL, $escape = SQLEscape::NONE) {
+		return [
+			'column' => $column,
+			'operator' => $operator,
+			'value' => $value,
+			'escape' => $escape
+		];
+	}
+
 	/**
 	 * Convert an array of properties into an SQL formatted list
 	 *

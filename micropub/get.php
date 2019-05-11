@@ -45,18 +45,8 @@ function query_source () {
 	
 	$where = [
 		// ALWAYS ONLY show public posts
-		[
-			'column' => 'public',
-			'operator' => SQLOP::EQUAL,
-			'value' => 1,
-			'escape' => SQLEscape::NONE,
-		],
-		[
-			'column' => 'slug',
-			'operator' => SQLOP::EQUAL,
-			'value' => $slug,
-			'escape' => SQLEscape::SLUG,
-		],
+		SQL::where_create('public', 1),
+		SQL::where_create('slug', $slug, SQLOP::EQUAL, SQLEscape::SLUG),
 	];
 
 	$single = $post->find_one($where);

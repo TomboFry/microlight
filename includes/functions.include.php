@@ -124,12 +124,7 @@ function ml_load_posts () {
 
 	$where = [
 		// ALWAYS ONLY show public posts
-		[
-			'column' => 'public',
-			'operator' => SQLOP::EQUAL,
-			'value' => 1,
-			'escape' => SQLEscape::NONE,
-		]
+		SQL::where_create('public', 1),
 	];
 
 	$limit = Config::POSTS_PER_PAGE;
@@ -138,46 +133,47 @@ function ml_load_posts () {
 	if ($post_slug !== '') {
 		$limit = 1;
 		$offset = 0;
-		array_push($where, [
-			'column' => 'slug',
-			'operator' => SQLOP::EQUAL,
-			'value' => $post_slug,
-			'escape' => SQLEscape::SLUG,
-		]);
+
+		array_push($where, SQL::where_create(
+			'slug',
+			$post_slug,
+			SQLOP::EQUAL,
+			SQLEscape::SLUG
+		));
 	} elseif ($post_tag !== '' || $post_type !== '' || $search_query !== '') {
 		if ($post_tag !== '') {
-			array_push($where, [
-				'column' => 'tags',
-				'operator' => SQLOP::LIKE,
-				'value' => "%$post_tag,%",
-				'escape' => SQLEscape::TAG,
-			]);
+			array_push($where, SQL::where_create(
+				'tags',
+				"%$post_tag,%",
+				SQLOP::LIKE,
+				SQLEscape::TAG
+			));
 		}
 
 		if ($post_type !== '') {
-			array_push($where, [
-				'column' => 'post_type',
-				'operator' => SQLOP::EQUAL,
-				'value' => $post_type,
-				'escape' => SQLEscape::POST_TYPE,
-			]);
+			array_push($where, SQL::where_create(
+				'post_type',
+				$post_type,
+				SQLOP::EQUAL,
+				SQLEscape::POST_TYPE
+			));
 		}
 
 		if ($search_query !== '') {
-			array_push($where, [
-				'column' => 'title',
-				'operator' => SQLOP::LIKE,
-				'value' => "%$search_query%",
-				'escape' => SQLEscape::NONE,
-			]);
+			array_push($where, SQL::where_create(
+				'title',
+				"%$search_query%",
+				SQLOP::LIKE,
+				SQLEscape::TAG
+			));
 		}
 	} else {
-		array_push($where, [
-			'column' => 'post_type',
-			'operator' => SQLOP::IN,
-			'value' => Config::HOMEPAGE_POST_TYPES,
-			'escape' => SQLEscape::POST_TYPE,
-		]);
+		array_push($where, SQL::where_create(
+			'post_type',
+			Config::HOMEPAGE_POST_TYPES,
+			SQLOP::IN,
+			SQLEscape::POST_TYPE
+		));
 	}
 
 	// Run the SQL query
