@@ -72,5 +72,22 @@ function query_source () {
 		throw new Exception('Post does not exist');
 	}
 
-	return Post::to_microformats($single);
+	// Get post details in microformat syntax
+	$details = Post::to_microformats($single);
+
+	// Only display properties requested
+	$properties = ml_api_get('properties');
+	if ($properties !== null && is_array($properties) && !empty($properties)) {
+		// Type is not required when requesting properties
+		unset($details['type']);
+
+		// Delete any properties that aren't those requested
+		foreach ($details['properties'] as $key => $value) {
+			if (!in_array($key, $properties)) {
+				unset($details['properties'][$key]);
+			}
+		}
+	}
+
+	return $details;
 }
