@@ -26,6 +26,7 @@ abstract class HTTPMethod extends BasicEnum {
 	const GET = 'GET';
 	const POST = 'POST';
 	const PUT = 'PUT';
+	const HEAD = 'HEAD';
 	const PATCH = 'PATCH';
 	const DELETE = 'DELETE';
 	const OPTIONS = 'OPTIONS';
@@ -154,6 +155,10 @@ function ml_http_request ($url, $method = HTTPMethod::GET, $body = null, $header
 	if ($method !== HTTPMethod::GET && $method !== HTTPMethod::POST) {
 		$settings[CURLOPT_CUSTOMREQUEST] = $method;
 	}
+	if ($method === HTTPMethod::HEAD) {
+		$settings[CURLOPT_HEADER] = true;
+		$settings[CURLOPT_NOBODY] = true;
+	}
 
 	curl_setopt_array($curl, $settings);
 
@@ -171,9 +176,9 @@ function ml_http_request ($url, $method = HTTPMethod::GET, $body = null, $header
 		return $errors;
 	}
 
-	if ($response_type === 'application/json') {
+	if ($response_type === HTTPContentType::JSON) {
 		return json_decode($result);
-	} elseif ($response_type === 'application/x-www-form-urlencoded') {
+	} elseif ($response_type === HTTPContentType::FORM_DATA) {
 		return ml_formdata_decode($result);
 	}
 
