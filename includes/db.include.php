@@ -253,14 +253,19 @@ class Post extends Model {
 			'properties' => [
 				'name' => [ $post->title ],
 				'summary' => [ $post->summary ],
-				'content' => [[
-					'value' => strip_tags($post->content),
-					'html' => $post->content,
-				]],
 				'category' => $post->tags,
 				'published' => [ $post->published ],
 			],
 		];
+
+		if ($post->content !== strip_tags($post->content)) {
+			$body['properties']['content'] = [[
+				'value' => strip_tags($post->content),
+				'html' => $post->content,
+			]];
+		} else {
+			$body['properties']['content'] = [ $post->content ];
+		}
 
 		if ($post->updated !== null) {
 			$body['properties']['updated'] = [ $post->updated ];
