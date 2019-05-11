@@ -131,6 +131,27 @@ class Model {
 		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
 		return (int)$stmt->fetch()->count;
 	}
+
+	/**
+	 * Delete from the database. If no `$where` value is provided, the
+	 * request will fail. This is to prevent all data being deleted from the
+	 * table.
+	 * @param array[] $where
+	 * @return bool Whether the deletion was successful or not
+	 * @throws DBError
+	 */
+	function delete ($where = []) {
+		if (empty($where)) throw new Exception('This will delete all records. Not proceeding.');
+
+		$sql = "DELETE FROM `$this->table_name`";
+		$sql .= $this->sql->where($where);
+		$stmt = $this->db->query($sql);
+		if ($stmt === false) throw new DBError(implode('; ', $this->db->errorInfo()), 0);
+		$stmt->fetch();
+
+		// If all goes well...
+		return true;
+	}
 }
 
 class Post extends Model {
