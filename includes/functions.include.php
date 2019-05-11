@@ -308,33 +308,22 @@ function ml_canonical_permalink ($suffix = '') {
 	global $post_type;
 	global $search_query;
 
-	$usedQuery = false;
+	$queries = [];
 
-	if ($search_query !== '') {
-		$str = ml_base_url() . '?search_query=' . urlencode($search_query);
-		$usedQuery = true;
-	} elseif ($post_tag !== '' || $post_type !== '') {
-		$str = ml_base_url() . '?';
-		$acc = [];
-		if ($post_tag !== '') array_push($acc, 'post_tag=' . urlencode($post_tag));
-		if ($post_type !== '') array_push($acc, 'post_type=' . urlencode($post_type));
-		$str .= implode('&', $acc);
-		$usedQuery = true;
+	if ($search_query !== '' || $post_tag !== '' || $post_type !== '') {
+		if ($search_query !== '') $queries[] = 'search_query=' . urlencode($search_query);
+		if ($post_tag !== '')     $queries[] = 'post_tag=' . urlencode($post_tag);
+		if ($post_type !== '')    $queries[] = 'post_type=' . urlencode($post_type);
 	} elseif ($post_slug !== '') {
-		$str = ml_base_url() . '?post_slug=' . urlencode($post_slug);
-		$usedQuery = true;
-	} else {
-		$str = ml_base_url();
+		$queries[] = 'post_slug=' . urlencode($post_slug);
 	}
 
 	if (!empty($suffix)) {
-		if ($usedQuery === false) {
-			$str .= '?';
-		} else {
-			$str .= '&';
-		}
-		$str .= $suffix;
+		$queries[] = $suffix;
 	}
+	
+	$str = ml_base_url() . '?';
+	$str .= implode('&', $queries);
 
 	return $str;
 }
