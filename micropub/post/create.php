@@ -3,6 +3,7 @@
 if (!defined('MICROLIGHT')) die();
 
 require_once('includes/lib/media.php');
+require_once('includes/webmention.include.php');
 
 /**
  * Validates the `published` or `updated` field
@@ -98,7 +99,8 @@ function validate_post_type ($entry) {
 	if (!empty($entry->photo) && filter_var($entry->photo, FILTER_VALIDATE_URL) !== false) {
 		return [
 			'type' => 'photo',
-			'url' => $entry->photo
+			'url' => $entry->photo,
+			'webmention' => false,
 		];
 	}
 
@@ -108,7 +110,8 @@ function validate_post_type ($entry) {
 
 		return [
 			'type' => 'photo',
-			'url' => $photo->get_permalink()
+			'url' => $photo->get_permalink(),
+			'webmention' => false,
 		];
 	}
 
@@ -116,15 +119,17 @@ function validate_post_type ($entry) {
 		return [
 			'type' => 'bookmark',
 			'url' => $entry->bookmark_of,
+			'webmention' => false,
 		];
 	}
 
-	// TODO: The following post types should perform webmentions when valid.
+	// The following post types should perform webmentions
 
 	if (!empty($entry->in_reply_to)) {
 		return [
 			'type' => 'reply',
 			'url' => $entry->in_reply_to,
+			'webmention' => true,
 		];
 	}
 
@@ -132,6 +137,7 @@ function validate_post_type ($entry) {
 		return [
 			'type' => 'like',
 			'url' => $entry->like_of,
+			'webmention' => true,
 		];
 	}
 
@@ -139,6 +145,7 @@ function validate_post_type ($entry) {
 		return [
 			'type' => 'repost',
 			'url' => $entry->repost_of,
+			'webmention' => true,
 		];
 	}
 
@@ -233,6 +240,7 @@ function post_create_entry ($entry) {
 	$post_slug = '';
 	$post_public = true;
 	$post_url = null;
+	$perform_webmention = false;
 
 	// VALIDATION / PROCESSING
 
@@ -281,6 +289,7 @@ function post_create_entry ($entry) {
 	if ($new_post_type !== false) {
 		$post_type = $new_post_type['type'];
 		$post_url = $new_post_type['url'];
+		$perform_webmention = $new_post_type['webmention'];
 	}
 
 	$post = [
@@ -296,5 +305,16 @@ function post_create_entry ($entry) {
 	];
 
 	insert_post($post);
+
+	if ($perform_webmention === true) {
+		try {
+			ml_webmention_perform($post_url, $post_slug);
+		} catch (\Throwable $e) {
+			error_log('Could not perform webmention. Here is why:');
+			error_log('Code: ' . $e->getCode());
+			error_log('Message: ' . $e->getMessage());
+		}
+	}
+
 	return;
 }
