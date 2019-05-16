@@ -22,6 +22,8 @@ try {
 	ml_load_posts();
 	ml_database_close();
 } catch (\Throwable $e) {
+	// TODO: Display a nice error message here instead. Reset global variables
+	// and set `$showing` to an error code which can be displayed by the theme.
 	echo "<h1>Error</h1>";
 	echo "<p><strong>Message:</strong> {$e->getMessage()}</p>";
 	echo "<p><strong>Code:</strong> {$e->getCode()}</p>";

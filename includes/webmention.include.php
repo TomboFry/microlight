@@ -2,6 +2,8 @@
 
 if (!defined('MICROLIGHT')) die();
 
+require_once('sql.include.php');
+
 /**
  * Find a webmention URL by looking at the HTTP headers from the source URL. If
  * no URL could be found, return `false`.  
@@ -82,20 +84,36 @@ function ml_webmention_html ($url) {
  * Perform a webmention to the specified URL
  * @param string $url Target URL
  * @param string $post_slug Slug of the newly created post
- * @return bool Success (or not)
+ * @throws Exception
+ * @return void
  */
 function ml_webmention_perform ($url, $post_slug) {
+	// Check if post with slug exists first. It *should* exist, as this function
+	// will likely be run just after the post is created, but nonetheless, check
+	// anyway.
+	$db = new DB();
+	$post = new Post($db);
+	$post_exists = $post->count([ SQL::where_create('slug', $post_slug, SQLOP::EQUAL, SQLEscape::SLUG) ]);
+	if ($post_exists < 1) throw new Exception('Post with slug `' . $post_slug . '` does not exist');
+
 	// Try HEAD first
-	$webmention_link = ml_webmention_head($url);
+	$webmention_url = ml_webmention_head($url);
 
 	// Attempt HTML afterwards
-	if ($webmention_link === false) {
-		$webmention_link = ml_webmention_html($url);
+	if ($webmention_url === false) {
+		$webmention_url = ml_webmention_html($url);
 	}
 
 	// If there's no webmention link, just return as successful
-	if ($webmention_link === false) return true;
+	if ($webmention_url === false) return;
 
-	// TODO: Perform webmention here
-	echo "Performing webmention with URL: `$webmention_link`";
+	// TODO: Get headers and return code off request made, to determine whether
+	// successful.
+	$response = ml_http_request($webmention_url, HTTPMethod::POST, [
+		'source' => ml_post_permalink($post_slug),
+		'target' => $url,
+	]);
+	// if ($response === ?) {...}
+
+	return;
 }

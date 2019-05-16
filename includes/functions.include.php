@@ -531,6 +531,8 @@ function ml_generate_token () {
 	} elseif (function_exists('openssl_random_pseudo_bytes')) {
 		return bin2hex(openssl_random_pseudo_bytes(32));
 	} elseif (function_exists('mcrypt_create_iv')) {
+		// Deprecated in 7.1, but if random_bytes doesn't exist (the preferred
+		// alternative) this should work instead.
 		return bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
 	} else {
 		// Not recommended, but if none of the above functions
