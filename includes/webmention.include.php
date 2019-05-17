@@ -5,6 +5,50 @@ if (!defined('MICROLIGHT')) die();
 require_once('sql.include.php');
 
 /**
+ * Ensure that the webmention URL found is actually a valid absolute URL, and if
+ * not, perhaps the source URL can help.
+ * @param string $source
+ * @param string $webmention_url
+ * @return string|false
+ */
+function ml_webmention_validate_url ($source, $url) {
+	$output = '';
+	$url_parts = parse_url($url);
+	$source_parts = parse_url($source);
+
+	// Test for absolute URL. As long as http(s) and the hostname is provided,
+	// we can safely assume it is absolute, as the rest doesn't really matter.
+	if ($url_parts['scheme'] !== null && $url_parts['host'] !== null) {
+		$output = $url;
+	
+	// Otherwise, the provided URL must be relative
+	// (ie. not contain a scheme or hostname)
+	} else if ($url_parts['host'] === null) {
+		$output = $source_parts['scheme'] . '://' . $source_parts['host'];
+
+		// Add source port
+		if ($source_parts['port'] !== null) $output .= ':' . $source_parts['port'];
+		
+		// Relative to Root
+		if (strpos($url_parts['path'], '/') === 0) {
+			$output .= $url;
+
+		// Relative to source page
+		} else {
+			$output .= $source_parts['path'];
+			// Prevent the URL from having two slashes if the path already ends with slash
+			if ($source_parts['path'][-1] !== '/') $output .= '/';
+			$output .= $url;
+		}
+	}
+
+	// Finally, validate the URL we've created to make sure it's valid
+	if (filter_var($output, FILTER_VALIDATE_URL) !== false) return $output;
+
+	return false;
+}
+
+/**
  * Find a webmention URL by looking at the HTTP headers from the source URL. If
  * no URL could be found, return `false`.  
  * Example: `Link: <https://.../>; rel="webmention"`
@@ -35,9 +79,6 @@ function ml_webmention_head ($url) {
 
 		// Extract the URL from between the angled brackets
 		if (!preg_match('/^\<(.*)\>; .*/', $value, $match)) continue;
-
-		// Make sure it's a valid URL
-		if (filter_var($match[1], FILTER_VALIDATE_URL) === false) continue;
 
 		// We've found it!
 		return $match[1];
@@ -100,12 +141,14 @@ function ml_webmention_perform ($url, $post_slug) {
 	$webmention_url = ml_webmention_head($url);
 
 	// Attempt HTML afterwards
-	if ($webmention_url === false) {
-		$webmention_url = ml_webmention_html($url);
-	}
+	if ($webmention_url === false) $webmention_url = ml_webmention_html($url);
 
 	// If there's no webmention link, just return as successful
 	if ($webmention_url === false) return;
+
+	// Parse relative URLs before attempting to send a webmention
+	$webmention_url = ml_webmention_validate_url($url, $webmention_url);
+	if ($webmention_url === false) throw new Exception('Invalid webmention URL');
 
 	// TODO: Get headers and return code off request made, to determine whether
 	// successful.
