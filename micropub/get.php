@@ -66,7 +66,7 @@ function query_source () {
 
 		// Delete any properties that aren't those requested
 		foreach ($details['properties'] as $key => $value) {
-			if (!in_array($key, $properties)) {
+			if (!in_array($key, $properties, true)) {
 				unset($details['properties'][$key]);
 			}
 		}
