@@ -106,13 +106,27 @@ function ml_webmention_html ($url) {
 
 	// Get all `link` tags
 	$links = $doc->getElementsByTagName('link');
+	$ahrefs = $doc->getElementsByTagName('a');
 
-	// Search for the link
+	// Search for the link in all <link/> tags
 	$webmention_url = null;
 	foreach ($links as $link) {
-		if ($link->getAttribute('rel') === 'webmention') {
+		$rels = explode(' ', $link->getAttribute('rel'));
+		if (in_array('webmention', $rels, true)) {
 			$webmention_url = $link->getAttribute('href');
 			break;
+		}
+	}
+
+	// Do the same for <a/> tags, only if there wasn't one found
+	// in the <link/> tags.
+	if ($webmention_url === null) {
+		foreach ($ahrefs as $link) {
+			$rels = explode(' ', $link->getAttribute('rel'));
+			if (in_array('webmention', $rels, true)) {
+				$webmention_url = $link->getAttribute('href');
+				break;
+			}
 		}
 	}
 
