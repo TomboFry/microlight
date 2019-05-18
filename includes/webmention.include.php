@@ -106,33 +106,28 @@ function ml_webmention_html ($url) {
 
 	// Parse the document
 	$doc = new DOMDocument();
-	$doc->loadHTML($response);
+	@$doc->loadHTML($response);
+	$xpath = new DOMXPath($doc);
 
-	// Get all `link` tags
-	$links = $doc->getElementsByTagName('link');
-	$ahrefs = $doc->getElementsByTagName('a');
+	// Perform an XPath query with the following expression.
+	// This selects any <link/> and <a/> tags that contain 'webmention' in their
+	// rel attribute.
+	$query = "//link[contains(@rel,'webmention')]|//a[contains(@rel,'webmention')]";
+	$links = $xpath->query($query);
 
-	// Search for the link in all <link/> tags
+	// Search for the link in all <link/> and <a> tags
 	$webmention_url = null;
 	foreach ($links as $link) {
-		$rels = explode(' ', $link->getAttribute('rel'));
-		if (in_array('webmention', $rels, true)) {
-			$webmention_url = $link->getAttribute('href');
-			break;
-		}
-	}
-
-	// Do the same for <a/> tags, only if there wasn't one found
-	// in the <link/> tags.
-	if ($webmention_url === null) {
-		foreach ($ahrefs as $link) {
-			$rels = explode(' ', $link->getAttribute('rel'));
-			if (in_array('webmention', $rels, true)) {
+		// Despite getting all tags with a rel containing 'webmention', we still
+		// need to check whether it is explicitly provided as a single word
+		// e.g. 'sneakywebmention' is not valid, but 'sneaky webmention' is.
+		$rels = explode(' ', strtolower($link->getAttribute('rel')));
+		$has_href = $link->hasAttribute('href');
+		if (in_array('webmention', $rels, true) && $has_href === true) {
 				$webmention_url = $link->getAttribute('href');
 				break;
 			}
 		}
-	}
 
 	// Return false if there is no URL.
 	if ($webmention_url !== null) return $webmention_url;
