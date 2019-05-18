@@ -37,7 +37,7 @@ function ml_webmention_validate_url ($source, $url) {
 		} else {
 			$output .= $source_parts['path'];
 			// Prevent the URL from having two slashes if the path already ends with slash
-			if ($source_parts['path'][-1] !== '/') $output .= '/';
+			if ($source_parts['path'][-1] !== '/' && strlen($url) > 0) $output .= '/';
 			$output .= $url;
 		}
 	}
