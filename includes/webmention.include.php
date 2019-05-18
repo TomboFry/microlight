@@ -35,9 +35,15 @@ function ml_webmention_validate_url ($source, $url) {
 
 		// Relative to source page
 		} else {
-			$output .= $source_parts['path'];
+			// Remove everything after the last slash to point to the corrent
+			// relative URL.
+			$source_path = substr($source_parts['path'], 0, strrpos($source_parts['path'], '/'));
+
+			// Add the new path
+			$output .= $source_path;
+
 			// Prevent the URL from having two slashes if the path already ends with slash
-			if ($source_parts['path'][-1] !== '/' && strlen($url) > 0) $output .= '/';
+			if ($source_path[-1] !== '/' && strlen($url) > 0) $output .= '/';
 			$output .= $url;
 		}
 	}
