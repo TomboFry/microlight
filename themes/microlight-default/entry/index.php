@@ -31,6 +31,9 @@ function entry ($post, $is_archive = true) {
 	case 'like':
 		fmt_like($post, $is_archive);
 		break;
+	case 'reply':
+		fmt_reply($post, $is_archive);
+		break;
 	default:
 		fmt_default($post, $is_archive);
 		break;
