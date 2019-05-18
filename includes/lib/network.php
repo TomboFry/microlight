@@ -115,7 +115,9 @@ function ml_formdata_decode ($response) {
 		$param = explode("=", $chunk);
 
 		if ($param) {
-			$new_response[urldecode($param[0])] = isset($param[1]) ? urldecode($param[1]) : null;
+			$new_response[urldecode($param[0])] = isset($param[1])
+				? urldecode($param[1])
+				: null;
 		}
 	}
 	return $new_response;
@@ -128,7 +130,7 @@ function ml_formdata_decode ($response) {
  * @param string $method Uses a HTTPMethod enum value
  * @param array|object $body An array or object that can be converted into a URL-encoded string
  * @param array $headers If provided, the request will send these headers with the request
- * @return array|mixed|string
+ * @return array An array containing the keys 'body', 'headers', and 'code'
  * @throws Exception
  */
 function ml_http_request ($url, $method = HTTPMethod::GET, $body = null, $headers = []) {
@@ -140,49 +142,71 @@ function ml_http_request ($url, $method = HTTPMethod::GET, $body = null, $header
 
 	$curl = curl_init();
 
+	$response = [
+		'body' => null,
+		'headers' => [],
+		'code' => null,
+	];
+
 	$settings = [
 		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_URL => $url,
 		CURLOPT_HTTPHEADER => $headers,
+		CURLOPT_CUSTOMREQUEST => $method,
+
+		// Follow redirects up to 5 times, and always send POST values
+		// along with it, if provided
+		CURLOPT_FOLLOWLOCATION => true,
+		CURLOPT_MAXREDIRS => 5,
+		CURLOPT_POSTREDIR => 3,
+
+		// Get headers directly from request using this anonymous function
+		CURLOPT_HEADERFUNCTION => function($curl, $header) use (&$response) {
+			$len = strlen($header);
+
+			// Split headers by their colon, making sure there are always two values
+			[$name, $value] = array_pad(explode(':', $header, 2), 2, '');
+			$name = strtolower(trim($name));
+			$value = trim($value);
+
+			// Directly set the header within the response
+			if ($value !== '') $response['headers'][$name] = $value;
+
+			return $len;
+		},
 	];
 
 	if ($body !== null) {
 		$settings[CURLOPT_POSTFIELDS] = http_build_query($body);
 	}
-	if ($method === HTTPMethod::POST) {
-		$settings[CURLOPT_POST] = true;
-	}
-	if ($method !== HTTPMethod::GET && $method !== HTTPMethod::POST) {
-		$settings[CURLOPT_CUSTOMREQUEST] = $method;
-	}
+
 	if ($method === HTTPMethod::HEAD) {
-		$settings[CURLOPT_HEADER] = true;
 		$settings[CURLOPT_NOBODY] = true;
 	}
 
 	curl_setopt_array($curl, $settings);
 
-	// Execute HTTP request using settings above
-	$result = curl_exec($curl);
-	$errors = curl_error($curl);
+	$result = curl_exec($curl);  // Execute HTTP request using settings above
+	$errors = curl_error($curl); // String, if set
 
 	// Try to decode the response if it's FORM or JSON data
 	$response_type = curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
+	$response['code'] = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
 	// Before returning anything, close the curl connection
 	curl_close($curl);
 
-	if ($result === false || $errors !== '') {
-		return $errors;
-	}
+	if ($result === false || $errors !== '') throw new Exception($errors);
 
 	if ($response_type === HTTPContentType::JSON) {
-		return json_decode($result);
+		$response['body'] = json_decode($result, true);
 	} elseif ($response_type === HTTPContentType::FORM_DATA) {
-		return ml_formdata_decode($result);
+		$response['body'] = ml_formdata_decode($result);
+	} else {
+		$response['body'] = $result;
 	}
 
-	return $result;
+	return $response;
 }
 
 function ml_http_bearer () {

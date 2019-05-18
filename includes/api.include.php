@@ -143,11 +143,11 @@ function ml_api_validate_token ($token) {
 		$headers
 	);
 
-	if (empty($response->me)) return false;
-	if ($response->me !== ml_base_url()) return false;
+	if (empty($response['body']['me'])) return false;
+	if ($response['body']['me'] !== ml_base_url()) return false;
 
-	$auth = $response;
-	$auth->scope = explode(' ', $auth->scope);
+	$auth = $response['body'];
+	$auth['scope'] = explode(' ', $auth['scope']);
 
 	return true;
 }

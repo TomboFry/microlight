@@ -58,31 +58,13 @@ function ml_webmention_validate_url ($source, $url) {
  * Find a webmention URL by looking at the HTTP headers from the source URL. If
  * no URL could be found, return `false`.  
  * Example: `Link: <https://.../>; rel="webmention"`
- * @param string $url
+ * @param array $response
  * @return string|false
  */
-function ml_webmention_head ($url) {
-	// Get HTTP Headers from this URL
-	$response = ml_http_request($url, HTTPMethod::HEAD, null, [
-		'User-Agent: Microlight/' . MICROLIGHT . ' (webmention)'
-	]);
-
-	// Split headers by new lines
-	$response = explode("\r\n", trim($response));
-
-	for ($i = 0; $i < count($response); $i++) {
-		// Split headers like `Content-Type: application/json`
-		// into `[ 'Content-Type', 'application/json' ];`
-		$response[$i] = explode(': ', $response[$i]);
-		
-		// Skip headers that don't have a key followed by a value
-		if (count($response[$i]) <= 1) continue;
-
-		$header = $response[$i][0];
-		$value = $response[$i][1];
-
+function ml_webmention_head ($response) {
+	foreach ($response['headers'] as $header => $value) {
 		// We only care about `Link` headers
-		if (strtolower($header) !== 'link') continue;
+		if ($header !== 'link') continue;
 
 		// The link header may contain more than one URL
 		$value = explode(',', $value);
@@ -111,18 +93,13 @@ function ml_webmention_head ($url) {
  * Find a webmention URL by looking at the HTML returned from the source URL. If
  * no URL could be found, return `false`.  
  * Example: `<link rel='webmention' href='https://.../' />`
- * @param string $url
+ * @param array $response
  * @return string|false
  */
-function ml_webmention_html ($url) {
-	// Download the site's HTML
-	$response = ml_http_request($url, HTTPMethod::GET, null, [
-		'User-Agent: Microlight/' . MICROLIGHT . ' (webmention)'
-	]);
-
+function ml_webmention_html ($response) {
 	// Parse the document
 	$doc = new DOMDocument();
-	@$doc->loadHTML($response);
+	@$doc->loadHTML($response['body']);
 	$xpath = new DOMXPath($doc);
 
 	// Perform an XPath query with the following expression.
@@ -166,11 +143,15 @@ function ml_webmention_perform ($url, $post_slug) {
 	$post_exists = $post->count([ SQL::where_create('slug', $post_slug, SQLOP::EQUAL, SQLEscape::SLUG) ]);
 	if ($post_exists < 1) throw new Exception('Post with slug `' . $post_slug . '` does not exist');
 
-	// Try HEAD first
-	$webmention_url = ml_webmention_head($url);
+	// Load the page, including the headers, but specifically setting the user-agent
+	$webmention_page = ml_http_request($url, HTTPMethod::GET, null, [
+		'User-Agent: Microlight/' . MICROLIGHT . ' (webmention)'
+	]);
+
+	$webmention_url = ml_webmention_head($webmention_page);
 
 	// Attempt HTML afterwards
-	if ($webmention_url === false) $webmention_url = ml_webmention_html($url);
+	if ($webmention_url === false) $webmention_url = ml_webmention_html($webmention_page);
 
 	// If there's no webmention link, just return as successful
 	if ($webmention_url === false) return;
@@ -185,6 +166,8 @@ function ml_webmention_perform ($url, $post_slug) {
 		'source' => ml_post_permalink($post_slug),
 		'target' => $url,
 	]);
+
+	error_log($response['body']);
 	// if ($response === ?) {...}
 
 	return;

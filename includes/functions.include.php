@@ -575,7 +575,7 @@ function ml_validate_token () {
 		'client_id' => ml_base_url(),
 	]);
 
-	$me = $response['me'];
+	$me = $response['body']['me'];
 
 	if (!empty($me)) {
 		if ($me === ml_base_url()) {
@@ -586,6 +586,6 @@ function ml_validate_token () {
 			return error('Host URL not correct ("' . $me . '" !== "' . ml_base_url() . '")');
 		}
 	} else {
-		return error(implode('; ', $response));
+		return error(implode('; ', $response['body']));
 	}
 }

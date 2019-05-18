@@ -51,7 +51,7 @@ try {
 
 		switch (ml_api_post('action')) {
 		case 'delete':
-			if (!in_array(TokenScope::DELETE, $auth->scope, true)) {
+			if (!in_array(TokenScope::DELETE, $auth['scope'], true)) {
 				ml_http_error(HTTPStatus::INSUFFICIENT_SCOPE, 'Token is missing `delete` scope');
 				return;
 			}
@@ -74,7 +74,7 @@ try {
 			break;
 		}
 
-		if (!in_array(TokenScope::CREATE, $auth->scope, true)) {
+		if (!in_array(TokenScope::CREATE, $auth['scope'], true)) {
 			ml_http_error(HTTPStatus::INSUFFICIENT_SCOPE, 'Token is missing `create` scope');
 			return;
 		}
