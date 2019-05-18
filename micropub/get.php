@@ -45,7 +45,7 @@ function query_source () {
 	
 	$where = [
 		// ALWAYS ONLY show public posts
-		SQL::where_create('public', 1),
+		SQL::where_create('status', 'public'),
 		SQL::where_create('slug', $slug, SQLOP::EQUAL, SQLEscape::SLUG),
 	];
 

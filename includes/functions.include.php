@@ -124,7 +124,7 @@ function ml_load_posts () {
 
 	$where = [
 		// ALWAYS ONLY show public posts
-		SQL::where_create('public', 1),
+		SQL::where_create('status', 'public'),
 	];
 
 	$limit = Config::POSTS_PER_PAGE;

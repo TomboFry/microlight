@@ -233,7 +233,7 @@ function post_create_entry ($entry) {
 	// Internally calculated values
 	$post_type = 'article';
 	$post_slug = '';
-	$post_public = true;
+	$post_status = 'public';
 	$post_url = null;
 	$perform_webmention = false;
 
@@ -273,7 +273,7 @@ function post_create_entry ($entry) {
 	$private_category_key = array_search('private', $entry->category, true);
 	if ($private_category_key !== false) {
 		array_splice($entry->category, $private_category_key, 1);
-		$post_public = false;
+		$post_status = 'private';
 	}
 	$entry->category = implode(',', $entry->category);
 	if (strlen($entry->category) > 0) $entry->category .= ',';
@@ -295,7 +295,7 @@ function post_create_entry ($entry) {
 		'slug' => $post_slug,
 		'published' => $entry->published,
 		'tags' => $entry->category,
-		'public' => $post_public,
+		'status' => $post_status,
 		'url' => $post_url
 	];
 

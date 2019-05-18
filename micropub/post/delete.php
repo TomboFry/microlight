@@ -11,5 +11,6 @@ function post_delete_post ($slug) {
 	// Check if the post exists before trying to delete it
 	if ($post->count($where) === 0) throw new Exception('Post does not exist');
 
+	// TODO: Set $post['status'] to 'deleted'
 	return $post->delete($where);
 }

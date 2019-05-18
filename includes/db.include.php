@@ -194,9 +194,10 @@ class Post extends Model {
 				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL . SQLType::MOD_UNIQUE,
 			],
 			[
-				// To be shown to users
-				'column' => 'public',
-				'type' => SQLType::BOOL_TYPE . SQLType::MOD_NOT_NULL,
+				// One of: 'public', 'private', 'deleted'.
+				// More status types may be added in the future.
+				'column' => 'status',
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
 			],
 			[
 				// Date/Time ISO8601
