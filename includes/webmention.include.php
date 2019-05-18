@@ -99,9 +99,9 @@ function ml_webmention_head ($url) {
 			$rels = explode(' ', $match[2]);
 			if (!in_array('webmention', $rels, true)) continue;
 
-		// We've found it!
-		return $match[1];
-	}
+			// We've found it!
+			return $match[1];
+		}
 	}
 
 	return false;
@@ -140,10 +140,10 @@ function ml_webmention_html ($url) {
 		$rels = explode(' ', strtolower($link->getAttribute('rel')));
 		$has_href = $link->hasAttribute('href');
 		if (in_array('webmention', $rels, true) && $has_href === true) {
-				$webmention_url = $link->getAttribute('href');
-				break;
-			}
+			$webmention_url = $link->getAttribute('href');
+			break;
 		}
+	}
 
 	// Return false if there is no URL.
 	if ($webmention_url !== null) return $webmention_url;
