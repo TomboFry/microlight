@@ -84,14 +84,24 @@ function ml_webmention_head ($url) {
 		// We only care about `Link` headers
 		if (strtolower($header) !== 'link') continue;
 
-		// And it must be a webmention link, too.
-		if (strpos($value, 'rel="webmention"') === false) continue;
+		// The link header may contain more than one URL
+		$value = explode(',', $value);
 
-		// Extract the URL from between the angled brackets
-		if (!preg_match('/^\<(.*)\>; .*/', $value, $match)) continue;
+		foreach ($value as $link) {
+			// Parse link headers using fancy regex
+			if (preg_match('/^\s*\<([^\>]*)\>;\s*rel=\"?([^\"]*)\"?\s*$/', $link, $match) !== 1) continue;
+
+			// Indices explained:
+			// 0 = original string
+			// 1 = URL
+			// 2 = rel
+
+			$rels = explode(' ', $match[2]);
+			if (!in_array('webmention', $rels, true)) continue;
 
 		// We've found it!
 		return $match[1];
+	}
 	}
 
 	return false;
