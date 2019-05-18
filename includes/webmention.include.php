@@ -18,18 +18,18 @@ function ml_webmention_validate_url ($source, $url) {
 
 	// Test for absolute URL. As long as http(s) and the hostname is provided,
 	// we can safely assume it is absolute, as the rest doesn't really matter.
-	if ($url_parts['scheme'] !== null && $url_parts['host'] !== null) {
+	if (isset($url_parts['scheme']) && isset($url_parts['host'])) {
 		$output = $url;
 	
 	// Otherwise, the provided URL must be relative
 	// (ie. not contain a scheme or hostname)
-	} else if ($url_parts['host'] === null) {
+	} else if (!isset($url_parts['host'])) {
 		$output = $source_parts['scheme'] . '://' . $source_parts['host'];
 
 		// Add source port
-		if ($source_parts['port'] !== null) $output .= ':' . $source_parts['port'];
+		if (isset($source_parts['port'])) $output .= ':' . $source_parts['port'];
 		
-		// Relative to Root
+		// Relative to Root (because first character is '/')
 		if (strpos($url_parts['path'], '/') === 0) {
 			$output .= $url;
 
@@ -68,6 +68,10 @@ function ml_webmention_head ($url) {
 		// Split headers like `Content-Type: application/json`
 		// into `[ 'Content-Type', 'application/json' ];`
 		$response[$i] = explode(': ', $response[$i]);
+		
+		// Skip headers that don't have a key followed by a value
+		if (count($response[$i]) <= 1) continue;
+
 		$header = $response[$i][0];
 		$value = $response[$i][1];
 
@@ -162,7 +166,7 @@ function ml_webmention_perform ($url, $post_slug) {
 
 	// Parse relative URLs before attempting to send a webmention
 	$webmention_url = ml_webmention_validate_url($url, $webmention_url);
-	if ($webmention_url === false) throw new Exception('Invalid webmention URL');
+	if ($webmention_url === false) throw new Exception('Invalid webmention URL: "' . $webmention_url . '"');
 
 	// TODO: Get headers and return code off request made, to determine whether
 	// successful.

@@ -105,7 +105,7 @@ function validate_post_type ($entry) {
 	}
 
 	// Perhaps an image was uploaded in the request itself
-	if (is_array($_FILES['photo'])) {
+	if (isset($_FILES['photo']) && is_array($_FILES['photo'])) {
 		$photo = new ImageResizer($_FILES['photo']);
 
 		return [
@@ -157,7 +157,7 @@ function validate_post_type ($entry) {
  * otherwise returning a 201 CREATED response to the new post.
  *
  * @param array $post
- * @return void
+ * @return string Post's final slug
  * @throws Exception
  */
 function insert_post ($post) {
@@ -197,8 +197,7 @@ function insert_post ($post) {
 		}
 
 		if ($suffix > 50) {
-			ml_http_error(HTTPStatus::INVALID_REQUEST, 'This slug is used by too many slugs');
-			return;
+			throw new Exception('This slug is used by too many slugs');
 		}
 
 		$postId = $db_post->insert($post);
@@ -211,17 +210,13 @@ function insert_post ($post) {
 				null,
 				ml_post_permalink($post['slug'])
 			);
-			return;
+			return $post['slug'];
 		} else {
-			ml_http_error(
-				HTTPStatus::SERVER_ERROR,
-				'Could not create entry. Unknown reason.'
-			);
-			return;
+			throw new Exception('Could not create entry. Unknown reason.');
 		}
 	} catch (DBError $e) {
 		error_log('Post could not be inserted...');
-		ml_http_error(HTTPStatus::SERVER_ERROR, $e->getMessage());
+		throw new Exception($e->getMessage());
 	}
 }
 
@@ -304,15 +299,20 @@ function post_create_entry ($entry) {
 		'url' => $post_url
 	];
 
-	insert_post($post);
+	try {
+		$final_slug = insert_post($post);
+	} catch (\Throwable $error) {
+		ml_http_error(HTTPStatus::SERVER_ERROR, $error->getMessage());
+		return;
+	}
 
 	if ($perform_webmention === true) {
 		try {
-			ml_webmention_perform($post_url, $post_slug);
-		} catch (\Throwable $e) {
+			ml_webmention_perform($post_url, $final_slug);
+		} catch (\Throwable $error) {
 			error_log('Could not perform webmention. Here is why:');
-			error_log('Code: ' . $e->getCode());
-			error_log('Message: ' . $e->getMessage());
+			error_log('Code: ' . $error->getCode());
+			error_log('Message: ' . $error->getMessage());
 		}
 	}
 
