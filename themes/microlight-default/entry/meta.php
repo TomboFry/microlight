@@ -105,3 +105,16 @@ function entry_footer ($post, $is_archive) {
 
 	echo '</footer>';
 }
+
+function entry_hcard () {
+	echo "<div class='p-author vcard hcard h-card hidden'>";
+		if (ml_user_has_icon()) {
+			echo "<img class='u-photo' alt='" . User::NAME . "' src='" . ml_icon_url() . "' />";
+		}
+		echo "<a href='";
+		echo ml_base_url();
+		echo "' class='p-name u-url uid fn' rel='me'>";
+			echo User::NAME;
+		echo "</a>";
+	echo "</div>";
+}

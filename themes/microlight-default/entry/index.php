@@ -38,6 +38,8 @@ function entry ($post, $is_archive = true) {
 
 	entry_footer($post, $is_archive);
 
+	entry_hcard();
+
 	// Everything below this point is for metadata
 	echo '</article>';
 }
