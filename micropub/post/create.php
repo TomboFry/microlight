@@ -155,7 +155,6 @@ function validate_post_type ($entry) {
 /**
  * Inserts a post into the database, returning any errors if they occur,
  * otherwise returning a 201 CREATED response to the new post.
- *
  * @param array $post
  * @return string Post's final slug
  * @throws Exception
@@ -288,7 +287,7 @@ function post_create_entry ($entry) {
 	}
 
 	$post = [
-		'title' => $entry->name,
+		'name' => $entry->name,
 		'summary' => $entry->summary,
 		'content' => $entry->content,
 		'post_type' => $post_type,

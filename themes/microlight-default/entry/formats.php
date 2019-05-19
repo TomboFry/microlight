@@ -13,7 +13,7 @@ function fmt_image ($post, $is_archive) {
 	entry_title($post, $is_archive);
 	echo "<img ";
 	echo "class='u-photo' ";
-	echo "alt='" . $post->title . "' ";
+	echo "alt='" . $post->name . "' ";
 	echo "src='" . $post->url . "' />";
 	entry_content($post, $is_archive);
 }
@@ -31,7 +31,7 @@ function fmt_bookmark ($post, $is_archive) {
 	echo "<h2>";
 		echo "Bookmarked ";
 		echo "<a class='u-bookmark-of h-cite' href='" . $post->url . "'>";
-			echo $post->title;
+			echo $post->name;
 		echo "</a>";
 	echo "</h2>";
 	entry_content($post, $is_archive);
@@ -41,7 +41,7 @@ function fmt_like ($post, $is_archive) {
 	echo "<h2>";
 		echo "Liked ";
 		echo "<a class='u-like-of' href='" . $post->url . "'>";
-			echo $post->title;
+			echo $post->name;
 		echo "</a>";
 	echo "</h2>";
 	entry_content($post, $is_archive);

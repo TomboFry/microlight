@@ -134,8 +134,8 @@ class Model {
 
 	/**
 	 * Delete from the database. If no `$where` value is provided, the
-	 * request will fail. This is to prevent all data being deleted from the
-	 * table.
+	 * request will fail. This is to prevent all records from being deleted in
+	 * the table.
 	 * @param array[] $where
 	 * @return bool Whether the deletion was successful or not
 	 * @throws DBError
@@ -169,8 +169,8 @@ class Post extends Model {
 				'type' => SQLType::PRIMARY_KEY_TYPE,
 			],
 			[
-				// Post Title
-				'column' => 'title',
+				// Post name
+				'column' => 'name',
 				'type' => SQLType::TEXT_TYPE,
 			],
 			[
@@ -189,7 +189,7 @@ class Post extends Model {
 				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
 			],
 			[
-				// URL friendly copy of the title
+				// URL friendly copy of the name
 				'column' => 'slug',
 				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL . SQLType::MOD_UNIQUE,
 			],
@@ -252,7 +252,7 @@ class Post extends Model {
 		$body = [
 			'type' => 'h-entry',
 			'properties' => [
-				'name' => [ $post->title ],
+				'name' => [ $post->name ],
 				'summary' => [ $post->summary ],
 				'category' => $post->tags,
 				'published' => [ $post->published ],

@@ -161,7 +161,7 @@ function ml_load_posts () {
 
 		if ($search_query !== '') {
 			array_push($where, SQL::where_create(
-				'title',
+				'name',
 				"%$search_query%",
 				SQLOP::LIKE,
 				SQLEscape::TAG
@@ -219,8 +219,8 @@ function ml_get_title () {
 	$str = '';
 
 	if ($showing === Show::POST || $showing === Show::PAGE) {
-		$str .= $posts->title !== ''
-			? $posts->title
+		$str .= $posts->name !== ''
+			? $posts->name
 			: $posts->summary;
 		$str .= Config::TITLE_SEPARATOR;
 	}
@@ -499,7 +499,7 @@ function ml_location_geo ($location) {
  * @return bool
  */
 function ml_post_has_title ($post) {
-	return $post->title !== null && $post->title !== '';
+	return $post->name !== null && $post->name !== '';
 }
 
 /**

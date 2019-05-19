@@ -19,7 +19,7 @@ function entry_title ($post, $is_archive) {
 	}
 
 	echo "<h2 class='p-name'>";
-	echo $post->title;
+	echo $post->name;
 	echo "</h2>";
 
 	if ($is_archive === true) {

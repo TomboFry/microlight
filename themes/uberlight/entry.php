@@ -40,7 +40,7 @@ function entry_title ($post, $show_permalink = true) {
 	}
 
 	echo "<h2 class='p-name'>";
-	echo $post->title;
+	echo $post->name;
 	echo "</h2>";
 
 	if ($show_permalink == true) {
