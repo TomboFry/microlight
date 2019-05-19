@@ -94,6 +94,14 @@ class SQL {
 		if (!preg_match($regex, $test)) throw new Exception('Value "' . $test . '" invalid', 1);
 	}
 
+	/**
+	 * Helper for the generation of the WHERE clauses
+	 * @param string $column
+	 * @param mixed $value
+	 * @param SQLOP $operator
+	 * @param SQLEscape $escape
+	 * @return array
+	 */
 	public static function where_create ($column, $value, $operator = SQLOP::EQUAL, $escape = SQLEscape::NONE) {
 		return [
 			'column' => $column,
@@ -110,10 +118,10 @@ class SQL {
 	 * @return string
 	 */
 	private function propsToString ($properties) {
-		$acc = null;
+		$acc = '';
 
 		// `array_walk` loops over every property provided.
-		array_walk($properties, function ($property, $index) use (&$acc) {
+		array_walk($properties, function (array $property, int $index) use (&$acc) {
 			$type = $property['type'];
 			$column = $property['column'];
 
@@ -140,7 +148,7 @@ class SQL {
 	 * @return string
 	 */
 	private function foreignKeyToString ($foreign_keys) {
-		$acc = null;
+		$acc = '';
 
 		// `array_walk` loops over every property provided.
 		array_walk($foreign_keys, function ($key_props) use (&$acc) {
@@ -172,7 +180,7 @@ class SQL {
 	 * @param array[]|null $foreign_keys
 	 * @return string
 	 */
-	public function create ($table_name, $properties, $foreign_keys = null) {
+	public function create (string $table_name, array $properties, array $foreign_keys = null) {
 		$new_props = $this->propsToString($properties);
 		$full_string = "CREATE TABLE IF NOT EXISTS `$table_name` ($new_props";
 		if ($foreign_keys != null) {
@@ -189,10 +197,10 @@ class SQL {
 	 * @param array[] $conditions
 	 * @return string
 	 */
-	public function where ($conditions) {
-		$acc = null;
+	public function where (array $conditions) {
+		$acc = '';
 
-		array_walk($conditions, function ($condition, $index) use (&$acc) {
+		array_walk($conditions, function (array $condition, int $index) use (&$acc) {
 			// Get condition properties
 			$column = $condition['column'];
 			$operator = $condition['operator'];
@@ -238,13 +246,53 @@ class SQL {
 	}
 
 	/**
+	 * Determine which regex escape to perform on the value, depending on what
+	 * the name of the column is.
+	 * @param string $column
+	 * @return SQLEscape
+	 */
+	private static function determine_escape (string $column) {
+		$escape = SQLEscape::NONE;
+		switch ($column) {
+
+		// Alphabetical characters only
+		case 'post_type':
+			$escape = SQLEscape::POST_TYPE;
+			break;
+
+		// A list of all ASCII characters
+		case 'tags':
+			$escape = SQLEscape::TAG;
+			break;
+
+		// Alphanumerical characters
+		case 'slug':
+			$escape = SQLEscape::SLUG;
+			break;
+		
+		// Alphabetical characters only
+		case 'status':
+			$escape = SQLEscape::POST_TYPE;
+			break;
+
+		// ISO8601 date/time format
+		case 'published':
+		case 'updated':
+			$escape = SQLEscape::ISO8601;
+			break;
+		}
+
+		return $escape;
+	}
+
+	/**
 	 * Generates part of an SQL query for inserting values into a table
 	 *
 	 * @param string[] $properties
 	 * @return string
 	 * @throws Exception
 	 */
-	public function insert ($properties) {
+	public function insert (array $properties) {
 		$keys = '';
 		$values = '';
 
@@ -254,30 +302,36 @@ class SQL {
 
 			// 2. Determine if there is a specific column that needs
 			//    testing
-			$escape = null;
-			switch ($key) {
-			case 'type':
-				$escape = SQLEscape::POST_TYPE;
-				break;
-			case 'tags':
-				$escape = SQLEscape::TAG;
-				break;
-			case 'slug':
-				$escape = SQLEscape::SLUG;
-				break;
-			case 'published':
-			case 'updated':
-				$escape = SQLEscape::ISO8601;
-				break;
-			default:
-				$escape = SQLEscape::NONE;
-				break;
-			}
+			$escape = SQL::determine_escape($key);
 			SQL::regex_test($escape, $value);
+
+			// 3. Add the key/value to the output!
 			$keys .= '`' . $key . '`,';
 			$values .= $this->db->quote($value) . ',';
 		};
 
 		return ' (' . substr($keys, 0, -1) . ') VALUES (' . substr($values, 0, -1) . ')';
+	}
+
+	public function update (array $properties) {
+		if (empty($properties)) throw new Exception('At least one property should be provided');
+
+		$output = '';
+
+		foreach ($properties as $column => $value) {
+			// 1. Determine regex escape for value based on column name
+			$escape = SQL::determine_escape($column);
+
+			// 2. Test column name and value
+			SQL::regex_test(SQLEscape::COLUMN, $column);
+			SQL::regex_test($escape, $value);
+
+			// 3. If all goes well, add them to the output!
+			$output .= '`' . $column . '`=';
+			$output .= $this->db->quote($value) . ',';
+		}
+
+		// Remove last character because it's a comma
+		return substr($output, 0, -1);
 	}
 }

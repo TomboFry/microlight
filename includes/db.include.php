@@ -152,6 +152,31 @@ class Model {
 		// If all goes well...
 		return true;
 	}
+
+	/**
+	 * Update values in the database. If no `$where` value is provided, the
+	 * request will fail. This is to prevent all records from being updated in
+	 * the table.
+	 * @param array $properties
+	 * @param array[] $where
+	 * @return void
+	 */
+	function update ($properties, $where = []){
+		if (empty($where)) throw new Exception('This will update all records. Not proceeding.');
+
+		$sql = "UPDATE `$this->table_name` SET ";
+		$sql .= $this->sql->update($properties);
+		$sql .= $this->sql->where($where);
+
+		error_log($sql);
+
+		$stmt = $this->db->query($sql);
+		if ($stmt === false) throw new DBError(implode('; ', $this->db->errorInfo()), 0);
+		$stmt->fetch();
+
+		// If all goes well...
+		return true;
+	}
 }
 
 class Post extends Model {
