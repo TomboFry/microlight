@@ -52,7 +52,10 @@ try {
 		switch (ml_api_post('action')) {
 		case 'delete':
 			if (!in_array(TokenScope::DELETE, $auth['scope'], true)) {
-				ml_http_error(HTTPStatus::INSUFFICIENT_SCOPE, 'Token is missing `delete` scope');
+				ml_http_error(
+					HTTPStatus::INSUFFICIENT_SCOPE,
+					'Token is missing `' . TokenScope::DELETE . '` scope'
+				);
 				return;
 			}
 
@@ -70,12 +73,30 @@ try {
 			break;
 
 		case 'update':
-			// TODO: Update post - should return early
-			break;
+			if (!in_array(TokenScope::UPDATE, $auth['scope'], true)) {
+				ml_http_error(
+					HTTPStatus::INSUFFICIENT_SCOPE,
+					'Token is missing `' . TokenScope::UPDATE . '` scope'
+				);
+				return;
+			}
+			$url = ml_api_post('url');
+			$slug = ml_slug_from_url($url);
+			$properties = [
+				'add' => ml_api_post('add'),
+				'replace' => ml_api_post('replace'),
+				'delete' => ml_api_post('delete'),
+			];
+
+			post_update_entry($slug, $properties);
+			return;
 		}
 
 		if (!in_array(TokenScope::CREATE, $auth['scope'], true)) {
-			ml_http_error(HTTPStatus::INSUFFICIENT_SCOPE, 'Token is missing `create` scope');
+			ml_http_error(
+				HTTPStatus::INSUFFICIENT_SCOPE,
+				'Token is missing `' . TokenScope::CREATE . '` scope'
+			);
 			return;
 		}
 
@@ -89,7 +110,7 @@ try {
 		case 'entry':
 		case 'h-entry':
 			$entry = new PostEntry();
-			$entry->parse_post(is_json);
+			$entry->parse_post($is_json);
 			post_create_entry($entry);
 			return;
 		}

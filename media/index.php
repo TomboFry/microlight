@@ -30,7 +30,10 @@ if (ml_api_validate_token($bearer) === false) {
 
 // Require `media` in scope
 if (!in_array(TokenScope::MEDIA, $auth['scope'], true)) {
-	ml_http_error(HTTPStatus::INSUFFICIENT_SCOPE, 'Token is missing `media` scope');
+	ml_http_error(
+		HTTPStatus::INSUFFICIENT_SCOPE,
+		'Token is missing `' . TokenScope::MEDIA . '` scope'
+	);
 	return;
 }
 

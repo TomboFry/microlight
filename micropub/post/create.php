@@ -178,7 +178,7 @@ function insert_post ($post) {
 		// Loop through suffixed slugs until one doesn't exist, or until we've
 		// tried 50 times, in which case return an error.
 		$suffix = 1;
-		while ($existing > 0 || $suffix > 50) {
+		while ($existing > 0) {
 			$new_slug = $slug . '-' . $suffix;
 
 			$existing = $db_post->count([
@@ -193,10 +193,10 @@ function insert_post ($post) {
 			// Overwrite the existing slug with the new slug
 			$post['slug'] = $new_slug;
 			$suffix += 1;
-		}
 
-		if ($suffix > 50) {
-			throw new Exception('This slug is used by too many slugs');
+			if ($suffix > 50) {
+				throw new Exception('This slug is used by too many slugs');
+			}
 		}
 
 		$postId = $db_post->insert($post);
@@ -214,21 +214,16 @@ function insert_post ($post) {
 			throw new Exception('Could not create entry. Unknown reason.');
 		}
 	} catch (DBError $e) {
-		error_log('Post could not be inserted...');
 		throw new Exception($e->getMessage());
 	}
 }
 
 /**
- * The main logic for the Micropub `h=entry` request. Takes various POST values
- * and converts them into an object suitable for the microlight database.
- * Any errors will be returned to the user.
- *
+ * Convert a PostEntry into something that can be handled by the database.
  * @param PostEntry $entry
- * @return void
- * @throws Exception
+ * @return array
  */
-function post_create_entry ($entry) {
+function post_create_post (PostEntry $entry) {
 	// Internally calculated values
 	$post_type = 'article';
 	$post_slug = '';
@@ -287,28 +282,49 @@ function post_create_entry ($entry) {
 	}
 
 	$post = [
-		'name' => $entry->name,
-		'summary' => $entry->summary,
-		'content' => $entry->content,
-		'post_type' => $post_type,
-		'slug' => $post_slug,
-		'published' => $entry->published,
-		'tags' => $entry->category,
-		'status' => $post_status,
-		'url' => $post_url
+		'properties' => [
+			'name' => $entry->name,
+			'summary' => $entry->summary,
+			'content' => $entry->content,
+			'post_type' => $post_type,
+			'slug' => $post_slug,
+			'published' => $entry->published,
+			'tags' => $entry->category,
+			'status' => $post_status,
+			'url' => $post_url
+		],
+		'perform_webmention' => $perform_webmention,
 	];
 
+	return $post;
+}
+
+/**
+ * The main logic for the Micropub `h=entry` request. Takes various POST values
+ * and converts them into an object suitable for the microlight database.
+ * Any errors will be returned to the user.
+ *
+ * @param PostEntry $entry
+ * @return void
+ * @throws Exception
+ */
+function post_create_entry (PostEntry $entry){
+	$new_post = post_create_post($entry);
+
 	try {
-		$final_slug = insert_post($post);
+		$final_slug = insert_post($new_post['properties']);
 	} catch (\Throwable $error) {
 		ml_http_error(HTTPStatus::SERVER_ERROR, $error->getMessage());
 		return;
 	}
 
-	if ($perform_webmention === true) {
+	if ($new_post['perform_webmention'] === true) {
 		try {
-			ml_webmention_perform($post_url, $final_slug);
+			ml_webmention_perform($new_post['properties']['url'], $final_slug);
 		} catch (\Throwable $error) {
+			// This error is not critical, as such, so a failing webmention does
+			// not really warrant it to be handled as such, hence the simple
+			// error logging.
 			error_log('Could not perform webmention. Here is why:');
 			error_log('Code: ' . $error->getCode());
 			error_log('Message: ' . $error->getMessage());
