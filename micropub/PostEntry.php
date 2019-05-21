@@ -17,8 +17,13 @@ class PostEntry {
 	public $repost_of;
 	public $mp_slug;
 
-	function __construct ($is_json = false) {
-		if ($is_json) {
+	/**
+	 * Parse the body of a JSON/form encoded request
+	 * @param bool $is_json
+	 * @return void
+	 */
+	public function parse_post (bool $is_json = false) {
+		if ($is_json === true) {
 			$this->parse_json();
 		} else {
 			$this->parse_form();
@@ -30,7 +35,7 @@ class PostEntry {
 	 *
 	 * @return void
 	 */
-	function parse_form () {
+	private function parse_form () {
 		$this->name = ml_api_post('name');
 		$this->summary = ml_api_post('summary');
 		$this->content = ml_api_post('content');
@@ -50,7 +55,7 @@ class PostEntry {
 	 * @return void
 	 * @throws Exception
 	 */
-	function parse_json () {
+	private function parse_json () {
 		global $post;
 
 		// Get all post properties from within properties

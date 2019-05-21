@@ -168,8 +168,6 @@ class Model {
 		$sql .= $this->sql->update($properties);
 		$sql .= $this->sql->where($where);
 
-		error_log($sql);
-
 		$stmt = $this->db->query($sql);
 		if ($stmt === false) throw new DBError(implode('; ', $this->db->errorInfo()), 0);
 		$stmt->fetch();

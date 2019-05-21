@@ -88,7 +88,8 @@ try {
 		switch ($type) {
 		case 'entry':
 		case 'h-entry':
-			$entry = new PostEntry($is_json);
+			$entry = new PostEntry();
+			$entry->parse_post(is_json);
 			post_create_entry($entry);
 			return;
 		}
