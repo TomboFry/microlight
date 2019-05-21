@@ -18,6 +18,38 @@ class PostEntry {
 	public $mp_slug;
 
 	/**
+	 * Convert a post from the database into a PostEntry
+	 * @param array[] $properties
+	 * @return void
+	 */
+	public function parse_entry ($properties) {
+		$this->name = $properties->name;
+		$this->summary = $properties->summary;
+		$this->content = $properties->content;
+		$this->published = $properties->published;
+		$this->category = $properties->tags;
+		$this->mp_slug = $properties->slug;
+
+		switch ($properties->post_type) {
+		case 'photo':
+			$this->photo = $properties->url;
+			break;
+		case 'bookmark':
+			$this->bookmark_of = $properties->url;
+			break;
+		case 'reply':
+			$this->in_reply_to = $properties->url;
+			break;
+		case 'like':
+			$this->like_of = $properties->url;
+			break;
+		case 'repost':
+			$this->repost_of = $properties->url;
+			break;
+		}
+	}
+
+	/**
 	 * Parse the body of a JSON/form encoded request
 	 * @param bool $is_json
 	 * @return void
