@@ -133,6 +133,7 @@ function post_update_entry (string $original_slug, array $properties) {
 
 	// 4. Insert back into database
 	$new_post = post_create_post($original_entry);
+	$new_post['properties']['updated'] = validate_date(null);
 
 	try {
 		$db_post->update(

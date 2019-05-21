@@ -68,6 +68,11 @@ function entry_footer ($post, $is_archive) {
 			<?php echo ml_date_pretty($post->published); ?>
 		</time>
 	</a>
+	<?php if ($post->updated !== null && $is_archive === false): ?>
+	<time class='dt-updated' datetime='<?php echo $post->updated; ?>'>
+		Updated on <?php echo ml_date_pretty($post->updated); ?>
+	</time>
+	<?php endif; ?>
 	<?php
 
 	// Print Location

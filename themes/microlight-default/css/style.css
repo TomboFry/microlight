@@ -92,12 +92,17 @@ article h2 {
 	margin-bottom: 16px;
 }
 
-.dt-published-link {
+.dt-published-link, .dt-updated {
 	display: block;
 	color: #666;
 	text-decoration: none;
 	font-size: 11pt;
 	font-weight: 500;
+	margin-bottom: 4px;
+}
+
+.h-geo, .h-adr {
+	margin-top: 12px;
 	margin-bottom: 16px;
 }
 

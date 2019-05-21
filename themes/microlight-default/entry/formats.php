@@ -28,7 +28,7 @@ function fmt_audio ($post, $is_archive) {
 }
 
 function fmt_bookmark ($post, $is_archive) {
-	echo "<h2>";
+	echo "<h2 class='p-name'>";
 		echo "Bookmarked ";
 		echo "<a class='u-bookmark-of h-cite' href='" . $post->url . "'>";
 			echo $post->name;
@@ -38,7 +38,7 @@ function fmt_bookmark ($post, $is_archive) {
 }
 
 function fmt_like ($post, $is_archive) {
-	echo "<h2>";
+	echo "<h2 class='p-name'>";
 		echo "Liked ";
 		echo "<a class='u-like-of' href='" . $post->url . "'>";
 			echo $post->name;
@@ -48,7 +48,7 @@ function fmt_like ($post, $is_archive) {
 }
 
 function fmt_reply ($post, $is_archive) {
-	echo "<h2>";
+	echo "<h2 class='p-name'>";
 		echo "Replied to ";
 		echo "<a class='in-reply-to' href='" . $post->url . "'>";
 			echo $post->url;
