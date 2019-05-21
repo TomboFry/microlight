@@ -167,6 +167,9 @@ function ml_webmention_perform ($url, $post_slug) {
 		'target' => $url,
 	]);
 
+	// If the webmention server returned a failed request
+	if ($response['code'] >= 400) throw new Exception('Error returned: ' . $response['body']);
+
 	error_log($response['body']);
 	// if ($response === ?) {...}
 
