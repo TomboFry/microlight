@@ -22,6 +22,9 @@ require_once('entry/index.php');
 			case Show::ERROR404:
 				echo 'That post could not be found.';
 				break;
+			case Show::DELETED:
+				echo 'That post has been deleted.';
+				break;
 			case Show::ARCHIVE:
 				foreach ($posts as $Post) {
 					entry($Post);

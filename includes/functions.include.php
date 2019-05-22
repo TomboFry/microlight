@@ -7,6 +7,7 @@ abstract class Show extends BasicEnum {
 	const POST = 'POST';
 	const PAGE = 'PAGE';
 	const ERROR404 = 'ERROR404';
+	const DELETED = 'DELETED';
 }
 
 // Define all globally available variables
@@ -134,12 +135,15 @@ function ml_load_posts () {
 		$limit = 1;
 		$offset = 0;
 
-		array_push($where, SQL::where_create(
+		// Overwrite the existing where clause (public posts only)
+		// as we need to show a various errors depending on the status of the
+		// post
+		$where = [ SQL::where_create(
 			'slug',
 			$post_slug,
 			SQLOP::EQUAL,
 			SQLEscape::SLUG
-		));
+		) ];
 	} elseif ($post_tag !== '' || $post_type !== '' || $search_query !== '') {
 		if ($post_tag !== '') {
 			array_push($where, SQL::where_create(
@@ -188,9 +192,24 @@ function ml_load_posts () {
 		if (count($posts) !== 1) {
 			$showing = Show::ERROR404;
 			$posts = null;
+			http_response_code(404);
 		} else {
-			// Otherwise, take the only post out of the array
-			$posts = $posts[0];
+			// Don't show the post if it has been deleted, or if it's not public
+			switch ($posts[0]->status) {
+			case 'public':
+				$posts = $posts[0];
+				break;
+			case 'deleted':
+				$posts = null;
+				$showing = Show::DELETED;
+				http_response_code(410);
+				break;
+			default:
+				$posts = null;
+				$showing = Show::ERROR404;
+				http_response_code(404);
+				break;
+			}
 		}
 	}
 }
