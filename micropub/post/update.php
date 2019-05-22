@@ -38,6 +38,10 @@ function post_update_entry (string $original_slug, array $properties) {
 	$original_entry = new PostEntry();
 	$original_entry->parse_entry($original_post);
 
+	// Track to see if the original URL was changed, so we can send a webmention
+	// to it again.
+	$original_url = $original_post->url;
+
 	// Make sure we traverse an array regardless of whether a value was provided
 	// for each field or not
 	if (empty($properties['add'])) {
@@ -148,6 +152,12 @@ function post_update_entry (string $original_slug, array $properties) {
 	if ($new_post['perform_webmention'] === true) {
 		try {
 			ml_webmention_perform($new_post['properties']['url'], $new_post['properties']['slug']);
+
+			// Also send a webmention to the URL this post used to point to
+			// (making sure it actually did point somewhere beforehand)
+			if (!empty($original_url) && $original_url !== $new_post['properties']['url']) {
+				ml_webmention_perform($original_url, $new_post['properties']['slug']);
+			}
 		} catch (\Throwable $error) {
 			// This error is not critical, as such, so a failing webmention does
 			// not really warrant it to be handled as such, hence the simple
