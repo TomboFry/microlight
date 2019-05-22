@@ -200,7 +200,9 @@ function ml_load_posts () {
 				$posts = $posts[0];
 				break;
 			case 'deleted':
-				$posts = null;
+				$deleted_post = Post::create_empty();
+				$deleted_post->slug = $posts[0]->slug;
+				$posts = $deleted_post;
 				$showing = Show::DELETED;
 				http_response_code(410);
 				break;

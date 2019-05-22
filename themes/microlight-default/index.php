@@ -23,7 +23,7 @@ require_once('entry/index.php');
 				echo 'That post could not be found.';
 				break;
 			case Show::DELETED:
-				echo 'That post has been deleted.';
+				entry($posts, false);
 				break;
 			case Show::ARCHIVE:
 				foreach ($posts as $Post) {

@@ -321,4 +321,21 @@ class Post extends Model {
 
 		return $body;
 	}
+
+	static function create_empty () {
+		$post = new stdClass();
+		$post->id = 0;
+		$post->name = 'Deleted';
+		$post->summary = 'This post has been deleted';
+		$post->content = 'This post has been deleted';
+		$post->post_type = 'article';
+		$post->slug = '';
+		$post->status = 'deleted';
+		$post->published = '';
+		$post->updated = null;
+		$post->tags = '';
+		$post->location = null;
+		$post->url = '';
+		return $post;
+	}
 }
