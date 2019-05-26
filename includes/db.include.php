@@ -84,7 +84,7 @@ class Model {
 		// Add limiting (mostly used for pagination)
 		if ($limit != NULL) $sql .= " LIMIT $limit OFFSET $offset";
 
-		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
+		$stmt = $this->db->query($sql, PDO::FETCH_ASSOC);
 		if ($stmt === false) throw new DBError(implode('; ', $this->db->errorInfo()), 0);
 
 		return $stmt->fetchAll();
@@ -113,7 +113,7 @@ class Model {
 	 */
 	function insert ($properties) {
 		$sql = 'INSERT INTO ' . $this->table_name . $this->sql->insert($properties);
-		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
+		$stmt = $this->db->query($sql, PDO::FETCH_ASSOC);
 		if ($stmt === false) throw new DBError(implode('; ', $this->db->errorInfo()), 0);
 		return $this->db->lastInsertId();
 	}
@@ -128,7 +128,7 @@ class Model {
 	function count ($where = []) {
 		$sql = "SELECT COUNT(id) as count FROM `$this->table_name`";
 		$sql .= $this->sql->where($where);
-		$stmt = $this->db->query($sql, PDO::FETCH_OBJ);
+		$stmt = $this->db->query($sql, PDO::FETCH_ASSOC);
 		return (int)$stmt->fetch()->count;
 	}
 
@@ -257,10 +257,10 @@ class Post extends Model {
 		// Process each result
 		foreach ($results as $key => $value) {
 			// Split the commas in the tags into an array
-			$results[$key]->tags = explode(',', $value->tags);
+			$results[$key]['tags'] = explode(',', $value['tags']);
 
 			// Remove the last element, which is always empty
-			array_pop($results[$key]->tags);
+			array_pop($results[$key]['tags']);
 		}
 
 		return $results;
@@ -275,47 +275,47 @@ class Post extends Model {
 		$body = [
 			'type' => 'h-entry',
 			'properties' => [
-				'name' => [ $post->name ],
-				'summary' => [ $post->summary ],
-				'category' => $post->tags,
-				'published' => [ $post->published ],
+				'name' => [ $post['name'] ],
+				'summary' => [ $post['summary'] ],
+				'category' => $post['tags'],
+				'published' => [ $post['published'] ],
 			],
 		];
 
-		if ($post->content !== strip_tags($post->content)) {
+		if ($post['content'] !== strip_tags($post['content'])) {
 			$body['properties']['content'] = [[
-				'value' => strip_tags($post->content),
-				'html' => $post->content,
+				'value' => strip_tags($post['content']),
+				'html' => $post['content'],
 			]];
 		} else {
-			$body['properties']['content'] = [ $post->content ];
+			$body['properties']['content'] = [ $post['content'] ];
 		}
 
-		if ($post->updated !== null) {
-			$body['properties']['updated'] = [ $post->updated ];
+		if ($post['updated'] !== null) {
+			$body['properties']['updated'] = [ $post['updated'] ];
 		}
 
-		switch ($post->post_type) {
+		switch ($post['post_type']) {
 		case 'photo':
-			$body['properties']['photo'] = [ $post->url ];
+			$body['properties']['photo'] = [ $post['url'] ];
 			break;
 		case 'audio':
-			$body['properties']['audio'] = [ $post->url ];
+			$body['properties']['audio'] = [ $post['url'] ];
 			break;
 		case 'video':
-			$body['properties']['video'] = [ $post->url ];
+			$body['properties']['video'] = [ $post['url'] ];
 			break;
 		case 'like':
-			$body['properties']['like-of'] = [ $post->url ];
+			$body['properties']['like-of'] = [ $post['url'] ];
 			break;
 		case 'bookmark':
-			$body['properties']['bookmark-of'] = [ $post->url ];
+			$body['properties']['bookmark-of'] = [ $post['url'] ];
 			break;
 		case 'reply':
-			$body['properties']['in-reply-to'] = [ $post->url ];
+			$body['properties']['in-reply-to'] = [ $post['url'] ];
 			break;
 		case 'repost':
-			$body['properties']['repost-of'] = [ $post->url ];
+			$body['properties']['repost-of'] = [ $post['url'] ];
 			break;
 		}
 
@@ -323,19 +323,21 @@ class Post extends Model {
 	}
 
 	static function create_empty () {
-		$post = new stdClass();
-		$post->id = 0;
-		$post->name = 'Deleted';
-		$post->summary = 'This post has been deleted';
-		$post->content = 'This post has been deleted';
-		$post->post_type = 'article';
-		$post->slug = '';
-		$post->status = 'deleted';
-		$post->published = '';
-		$post->updated = null;
-		$post->tags = '';
-		$post->location = null;
-		$post->url = '';
+		$post = [
+			'id' => 0,
+			'name' => 'Deleted',
+			'summary' => 'This post has been deleted',
+			'content' => 'This post has been deleted',
+			'post_type' => 'article',
+			'slug' => '',
+			'status' => 'deleted',
+			'published' => '',
+			'updated' => null,
+			'tags' => '',
+			'location' => null,
+			'url' => '',
+		];
+
 		return $post;
 	}
 }

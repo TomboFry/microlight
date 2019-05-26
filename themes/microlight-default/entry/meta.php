@@ -15,11 +15,11 @@ function entry_title ($post, $is_archive) {
 	if (ml_post_has_title($post) !== true) return;
 
 	if ($is_archive === true) {
-		echo "<a href='" . ml_post_permalink($post->slug) . "'>";
+		echo "<a href='" . ml_post_permalink($post['slug']) . "'>";
 	}
 
 	echo "<h2 class='p-name'>";
-	echo $post->name;
+	echo $post['name'];
 	echo "</h2>";
 
 	if ($is_archive === true) {
@@ -37,9 +37,9 @@ function entry_title ($post, $is_archive) {
  */
 function entry_content ($post, $is_archive) {
 	if ($is_archive === true) {
-		echo "<p class='p-summary'>" . $post->summary . "</p>";
+		echo "<p class='p-summary'>" . $post['summary'] . "</p>";
 	} else {
-		echo "<div class='e-content'>" . $post->content . "</div>";
+		echo "<div class='e-content'>" . $post['content'] . "</div>";
 	}
 }
 
@@ -54,30 +54,30 @@ function entry_footer ($post, $is_archive) {
 	?>
 	<footer>
 	<div class='tags'>
-		<a href='<?php echo ml_type_permalink($post->post_type); ?>'><?php
-			echo $post->post_type;
+		<a href='<?php echo ml_type_permalink($post['post_type']); ?>'><?php
+			echo $post['post_type'];
 		?></a>
 		<?php
-		foreach ($post->tags as $key) {
+		foreach ($post['tags'] as $key) {
 			echo "<a class='p-category' href='" . ml_tag_permalink($key) . "'>" . $key . "</a>";
 		}
 		?>
 	</div>
-	<a class='u-url u-uid dt-published-link' href='<?php echo ml_post_permalink($post->slug); ?>'>
-		<time class='dt-published' datetime='<?php echo $post->published; ?>'>
-			<?php echo ml_date_pretty($post->published); ?>
+	<a class='u-url u-uid dt-published-link' href='<?php echo ml_post_permalink($post['slug']); ?>'>
+		<time class='dt-published' datetime='<?php echo $post['published']; ?>'>
+			<?php echo ml_date_pretty($post['published']); ?>
 		</time>
 	</a>
-	<?php if ($post->updated !== null && $is_archive === false): ?>
-	<time class='dt-updated' datetime='<?php echo $post->updated; ?>'>
-		Updated on <?php echo ml_date_pretty($post->updated); ?>
+	<?php if ($post['updated'] !== null && $is_archive === false): ?>
+	<time class='dt-updated' datetime='<?php echo $post['updated']; ?>'>
+		Updated on <?php echo ml_date_pretty($post['updated']); ?>
 	</time>
 	<?php endif; ?>
 	<?php
 
 	// Print Location
 	if (!$is_archive):
-		$geo = ml_location_geo($post->location);
+		$geo = ml_location_geo($post['location']);
 		if (is_array($geo)):
 			$link = 'https://www.openstreetmap.org/?mlat=' . $geo['lat'] . '&mlon=' . $geo['long'];
 			?>

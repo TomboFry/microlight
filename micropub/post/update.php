@@ -40,7 +40,7 @@ function post_update_entry (string $original_slug, array $properties) {
 
 	// Track to see if the original URL was changed, so we can send a webmention
 	// to it again.
-	$original_url = $original_post->url;
+	$original_url = $original_post['url'];
 
 	// Make sure we traverse an array regardless of whether a value was provided
 	// for each field or not

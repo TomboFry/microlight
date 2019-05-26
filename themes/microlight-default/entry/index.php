@@ -18,7 +18,7 @@ function entry ($post, $is_archive = true) {
 	echo "<article class='h-entry'>";
 
 	// Show different content for different post types
-	switch ($post->post_type) {
+	switch ($post['post_type']) {
 	case 'audio':
 		fmt_audio($post, $is_archive);
 		break;

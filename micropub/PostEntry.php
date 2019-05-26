@@ -23,28 +23,28 @@ class PostEntry {
 	 * @return void
 	 */
 	public function parse_entry ($properties) {
-		$this->name = $properties->name;
-		$this->summary = $properties->summary;
-		$this->content = $properties->content;
-		$this->published = $properties->published;
-		$this->category = $properties->tags;
-		$this->mp_slug = $properties->slug;
+		$this->name = $properties['name'];
+		$this->summary = $properties['summary'];
+		$this->content = $properties['content'];
+		$this->published = $properties['published'];
+		$this->category = $properties['tags'];
+		$this->mp_slug = $properties['slug'];
 
-		switch ($properties->post_type) {
+		switch ($properties['post_type']) {
 		case 'photo':
-			$this->photo = $properties->url;
+			$this->photo = $properties['url'];
 			break;
 		case 'bookmark':
-			$this->bookmark_of = $properties->url;
+			$this->bookmark_of = $properties['url'];
 			break;
 		case 'reply':
-			$this->in_reply_to = $properties->url;
+			$this->in_reply_to = $properties['url'];
 			break;
 		case 'like':
-			$this->like_of = $properties->url;
+			$this->like_of = $properties['url'];
 			break;
 		case 'repost':
-			$this->repost_of = $properties->url;
+			$this->repost_of = $properties['url'];
 			break;
 		}
 	}

@@ -195,13 +195,13 @@ function ml_load_posts () {
 			http_response_code(404);
 		} else {
 			// Don't show the post if it has been deleted, or if it's not public
-			switch ($posts[0]->status) {
+			switch ($posts[0]['status']) {
 			case 'public':
 				$posts = $posts[0];
 				break;
 			case 'deleted':
 				$deleted_post = Post::create_empty();
-				$deleted_post->slug = $posts[0]->slug;
+				$deleted_post['slug'] = $posts[0]['slug'];
 				$posts = $deleted_post;
 				$showing = Show::DELETED;
 				http_response_code(410);
@@ -240,9 +240,9 @@ function ml_get_title () {
 	$str = '';
 
 	if ($showing === Show::POST || $showing === Show::PAGE) {
-		$str .= $posts->name !== ''
-			? $posts->name
-			: $posts->summary;
+		$str .= $posts['name'] !== ''
+			? $posts['name']
+			: $posts['summary'];
 		$str .= Config::TITLE_SEPARATOR;
 	}
 
@@ -378,9 +378,9 @@ function ml_page_headers () {
 	global $posts;
 
 	if ($showing === Show::PAGE || $showing === Show::POST) {
-		$description = $posts->summary;
-		if ($posts->post_type === 'photo') {
-			$image = $posts->url;
+		$description = $posts['summary'];
+		if ($posts['post_type'] === 'photo') {
+			$image = $posts['url'];
 		} else {
 			$image = ml_icon_url();
 		}
@@ -520,7 +520,7 @@ function ml_location_geo ($location) {
  * @return bool
  */
 function ml_post_has_title ($post) {
-	return $post->name !== null && $post->name !== '';
+	return $post['name'] !== null && $post['name'] !== '';
 }
 
 /**
