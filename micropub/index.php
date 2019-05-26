@@ -62,14 +62,9 @@ try {
 			$url = ml_api_post('url');
 			$slug = ml_slug_from_url($url);
 
-			$success = post_delete_post($slug);
-
-			if ($success === true) {
-				ml_http_response(HTTPStatus::NO_CONTENT);
-				return;
-			} else {
-				throw new Exception($success);
-			}
+			post_delete_post($slug);
+			ml_http_response(HTTPStatus::NO_CONTENT);
+			return;
 			break;
 
 		case 'update':
@@ -89,7 +84,9 @@ try {
 			];
 
 			post_update_entry($slug, $properties);
+			ml_http_response(HTTPStatus::NO_CONTENT);
 			return;
+			break;
 		}
 
 		if (!in_array(TokenScope::CREATE, $auth['scope'], true)) {
