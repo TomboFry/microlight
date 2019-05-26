@@ -52,7 +52,7 @@ abstract class SQLEscape extends BasicEnum {
 	// Full ISO8601 timestamp
 	// Required: Year, Month, Day, Hour, Minute, and Seconds
 	// Optional: T, Z, milliseconds, and timezone
-	const ISO8601 = '/^[0-9]{4}-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])[T ]([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[\+-]([0-1][0-9]|2[0-3]):?([0-5][0-9])?)?$/';
+	const ISO8601 = '/^[0-9]{4}-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1])[T ]([0-1][0-9]|2[0-3]):([0-5][0-9])(:([0-5][0-9])(\.[0-9]+)?)?(Z|[\+-]([0-1][0-9]|2[0-3]):?([0-5][0-9])?)?$/';
 }
 
 abstract class SQLType extends BasicEnum {
