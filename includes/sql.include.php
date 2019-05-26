@@ -324,11 +324,15 @@ class SQL {
 
 			// 2. Test column name and value
 			SQL::regex_test(SQLEscape::COLUMN, $column);
-			SQL::regex_test($escape, $value);
+			if ($value !== null) SQL::regex_test($escape, $value);
 
 			// 3. If all goes well, add them to the output!
 			$output .= '`' . $column . '`=';
-			$output .= $this->db->quote($value) . ',';
+			if ($value === null) {
+				$output .= 'null,';
+			} else {
+				$output .= $this->db->quote($value) . ',';
+			}
 		}
 
 		// Remove last character because it's a comma
