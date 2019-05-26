@@ -160,8 +160,6 @@ function ml_webmention_perform ($url, $post_slug) {
 	$webmention_url = ml_webmention_validate_url($url, $webmention_url);
 	if ($webmention_url === false) throw new Exception('Invalid webmention URL: "' . $webmention_url . '"');
 
-	// TODO: Get headers and return code off request made, to determine whether
-	// successful.
 	$response = ml_http_request($webmention_url, HTTPMethod::POST, [
 		'source' => ml_post_permalink($post_slug),
 		'target' => $url,

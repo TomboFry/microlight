@@ -122,7 +122,7 @@ function post_update_entry (string $original_slug, array $properties) {
 		if (!property_exists($original_entry, $key) || !is_array($original_entry->$key)) {
 			throw new Exception('Cannot delete from the "' . $key . '" property');
 		}
-		
+
 		// Delete individual values from an array
 		foreach ($values as $value) {
 			// Go through every value provided and check that it already exists
@@ -137,11 +137,11 @@ function post_update_entry (string $original_slug, array $properties) {
 
 	// 4. Insert back into database
 	$new_post = post_create_post($original_entry);
-	$new_post['properties']['updated'] = validate_date(null);
+	$new_post['updated'] = validate_date(null);
 
 	try {
 		$db_post->update(
-			$new_post['properties'],
+			$new_post,
 			[ SQL::where_create('slug', $original_slug, SQLOP::EQUAL, SQLEscape::SLUG) ]
 		);
 	} catch (\Throwable $error) {
@@ -149,14 +149,14 @@ function post_update_entry (string $original_slug, array $properties) {
 		return;
 	}
 
-	if ($new_post['perform_webmention'] === true) {
+	if (should_perform_webmention($new_post) === true) {
 		try {
-			ml_webmention_perform($new_post['properties']['url'], $new_post['properties']['slug']);
+			ml_webmention_perform($new_post['url'], $new_post['slug']);
 
 			// Also send a webmention to the URL this post used to point to
 			// (making sure it actually did point somewhere beforehand)
-			if (!empty($original_url) && $original_url !== $new_post['properties']['url']) {
-				ml_webmention_perform($original_url, $new_post['properties']['slug']);
+			if (!empty($original_url) && $original_url !== $new_post['url']) {
+				ml_webmention_perform($original_url, $new_post['slug']);
 			}
 		} catch (\Throwable $error) {
 			// This error is not critical, as such, so a failing webmention does
