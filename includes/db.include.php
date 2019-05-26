@@ -129,7 +129,7 @@ class Model {
 		$sql = "SELECT COUNT(id) as count FROM `$this->table_name`";
 		$sql .= $this->sql->where($where);
 		$stmt = $this->db->query($sql, PDO::FETCH_ASSOC);
-		return (int)$stmt->fetch()->count;
+		return (int)$stmt->fetch()['count'];
 	}
 
 	/**
@@ -259,7 +259,7 @@ class Post extends Model {
 			// Split the commas in the tags into an array
 			$results[$key]['tags'] = explode(',', $value['tags']);
 
-			// Remove the last element, which is always empty
+			// Remove the last element, which should always be empty
 			array_pop($results[$key]['tags']);
 		}
 
@@ -333,7 +333,7 @@ class Post extends Model {
 			'status' => 'deleted',
 			'published' => '',
 			'updated' => null,
-			'tags' => '',
+			'tags' => [],
 			'location' => null,
 			'url' => '',
 		];
