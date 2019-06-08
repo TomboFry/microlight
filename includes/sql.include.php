@@ -148,10 +148,11 @@ class SQL {
 	 * @return string
 	 */
 	private function foreignKeyToString ($foreign_keys) {
-		$acc = '';
+		$types = '';
+		$keys = '';
 
 		// `array_walk` loops over every property provided.
-		array_walk($foreign_keys, function ($key_props) use (&$acc) {
+		array_walk($foreign_keys, function ($key_props) use (&$types, &$keys) {
 			// The table to refer to
 			$table = $key_props['table'];
 
@@ -164,12 +165,11 @@ class SQL {
 
 			$column = $table . '_' . $reference;
 
-			$acc .= ", `$column` INTEGER NOT NULL,"
-				. " FOREIGN KEY(`$column`)"
-				. " REFERENCES `$table`(`$reference`)";
+			$types .= ", `$column` INTEGER NOT NULL";
+			$keys .= ", FOREIGN KEY(`$column`) REFERENCES `$table`(`$reference`)";
 		});
 
-		return $acc;
+		return $types . $keys;
 	}
 
 	/**
