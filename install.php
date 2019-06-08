@@ -163,6 +163,12 @@ if (isset($_POST['submit'])) {
 			$post = new Post($db);
 			$post->create_table();
 
+			$person = new Person($db);
+			$person->create_table();
+
+			$interaction = new Interaction($db);
+			$interaction->create_table();
+
 			if (create_user_config($name, $email, $note, $services) === false) {
 				throw new Exception (
 					'Could not create `user.config.php`. ' +

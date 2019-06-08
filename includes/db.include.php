@@ -341,3 +341,74 @@ class Post extends Model {
 		return $post;
 	}
 }
+
+class Person extends Model {
+	public $table_name = 'person';
+
+	function __construct (&$db) {
+		parent::__construct($db, $this->table_name);
+	}
+
+	function create_table() {
+		$this->db->exec($this->sql->create($this->table_name, [
+			[
+				'column' => 'id',
+				'type' => SQLType::PRIMARY_KEY_TYPE,
+			],
+			[
+				'column' => 'name',
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
+			],
+			[
+				'column' => 'url',
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
+			],
+			[
+				'column' => 'photo_url',
+				'type' => SQLType::TEXT_TYPE,
+			],
+		]));
+	}
+}
+
+class Interaction extends Model {
+	public $table_name = 'interaction';
+
+	function __construct (&$db) {
+		parent::__construct($db, $this->table_name);
+	}
+
+	function create_table() {
+		$this->db->exec($this->sql->create($this->table_name, [
+			[
+				'column' => 'id',
+				'type' => SQLType::PRIMARY_KEY_TYPE,
+			],
+			[
+				'column' => 'type',
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
+			],
+			[
+				'column' => 'datetime',
+				'type' => SQLType::DATETIME_TYPE . SQLType::MOD_NOT_NULL,
+			],
+			[
+				'column' => 'contents',
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
+			],
+			[
+				'column' => 'url',
+				'type' => SQLType::TEXT_TYPE . SQLType::MOD_NOT_NULL,
+			],
+		], [
+			[
+				'table' => 'person',
+				'reference' => 'id',
+			],
+			[
+				'table' => 'post',
+				'reference' => 'id',
+			],
+		]));
+	}
+}
