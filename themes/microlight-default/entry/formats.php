@@ -27,6 +27,20 @@ function fmt_audio ($post, $is_archive) {
 	entry_content($post, $is_archive);
 }
 
+function fmt_scrobble ($post, $is_archive) {
+	$url = $post['url'];
+	if (empty($url)) {
+		$url = ml_post_permalink($post['slug']);
+	}
+	echo "<h2 class='p-name'>";
+		echo "Listened to ";
+		echo "<a class='u-listen-of' href='" . $url . "'>";
+			echo $post['name'];
+		echo "</a>";
+	echo "</h2>";
+	entry_content($post, $is_archive);
+}
+
 function fmt_bookmark ($post, $is_archive) {
 	echo "<h2 class='p-name'>";
 		echo "Bookmarked ";
