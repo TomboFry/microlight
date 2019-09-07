@@ -92,7 +92,7 @@ article h2 {
 	margin-bottom: 16px;
 }
 
-.dt-published-link, .dt-updated {
+.dt-published-link, .dt-updated, #entry-interactions .dt-published {
 	display: block;
 	color: #666;
 	text-decoration: none;
@@ -171,4 +171,37 @@ audio {
 
 .hidden {
 	display: none;
+}
+
+#entry-interactions {
+	padding-top: 40px;
+}
+
+#entry-interactions::before {
+	content: 'INTERACTIONS';
+	color: #ccc;
+	font-weight: 700;
+}
+
+#entry-interactions > div {
+	padding: 10px 16px;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	margin-top: 10px;
+}
+
+#entry-interactions .p-name {
+	font-weight: 700;
+}
+
+.entry-interaction-emoji, #entry-interactions .u-photo {
+	float: left;
+	line-height: 40px;
+	width: 40px;
+	height: 40px;
+	font-size: 40px;
+	margin-right: 10px;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
 }

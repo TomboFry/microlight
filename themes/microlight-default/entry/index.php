@@ -6,6 +6,7 @@ if (!defined('MICROLIGHT')) die();
 
 require_once('meta.php');
 require_once('formats.php');
+require_once('interaction.php');
 
 /**
  * The main logic for displaying entries
@@ -45,6 +46,8 @@ function entry ($post, $is_archive = true) {
 	entry_footer($post, $is_archive);
 
 	entry_hcard();
+
+	entry_interactions($post);
 
 	// Everything below this point is for metadata
 	echo '</article>';
