@@ -198,6 +198,10 @@ function ml_load_posts () {
 			switch ($posts[0]['status']) {
 			case 'public':
 				$posts = $posts[0];
+
+				// Fetch interactions
+				$posts['interactions'] = ml_post_fetch_interactions($posts);
+
 				break;
 			case 'deleted':
 				$deleted_post = Post::create_empty();
@@ -538,6 +542,44 @@ function ml_slug_from_url($url) {
 	if ($pos === false) throw new Exception('Invalid post URL');
 
 	return substr($url, $pos + strlen($url_prefix));
+}
+
+/**
+ * Fetch a list of interactions for a specific post
+ *
+ * @param Post $post
+ * @return array
+ */
+function ml_post_fetch_interactions ($post) {
+	global $db;
+
+	$where = [ SQL::where_create(
+		'post_id',
+		$post['id'],
+		SQLOP::EQUAL,
+		SQLEscape::INT
+	) ];
+
+	$interaction_class = new Interaction($db);
+	$interaction_count = $interaction_class->count($where);
+
+	if ($interaction_count === 0) return [];
+
+	$interactions = $interaction_class->find($where, NULL, 0, 'datetime');
+	$person_class = new Person($db);
+
+	foreach ($interactions as $interaction_index => $interaction) {
+		$person_where = [ SQL::where_create(
+			'id',
+			$interaction['person_id'],
+			SQLOP::EQUAL,
+			SQLEscape::INT
+		) ];
+		$person = $person_class->find_one($person_where);
+		$interactions[$interaction_index]['person'] = $person;
+	}
+
+	return $interactions;
 }
 
 /**

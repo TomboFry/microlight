@@ -49,6 +49,9 @@ abstract class SQLEscape extends BasicEnum {
 	// Either `ASC` or `DESC`, and nothing else
 	const ORDER_DIRECTION = '/(ASC|DESC)/';
 
+	// Integer, used for ID matching
+	const INT = '/^[0-9]+$/';
+
 	// Full ISO8601 timestamp
 	// Required: Year, Month, Day, Hour, Minute, and Seconds
 	// Optional: T, Z, milliseconds, and timezone
