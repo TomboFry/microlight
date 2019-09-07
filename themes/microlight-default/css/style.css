@@ -177,6 +177,10 @@ audio {
 	padding-top: 40px;
 }
 
+#entry-interactions:empty {
+	display: none;
+}
+
 #entry-interactions::before {
 	content: 'INTERACTIONS';
 	color: #ccc;
