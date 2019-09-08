@@ -533,6 +533,7 @@ function ml_post_has_title ($post) {
  * Determine the slug of a single post based on the URL
  * @param string $url
  * @return string Post slug
+ * @throws Exception
  */
 function ml_slug_from_url($url) {
 	if (empty($url) || $url === null) throw new Exception('URL not provided');
