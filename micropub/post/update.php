@@ -2,7 +2,7 @@
 
 if (!defined('MICROLIGHT')) die();
 
-require_once('includes/webmention.include.php');
+require_once('includes/webmention-send.include.php');
 
 /**
  * Update an existing post in the database based on a given slug.

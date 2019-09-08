@@ -3,7 +3,7 @@
 if (!defined('MICROLIGHT')) die();
 
 require_once('includes/lib/media.php');
-require_once('includes/webmention.include.php');
+require_once('includes/webmention-send.include.php');
 
 /**
  * Inserts a post into the database, returning any errors if they occur,
