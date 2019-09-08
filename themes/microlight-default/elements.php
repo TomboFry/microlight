@@ -6,9 +6,9 @@ if (!defined('MICROLIGHT')) die();
 
 function html_head () {
 	echo "<head>";
-		echo "<meta charset='UTF-8'>";
-		echo "<meta name='viewport' content='width=device-width, initial-scale=1.0'>";
-		echo "<meta http-equiv='X-UA-Compatible' content='ie=edge'>";
+		echo "<meta charset='UTF-8' />";
+		echo "<meta name='viewport' content='width=device-width, initial-scale=1.0' />";
+		echo "<meta http-equiv='X-UA-Compatible' content='ie=edge' />";
 
 		// Add pre-generated headers
 		ml_page_headers();

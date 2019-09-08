@@ -396,20 +396,22 @@ function ml_page_headers () {
 	<meta name='description' content='<?php echo $description; ?>' />
 	<meta name='generator' content='Microlight <?php echo MICROLIGHT; ?>' />
 	<meta name='author' content='<?php echo User::NAME; ?>' />
-	<meta name='referrer' content='origin'>
+	<meta name='referrer' content='origin' />
+
 	<?php if (Config::OPEN_GRAPH === true): ?>
-		<meta name='twitter:card' content='summary' />
-		<meta property='og:url' content='<?php echo ml_canonical_permalink(); ?>' />
-		<meta property='og:title' content='<?php echo ml_get_title(); ?>' />
-		<meta property='og:description' content='<?php echo $description; ?>' />
-		<meta property='og:image' content='<?php echo $image; ?>' />
+	<meta name='twitter:card' content='summary' />
+	<meta property='og:url' content='<?php echo ml_canonical_permalink(); ?>' />
+	<meta property='og:title' content='<?php echo ml_get_title(); ?>' />
+	<meta property='og:description' content='<?php echo $description; ?>' />
+	<meta property='og:image' content='<?php echo $image; ?>' />
 	<?php endif; ?>
+
 	<title><?php echo ml_get_title(); ?></title>
 	<link rel='micropub' href='<?php echo ml_base_url() . 'micropub/index.php'; ?>' />
 	<link rel='authorization_endpoint' href='<?php echo Config::INDIEAUTH_PROVIDER; ?>' />
 	<link rel='token_endpoint' href='<?php echo Config::INDIEAUTH_TOKEN_ENDPOINT; ?>' />
-	<link rel='icon' href='<?php echo $image; ?>'>
-	<link rel='apple-touch-icon-precomposed' href='<?php echo $image; ?>'>
+	<link rel='icon' href='<?php echo $image; ?>' />
+	<link rel='apple-touch-icon-precomposed' href='<?php echo $image; ?>' />
 	<link rel='canonical' href='<?php echo ml_canonical_permalink(); ?>' />
 	<?php
 }
