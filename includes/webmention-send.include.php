@@ -20,7 +20,7 @@ function ml_webmention_validate_url ($source, $url) {
 	// we can safely assume it is absolute, as the rest doesn't really matter.
 	if (isset($url_parts['scheme']) && isset($url_parts['host'])) {
 		$output = $url;
-	
+
 	// Otherwise, the provided URL must be relative
 	// (ie. not contain a scheme or hostname)
 	} else if (!isset($url_parts['host'])) {
@@ -28,7 +28,7 @@ function ml_webmention_validate_url ($source, $url) {
 
 		// Add source port
 		if (isset($source_parts['port'])) $output .= ':' . $source_parts['port'];
-		
+
 		// Relative to Root (because first character is '/')
 		if (strpos($url_parts['path'], '/') === 0) {
 			$output .= $url;
