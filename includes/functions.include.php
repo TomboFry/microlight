@@ -341,9 +341,12 @@ function ml_canonical_permalink ($suffix = '') {
 	if (!empty($suffix)) {
 		array_push($queries, $suffix);
 	}
-	
-	$str = ml_base_url() . '?';
-	$str .= implode('&', $queries);
+
+	$str = ml_base_url();
+
+	if (count($queries) > 0) {
+		$str .= '?' . implode('&', $queries);
+	}
 
 	return $str;
 }
