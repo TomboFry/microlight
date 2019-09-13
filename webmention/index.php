@@ -7,6 +7,7 @@ require_once('includes/config.php');
 require_once('includes/api.include.php');
 
 if (ml_api_method() !== HTTPMethod::POST) {
+	header('Allow: POST');
 	ml_http_response(HTTPStatus::METHOD_NOT_ALLOWED);
 	return;
 }
