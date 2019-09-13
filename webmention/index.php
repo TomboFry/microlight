@@ -115,8 +115,9 @@ function xpath_class ($class_name) {
  * Perform a GET request on the source URL to try and find the Target URL within
  * the entry somewhere.
  *
- * @param string $url
- * @return void
+ * @param string $source Source URL
+ * @param string $target Target URL
+ * @return array Post's details
  * @throws Exception
  */
 function ml_webmention_validate_source_contents ($source, $target) {
@@ -125,8 +126,16 @@ function ml_webmention_validate_source_contents ($source, $target) {
 		'User-Agent: Microlight/' . MICROLIGHT . ' (webmention)'
 	]);
 
-	// Make sure the webpage returned a successful response
-	if ($response['code'] < 200 || $response['code'] > 299) {
+	// For multiple reuse, this is the structure of a "deleted" webmention.
+	$deleted = [
+		'author' => false,
+		'deleted' => true,
+	];
+
+	// Make sure the webpage returned a successful response, unless it has been deleted.
+	if ($response['code'] === 410) {
+		return $deleted;
+	} elseif ($response['code'] < 200 || $response['code'] > 299) {
 		throw new Exception('Source URL returned non-success status code');
 	}
 
@@ -142,9 +151,7 @@ function ml_webmention_validate_source_contents ($source, $target) {
 
 	// Make sure there is at least one link on the page with an exactly matching
 	// target URL.
-	if ($target_links->length < 1) {
-		throw new Exception('Source URL does not contain target');
-	}
+	if ($target_links->length < 1) return $deleted;
 
 	// If the page is indeed valid, determine the:
 	// * entry type
@@ -225,6 +232,7 @@ function ml_webmention_validate_source_contents ($source, $target) {
 		],
 		'datetime' => $published,
 		'contents' => $content,
+		'deleted' => false,
 	];
 }
 
@@ -242,6 +250,9 @@ function ml_webmention_validate_source_contents ($source, $target) {
  */
 function ml_webmention_validate_author ($db, $author) {
 	$person_db = new Person($db);
+
+	// The author may be false if the post was deleted, in which case return early.
+	if ($author === false) return false;
 
 	// Find a person
 	$where = [ SQL::where_create('url', $author['url']) ];
@@ -300,6 +311,17 @@ function ml_webmention_validate_author ($db, $author) {
 function ml_webmention_interaction_store ($db, $source, $post_id, $post_details, $author) {
 	$interaction_db = new Interaction($db);
 
+	// See if this URL has already been entered into the database
+	$where = [ SQL::where_create('url', $source) ];
+	$existing = $interaction_db->find_one($where);
+
+	// Delete and return early, only if the post has been deleted and the
+	// interaction *does* actually exist.
+	if ($post_details['deleted'] === true && $existing !== null) {
+		$interaction_db->delete($where);
+		return;
+	}
+
 	$interaction_properties = [
 		'type' => 'reply',
 		'datetime' => $post_details['datetime'],
@@ -309,14 +331,19 @@ function ml_webmention_interaction_store ($db, $source, $post_id, $post_details,
 		'post_id' => $post_id,
 	];
 
-	$interaction_id = $interaction_db->insert($interaction_properties);
+	// Update the existing record, or create a new one.
+	if ($existing !== null) {
+		$interaction_db->update($interaction_properties, $where);
+		return $existing['id'];
+	} else {
+		$interaction_id = $interaction_db->insert($interaction_properties);
+	}
 
 	return $interaction_id;
 }
 
 // TODO: Determine entry type on source URL
-// TODO: Support updating existing webmentions
-// TODO: Support deleting existing webmentions (`410 Gone` on update)
+// TODO: Limit fetching source contents to 5 seconds or 1 MB (whichever comes first)
 
 try {
 	// Step 1: Validate input, can't proceed if the URLs aren't set up properly!
@@ -339,6 +366,8 @@ try {
 	//         if not.
 	$author = ml_webmention_validate_author($db, $post_details['author']);
 
+	// Step 5: Finally, store the webmention in the database, updating or
+	//         deleting the interaction if it has changed.
 	$interaction_id = ml_webmention_interaction_store(
 		$db,
 		$source,
