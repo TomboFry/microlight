@@ -365,9 +365,6 @@ function ml_webmention_interaction_store ($db, $source, $post_id, $post_details,
 	return $interaction_id;
 }
 
-// TODO: Determine entry type on source URL
-// TODO: Limit fetching source contents to 5 seconds or 1 MB (whichever comes first)
-
 try {
 	// Step 1: Validate input, can't proceed if the URLs aren't set up properly!
 	$post_validation = ml_webmention_validate_post();

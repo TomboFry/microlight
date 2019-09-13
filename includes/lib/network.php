@@ -160,6 +160,9 @@ function ml_http_request ($url, $method = HTTPMethod::GET, $body = null, $header
 		CURLOPT_MAXREDIRS => 5,
 		CURLOPT_POSTREDIR => 3,
 
+		// Timeout after 5 seconds
+		CURLOPT_TIMEOUT => 5,
+
 		// Get headers directly from request using this anonymous function
 		CURLOPT_HEADERFUNCTION => function($curl, $header) use (&$response) {
 			$len = strlen($header);
