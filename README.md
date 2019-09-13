@@ -35,10 +35,10 @@ concepts. This means support for:
 * **GD Image Processing Library**  
   For image uploads. This extension can be enabled in your `php.ini` file, or by
   installing `php-gd`, depending on your distro.
-* **Apache Rewrite Module (mod_rewrite)** (optional)  
-  While this is not required, post permalinks are going to look *much* nicer.
-  Please note, however, this has not yet been implemented, so URLs still look
-  quite ugly.
+* **Apache or Nginx**  
+  To prevent your SQLite database from being directly downloaded, you should run
+  microlight in an Apache or Nginx server. In the future, pretty-URL support
+  will also be enabled for those doing so, when it is eventually developed.
 
 ## Disclaimer
 
