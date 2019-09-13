@@ -406,6 +406,10 @@ function ml_page_headers () {
 	<meta property='og:image' content='<?php echo $image; ?>' />
 	<?php endif; ?>
 
+	<?php if ($showing === Show::PAGE || $showing === Show::POST): ?>
+	<link rel='webmention' href='<?php echo ml_base_url() . 'webmention/index.php'; ?>' />
+	<?php endif; ?>
+
 	<title><?php echo ml_get_title(); ?></title>
 	<link rel='micropub' href='<?php echo ml_base_url() . 'micropub/index.php'; ?>' />
 	<link rel='authorization_endpoint' href='<?php echo Config::INDIEAUTH_PROVIDER; ?>' />
