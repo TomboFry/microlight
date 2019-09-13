@@ -159,6 +159,28 @@ function ml_webmention_validate_source_contents ($source, $target) {
 	// * published date
 	// * author details (name, image, home URL)
 
+	// Entry Type!
+	// We're only going to see what the first link contains. If this becomes a
+	// problem, I will update this to check all links.
+	$type = 'reply';
+	$target_link_classes = explode(" ", $target_links[0]->getAttribute('class'));
+	foreach ($target_link_classes as $class) {
+		switch ($class) {
+		case 'u-in-reply-to':
+			$type = 'reply';
+			break;
+		case 'u-like-of':
+			$type = 'like';
+			break;
+		case 'u-repost-of':
+			$type = 'repost';
+			break;
+		case 'u-bookmark-of':
+			$type = 'bookmark';
+			break;
+		}
+	}
+
 	// First, get the entry containers and use the first one.
 	$entry = $xpath->query('//*[' . xpath_class('h-entry') . ']');
 	if ($entry->length < 1) {
@@ -230,6 +252,7 @@ function ml_webmention_validate_source_contents ($source, $target) {
 			'url' => $author_url,
 			'photo_url' => $author_image,
 		],
+		'type' => $type,
 		'datetime' => $published,
 		'contents' => $content,
 		'deleted' => false,
@@ -323,7 +346,7 @@ function ml_webmention_interaction_store ($db, $source, $post_id, $post_details,
 	}
 
 	$interaction_properties = [
-		'type' => 'reply',
+		'type' => $post_details['type'],
 		'datetime' => $post_details['datetime'],
 		'contents' => $post_details['contents'],
 		'url' => $source,
