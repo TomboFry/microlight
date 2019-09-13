@@ -1,5 +1,5 @@
 docs/
-microlight.db
+*.db
 error.log
 uploads/
 /info.php

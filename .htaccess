@@ -1,0 +1,3 @@
+<FilesMatch "^.*\.db$">
+Deny from all
+</FilesMatch>
