@@ -64,7 +64,7 @@ function fmt_like ($post, $is_archive) {
 function fmt_reply ($post, $is_archive) {
 	echo "<h2 class='p-name'>";
 		echo "Replied to ";
-		echo "<a class='in-reply-to' href='" . $post['url'] . "'>";
+		echo "<a class='u-in-reply-to' href='" . $post['url'] . "'>";
 			echo $post['url'];
 		echo "</a>";
 	echo "</h2>";
