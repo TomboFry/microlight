@@ -61,6 +61,16 @@ function fmt_like ($post, $is_archive) {
 	entry_content($post, $is_archive);
 }
 
+function fmt_repost ($post, $is_archive) {
+	echo "<h2 class='p-name'>";
+		echo "Reposted ";
+		echo "<a class='u-repost-of' href='" . $post['url'] . "'>";
+			echo $post['name'];
+		echo "</a>";
+	echo "</h2>";
+	entry_content($post, $is_archive);
+}
+
 function fmt_reply ($post, $is_archive) {
 	echo "<h2 class='p-name'>";
 		echo "Replied to ";

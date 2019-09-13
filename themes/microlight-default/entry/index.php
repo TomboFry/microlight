@@ -32,6 +32,9 @@ function entry ($post, $is_archive = true) {
 	case 'like':
 		fmt_like($post, $is_archive);
 		break;
+	case 'repost':
+		fmt_repost($post, $is_archive);
+		break;
 	case 'reply':
 		fmt_reply($post, $is_archive);
 		break;
