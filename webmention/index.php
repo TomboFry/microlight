@@ -317,8 +317,8 @@ function ml_webmention_interaction_store ($db, $source, $post_id, $post_details,
 
 	// Delete and return early, only if the post has been deleted and the
 	// interaction *does* actually exist.
-	if ($post_details['deleted'] === true && $existing !== null) {
-		$interaction_db->delete($where);
+	if ($post_details['deleted'] === true) {
+		if ($existing !== null) $interaction_db->delete($where);
 		return;
 	}
 
