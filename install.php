@@ -236,7 +236,7 @@ if (isset($_POST['submit'])) {
 			width: 60% !important;
 		}
 
-		ul { margin-left: 24px }
+		ul { margin: 0 0 0 24px }
 
 		.f {
 			display: block;
@@ -276,14 +276,14 @@ if (isset($_POST['submit'])) {
 		}
 
 		.b {
-			margin-top: 0;
-			padding-bottom: 0;
+			margin: 0;
+			padding: 0 0 8px;
 		}
 
 		.r {
 			color: #E34;
 			font-weight: 700;
-			margin-left: 8px;
+			margin: 2px 0 0 8px;
 			font-size: 13px;
 			float: right;
 		}
@@ -318,7 +318,7 @@ if (isset($_POST['submit'])) {
 		}
 
 		#install:active {
-			margin-top: 2px;
+			margin: 2px 0 0;
 			border-bottom: 1px solid #184;
 		}
 	</style>
