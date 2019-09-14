@@ -217,7 +217,7 @@ if (isset($_POST['submit'])) {
 
 		h1 {
 			font-weight: 300;
-			font-size: 32pt;
+			font-size: 42px;
 		}
 
 		body > * { margin-bottom: 16px }
@@ -248,6 +248,7 @@ if (isset($_POST['submit'])) {
 			display: block;
 			font-weight: 500;
 			margin-bottom: 8px;
+			font-size: 16px;
 		}
 
 		.f input[type='text'], .f input[type='email'], .f input[type='url'] {
@@ -270,7 +271,7 @@ if (isset($_POST['submit'])) {
 		.d {
 			display: block;
 			margin-top: 8px;
-			font-size: 9pt;
+			font-size: 12px;
 			color: #999;
 		}
 
@@ -283,7 +284,7 @@ if (isset($_POST['submit'])) {
 			color: #E34;
 			font-weight: 700;
 			margin-left: 8px;
-			font-size: 10pt;
+			font-size: 13px;
 			float: right;
 		}
 
