@@ -53,6 +53,20 @@ header .u-photo {
 	margin-top: 16px;
 }
 
+h2.p-name {
+	font-size: 24px;
+}
+
+.p-name-emoji {
+	margin-right: 12px;
+	line-height: 20px;
+	height: 20px;
+	font-size: 20px;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
 .me-links {
 	list-style-type: none;
 	margin-left: 0;

@@ -33,7 +33,7 @@ function fmt_scrobble ($post, $is_archive) {
 		$url = ml_post_permalink($post['slug']);
 	}
 	echo "<h2 class='p-name'>";
-		echo "Listened to ";
+		echo "<span class='p-name-emoji'>&#127911;</span>";
 		echo "<a class='u-listen-of' href='" . $url . "'>";
 			echo $post['name'];
 		echo "</a>";
@@ -43,9 +43,13 @@ function fmt_scrobble ($post, $is_archive) {
 
 function fmt_bookmark ($post, $is_archive) {
 	echo "<h2 class='p-name'>";
-		echo "Bookmarked ";
+		echo "<span class='p-name-emoji'>&#128278;</span>";
 		echo "<a class='u-bookmark-of h-cite' href='" . $post['url'] . "'>";
+		if (empty($post['name'])) {
+			echo $post['url'];
+		} else {
 			echo $post['name'];
+		}
 		echo "</a>";
 	echo "</h2>";
 	entry_content($post, $is_archive);
@@ -53,9 +57,13 @@ function fmt_bookmark ($post, $is_archive) {
 
 function fmt_like ($post, $is_archive) {
 	echo "<h2 class='p-name'>";
-		echo "Liked ";
+		echo "<span class='p-name-emoji'>&#10084;&#65039;</span>";
 		echo "<a class='u-like-of' href='" . $post['url'] . "'>";
+		if (empty($post['name'])) {
+			echo $post['url'];
+		} else {
 			echo $post['name'];
+		}
 		echo "</a>";
 	echo "</h2>";
 	entry_content($post, $is_archive);
@@ -63,9 +71,13 @@ function fmt_like ($post, $is_archive) {
 
 function fmt_repost ($post, $is_archive) {
 	echo "<h2 class='p-name'>";
-		echo "Reposted ";
+		echo "<span class='p-name-emoji'>&#128260;</span>";
 		echo "<a class='u-repost-of' href='" . $post['url'] . "'>";
+		if (empty($post['name'])) {
+			echo $post['url'];
+		} else {
 			echo $post['name'];
+		}
 		echo "</a>";
 	echo "</h2>";
 	entry_content($post, $is_archive);
@@ -73,9 +85,13 @@ function fmt_repost ($post, $is_archive) {
 
 function fmt_reply ($post, $is_archive) {
 	echo "<h2 class='p-name'>";
-		echo "Replied to ";
+		echo "<span class='p-name-emoji'>&#128172;</span>";
 		echo "<a class='u-in-reply-to' href='" . $post['url'] . "'>";
+		if (empty($post['name'])) {
 			echo $post['url'];
+		} else {
+			echo $post['name'];
+		}
 		echo "</a>";
 	echo "</h2>";
 	entry_content($post, $is_archive);
