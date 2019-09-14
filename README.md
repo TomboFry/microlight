@@ -22,6 +22,10 @@ concepts. This means support for:
   * Your website is a corner of the internet **you own** - no company
     keeps a-hold of the information you post to it
 
+## Screenshot
+
+![](themes/microlight-default/microlight-default-screenshot.png)
+
 ## Requirements
 
 * **PHP 7 or above**  
