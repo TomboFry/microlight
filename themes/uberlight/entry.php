@@ -22,6 +22,7 @@ function entry ($post, $show_permalink = true) {
 	}
 
 	entry_footer($post);
+	entry_interactions($post);
 
 	echo "</article>";
 }
@@ -87,4 +88,65 @@ function entry_footer ($post) {
 
 	// Close footer
 	echo "</footer>";
+}
+
+function entry_interactions ($post) {
+	if (isset($post['interactions']) === false) return;
+
+	// Open interactions container
+	echo "<div class='entry-interactions'>";
+
+	foreach ($post['interactions'] as $interaction) {
+		entry_interaction_single($interaction);
+	}
+
+	// Close interactions container
+	echo "</div>";
+}
+
+function entry_interaction_single ($interaction) {
+	// Open container
+	echo "<div class='p-comment u-comment h-cite'>";
+
+	// Open author container
+	echo "<div class='p-author u-author h-card'>";
+
+	// Display the image, only if the person has one.
+	if ($interaction['person']['photo_url'] !== null) {
+		echo "<img src='" . $interaction['person']['photo_url'] . "' class='u-photo'>";
+	}
+
+	// Display the person's name and URL to their homepage
+	echo "<a class='u-url p-name' href='" . $interaction['person']['url'] . "'>";
+	echo $interaction['person']['name'];
+	echo "</a>";
+	echo "</div>";
+
+	// Open content container
+	echo "<p class='p-content'>";
+
+	if ($interaction['type'] === 'reply') {
+		// Display webmention contents
+		echo $interaction['contents'];
+	} else {
+		// Convert the interaction type into a verb and display it.
+		$type = $interaction['type'];
+		// Add an 'e' to the end if there isn't one already
+		if ($type[-1] !== 'e') $type .= 'e';
+		// Always add the D ;)
+		$type .= 'd';
+		// Print it out.
+		echo $type . ' this post.';
+	}
+
+	// Close content container
+	echo "</p>";
+
+	// Display metadata (date, link to post, etc).
+	echo "<a class='u-url' href='" . $interaction['url'] . "'>";
+	echo "<time class='dt-published'>" . ml_date_pretty($interaction['datetime']) . "</time>";
+	echo "</a>";
+
+	// Close container
+	echo "</div>";
 }

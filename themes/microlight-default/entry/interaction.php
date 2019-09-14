@@ -15,7 +15,7 @@ function entry_interactions ($post) {
 	// Open interactions section container
 	echo "<div id='entry-interactions'>";
 
-	foreach ($post['interactions'] as $index => $interaction) {
+	foreach ($post['interactions'] as $interaction) {
 		switch ($interaction['type']) {
 		case 'like':
 		case 'favourite':
