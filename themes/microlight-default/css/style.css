@@ -150,7 +150,7 @@ audio {
 
 .pagination {
 	display: block;
-	margin: 16px 0;
+	padding: 32px;
 }
 .pagination:after {
 	clear: both;
@@ -161,7 +161,7 @@ audio {
 
 .pagination-left, .pagination-right {
 	width: 50%;
-	width: calc(50% - 16px);
+	width: calc(50% - 8px);
 	display: inline-block;
 	padding: 16px;
 	text-align: center;
@@ -222,4 +222,31 @@ audio {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	user-select: none;
+}
+
+@media (max-width: 500px) {
+	header .u-photo {
+		float: none;
+		display: block;
+		width: 100%;
+		max-width: 240px;
+		margin: 0 auto 16px auto;
+	}
+
+	header {
+		text-align: center;
+	}
+
+	.tags {
+		text-align: left;
+		float: none;
+		display: block;
+		margin-bottom: 10px;
+		max-width: 100%;
+	}
+	.tags a {
+		display: inline-block;
+		margin: 0 5px 0 0;
+		padding: 0 0 5px 0;
+	}
 }

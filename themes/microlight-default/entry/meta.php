@@ -59,7 +59,7 @@ function entry_footer ($post, $is_archive) {
 		?></a>
 		<?php
 		foreach ($post['tags'] as $key) {
-			echo "<a class='p-category' href='" . ml_tag_permalink($key) . "'>" . $key . "</a>";
+			echo "<a class='p-category' href='" . ml_tag_permalink($key) . "'>" . $key . "</a> ";
 		}
 		?>
 	</div>
