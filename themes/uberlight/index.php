@@ -34,6 +34,8 @@ require_once('entry.php');
 				entry($posts, false);
 				break;
 		}
+
+		html_pagination();
 		?>
 	</main>
 </body>
