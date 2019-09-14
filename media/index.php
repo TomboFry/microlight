@@ -1,6 +1,6 @@
 <?php
 
-define('MICROLIGHT', 'v0.0.1');
+define('MICROLIGHT', 'v1.0.0');
 
 chdir('..');
 require_once('includes/config.php');
