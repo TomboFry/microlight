@@ -224,7 +224,7 @@ if (isset($_POST['submit'])) {
 
 		a { color: #3fa9f5 }
 
-		a:hover { color: #3793d5 }
+		a:hover { color: #2f89d5 }
 
 		.p { line-height: 1.4em }
 
@@ -303,6 +303,11 @@ if (isset($_POST['submit'])) {
 			border-radius: 6px;
 		}
 
+		code {
+			background-color: #f2f2f2;
+			padding: 1px 4px;
+		}
+
 		#install {
 			background: #4A3;
 			background: linear-gradient(#5B5, #4A3);
@@ -314,7 +319,7 @@ if (isset($_POST['submit'])) {
 			font-weight: 700;
 			font-size: 16px;
 			border-radius: 6px;
-			transition: margin-top 0.1s, border 0.1s;
+			transition: margin 0.1s linear, border 0.1s linear;
 		}
 
 		#install:active {
@@ -393,6 +398,7 @@ if (isset($_POST['submit'])) {
 		<div class='f'>
 			<label for='name'>
 				Photo
+				<span class='r'>required</span>
 			</label>
 			<input
 				required
@@ -404,8 +410,7 @@ if (isset($_POST['submit'])) {
 			<span class='d p'>
 				What do you look like? This will act as your
 				"profile picture", and be used when interacting
-				with other websites. Optional, but highly
-				recommended.
+				with other websites.
 			</span>
 		</div>
 		<div class='f'>
@@ -474,6 +479,12 @@ if (isset($_POST['submit'])) {
 				have specified. See
 				<a target='_blank' href='https://indieweb.org/IndieAuth'>IndieAuth</a>
 				for more information.
+			</span>
+			<span class="d p b">
+				If you'd like to add more links, you can edit
+				the <code>user.config.php</code> in the
+				<code>includes</code> folder after the
+				installation process.
 			</span>
 		</div>
 		<input
