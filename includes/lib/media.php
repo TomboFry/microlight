@@ -84,6 +84,8 @@ class ImageResizer {
 	 * @return ImageResizer
 	 */
 	function __construct ($file, $filename_override = null, $mimetype_override = null) {
+		if ($file['error'] !== UPLOAD_ERR_OK) throw new UploadException($file);
+
 		if (empty($file['tmp_name'])) {
 			throw new Exception('Filename was not provided');
 		}

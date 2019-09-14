@@ -43,12 +43,7 @@ try {
 		throw new Exception('Provide an image named `file`');
 	}
 
-	$file = $_FILES['file'];
-	if ($file['error'] > 0) {
-		throw new UploadException($file);
-	}
-
-	$image = new ImageResizer($file);
+	$image = new ImageResizer($_FILES['file']);
 	ml_http_response(HTTPStatus::CREATED, null, null, $image->get_permalink());
 	return;
 } catch (\Throwable $err) {
