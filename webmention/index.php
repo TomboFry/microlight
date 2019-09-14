@@ -214,7 +214,7 @@ function ml_webmention_validate_source_contents ($source, $target) {
 
 	// With the author h-card, get the image, name, and URL
 	$images = $xpath->query('.//img[' . xpath_class("u-photo") . ']', $author);
-	$author_image = '/uploads/me.jpg';
+	$author_image = null;
 	foreach ($images as $image) {
 		if ($image->hasAttribute('src')) {
 			$author_image = $image->getAttribute('src');

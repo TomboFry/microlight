@@ -49,6 +49,15 @@ function entry_interaction_metadata ($interaction) {
 	echo "</a>";
 }
 
+function entry_interaction_author_image ($author) {
+	$src = ml_get_theme_dir() . "/images/default.png";
+	if ($author['photo_url'] !== null) {
+		$src = $author['photo_url'];
+	}
+
+	echo "<img src='" . $src . "' class='u-photo'>";
+}
+
 /**
  * Markup for 'reply' interactions
  * @param Interaction $interaction
@@ -59,7 +68,7 @@ function entry_reply ($interaction) {
 	echo "<div class='p-comment u-comment h-cite'>";
 
 	echo "<div class='p-author u-author h-card'>";
-	echo "<img src='" . $interaction['person']['photo_url'] . "' class='u-photo'>";
+	entry_interaction_author_image($interaction['person']);
 	echo "<a class='u-url p-name' href='" . $interaction['person']['url'] . "'>";
 	echo $interaction['person']['name'];
 	echo "</a>";
@@ -89,7 +98,7 @@ function entry_like ($interaction) {
 
 	// Author
 	echo "<div class='p-author u-author h-card'>";
-	echo "<img src='" . $interaction['person']['photo_url'] . "' class='u-photo'>";
+	entry_interaction_author_image($interaction['person']);
 	echo "<a class='u-url p-name' href='" . $interaction['person']['url'] . "'>";
 	echo $interaction['person']['name'];
 	echo "</a> liked this post.";
@@ -115,7 +124,7 @@ function entry_repost ($interaction) {
 
 	// Author
 	echo "<div class='p-author u-author h-card'>";
-	echo "<img src='" . $interaction['person']['photo_url'] . "' class='u-photo'>";
+	entry_interaction_author_image($interaction['person']);
 	echo "<a class='u-url p-name' href='" . $interaction['person']['url'] . "'>";
 	echo $interaction['person']['name'];
 	echo "</a> reposted this post.";
@@ -140,7 +149,7 @@ function entry_bookmark ($interaction) {
 
 	// Author
 	echo "<div class='p-author u-author h-card'>";
-	echo "<img src='" . $interaction['person']['photo_url'] . "' class='u-photo'>";
+	entry_interaction_author_image($interaction['person']);
 	echo "<a class='u-url p-name' href='" . $interaction['person']['url'] . "'>";
 	echo $interaction['person']['name'];
 	echo "</a> bookmarked this post.";
