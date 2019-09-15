@@ -29,8 +29,18 @@ function ml_api_method () {
  * @return string
  */
 function ml_api_content_type () {
-	$content_type = $_SERVER['CONTENT_TYPE'];
-	if (empty($content_type)) $content_type = $_SERVER['HTTP_CONTENT_TYPE'];
+	$content_type = '';
+
+	if (isset($_SERVER['CONTENT_TYPE'])) {
+		$content_type = $_SERVER['CONTENT_TYPE'];
+	}
+
+	if (empty($content_type) && isset($_SERVER['HTTP_CONTENT_TYPE'])) {
+		$content_type = $_SERVER['HTTP_CONTENT_TYPE'];
+	}
+
+	// Default to form data if no value was provided.
+	if (empty($content_type)) $content_type = HTTPContentType::FORM_DATA;
 
 	return $content_type;
 }
@@ -43,7 +53,7 @@ function ml_api_content_type () {
 function ml_api_post_decode () {
 	global $post;
 
-	if (ml_api_content_type() === 'application/json') {
+	if (ml_api_content_type() === HTTPContentType::JSON) {
 		$post = json_decode(file_get_contents('php://input'), true);
 	} else {
 		$post = $_POST;
@@ -110,10 +120,12 @@ function ml_api_get ($key) {
  * @return null|string
  */
 function ml_api_access_token () {
+	global $post;
+
 	// Don't allow user in without a valid bearer token
 	$bearer = ml_http_bearer();
 
-	if ($bearer === false) {
+	if ($bearer === false && $post !== null) {
 		$bearer = ml_api_post('access_token');
 	}
 
