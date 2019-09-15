@@ -418,6 +418,7 @@ function ml_page_headers () {
 
 	<title><?php echo ml_get_title(); ?></title>
 	<link rel='micropub' href='<?php echo ml_base_url() . 'micropub/index.php'; ?>' />
+	<link rel="micropub_media" href='<?php echo ml_base_url() . 'media/index.php'; ?>' />
 	<link rel='authorization_endpoint' href='<?php echo Config::INDIEAUTH_PROVIDER; ?>' />
 	<link rel='token_endpoint' href='<?php echo Config::INDIEAUTH_TOKEN_ENDPOINT; ?>' />
 	<link rel='icon' href='<?php echo $image; ?>' />
