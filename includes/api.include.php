@@ -91,6 +91,7 @@ function ml_api_post_json ($post, $key, $is_single = false) {
 	if (!is_array($post)) return null;
 	if (!isset($post[$key])) return null;
 	if (empty($post[$key])) return null;
+	if (!is_array($post[$key])) return $post[$key];
 
 	// A lot of microformats2 items are intentionally single element arrays.
 	// I'm not sure why, but if we know it's supposed to, parse it here.
