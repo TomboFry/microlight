@@ -5,3 +5,6 @@ uploads/
 /info.php
 .idea/
 user.config.php
+release/
+/Dockerfile
+/docker-compose.yml
