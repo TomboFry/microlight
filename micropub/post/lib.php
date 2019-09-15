@@ -9,7 +9,7 @@ if (!defined('MICROLIGHT')) die();
  * @return string|false Return the date in ISO8601 if valid, otherwise false
  */
 function validate_date ($date) {
-	if ($date === null) {
+	if ($date === null || $date === '') {
 		// Use the current timestamp, if not provided.
 		return gmdate("c");
 	} else {
@@ -87,7 +87,7 @@ function generate_slug ($name, $summary) {
 /**
  * Determines the post type depending on whether other optional fields to POST
  * were provided.
- * 
+ *
  * @param PostEntry $entry
  * @return array|false If a valid post type was detected, an array containing
  *                     "type" and "url" keys, otherwise false.
