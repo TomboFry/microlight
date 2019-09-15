@@ -244,7 +244,7 @@ function ml_get_title () {
 	$str = '';
 
 	if ($showing === Show::POST || $showing === Show::PAGE) {
-		$str .= $posts['name'] !== ''
+		$str .= $posts['name'] !== '' && $posts['name'] !== null
 			? $posts['name']
 			: $posts['summary'];
 		$str .= Config::TITLE_SEPARATOR;
@@ -395,6 +395,9 @@ function ml_page_headers () {
 		$description = User::NOTE;
 		$image = ml_icon_url();
 	}
+
+	$description = htmlspecialchars($description, ENT_QUOTES);
+	$title = htmlspecialchars(ml_get_title(), ENT_QUOTES);
 	?>
 	<meta name='description' content='<?php echo $description; ?>' />
 	<meta name='generator' content='Microlight <?php echo MICROLIGHT; ?>' />
@@ -404,7 +407,7 @@ function ml_page_headers () {
 	<?php if (Config::OPEN_GRAPH === true): ?>
 	<meta name='twitter:card' content='summary' />
 	<meta property='og:url' content='<?php echo ml_canonical_permalink(); ?>' />
-	<meta property='og:title' content='<?php echo ml_get_title(); ?>' />
+	<meta property='og:title' content='<?php echo $title; ?>' />
 	<meta property='og:description' content='<?php echo $description; ?>' />
 	<meta property='og:image' content='<?php echo $image; ?>' />
 	<?php endif; ?>
