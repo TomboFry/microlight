@@ -73,12 +73,10 @@ class User {
 	const EMAIL = \'' . $email .'\';
 ';
 
-	// Add note, if provided
-	if (!empty($note)) {
-		$note = quote($note);
-		$contents .= '	const NOTE = \'' . $note . '\';
+	// Always add note, even if it's empty.
+	$note = quote($note);
+	$contents .= '	const NOTE = \'' . $note . '\';
 ';
-	}
 
 	// Open identities section, even if there are no identities provided
 	$contents .= '	const IDENTITIES = [
@@ -96,7 +94,8 @@ class User {
 ';
 		}
 	} else {
-		$contents .= '		//	[ \'name\' => \'\', \'url\' => \'\' ],';
+		$contents .= '		//	[ \'name\' => \'\', \'url\' => \'\' ],
+';
 	}
 
 	// Close identities section
