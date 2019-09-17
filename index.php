@@ -1,7 +1,7 @@
 <?php
 
 // This definition will prevent any files to be loaded outside of this file.
-define('MICROLIGHT', 'v1.0.0');
+define('MICROLIGHT', 'v1.0.1');
 
 try {
 	// Load user details

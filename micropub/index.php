@@ -1,6 +1,6 @@
 <?php
 
-define('MICROLIGHT', 'v1.0.0');
+define('MICROLIGHT', 'v1.0.1');
 
 chdir('..');
 require_once('includes/config.php');
@@ -40,6 +40,13 @@ try {
 
 		case 'source':
 			ml_http_response(HTTPStatus::OK, query_source());
+			return;
+
+		default:
+			ml_http_error(
+				HTTPStatus::INVALID_REQUEST,
+				'Invalid q parameter. Pick one of "config", "syndicate-to", or "source"'
+			);
 			return;
 		}
 
