@@ -148,7 +148,12 @@ if (isset($_POST['submit'])) {
 
 		// Attempt to upload/resize profile picture
 		if (isset($_FILES['photo'])) {
-			$image = new ImageResizer($_FILES['photo'], 'me', 'image/jpg');
+			$image = new ImageResizer(
+				$_FILES['photo'],
+				'me',
+				ImageType::JPG,
+				ImageResizeMethod::SQUARE
+			);
 		}
 
 		if (count($errors) === 0) {
