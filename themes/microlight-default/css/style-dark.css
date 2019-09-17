@@ -59,6 +59,11 @@ h2.p-name {
 	font-size: 24px;
 }
 
+h2.p-name, h2.p-name a {
+	word-break: normal;
+	overflow-wrap: break-word;
+}
+
 .p-name-emoji {
 	margin-right: 12px;
 	line-height: 20px;
