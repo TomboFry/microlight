@@ -4,6 +4,9 @@
 // file from within microlight itself.
 if (!defined('MICROLIGHT')) die();
 
+// Should this theme be dark or light? You decide!
+$dark_mode = false;
+
 // Contains various elements for this page
 require_once('elements.php');
 

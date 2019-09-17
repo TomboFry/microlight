@@ -64,6 +64,11 @@ abstract class ImageType extends BasicEnum {
 	const GIF = 'image/gif'; // jif
 }
 
+abstract class ImageResizeMethod extends BasicEnum {
+	const KEEP_ASPECT_RATIO = 0;
+	const SQUARE = 1;
+}
+
 class ImageResizer {
 	private $image;
 	private $type;
@@ -72,6 +77,7 @@ class ImageResizer {
 	private $width_src;
 	private $height_src;
 	private $filename;
+	private $resize_method;
 
 	private $filename_override;
 	private $mimetype_override;
@@ -81,9 +87,16 @@ class ImageResizer {
 	 * @param array $file
 	 * @param string $filename_override If set, the image will be forcibly saved here
 	 * @param string $mimetype_override If set, the image will be forcibly saved with this type
+	 * @param ImageResizeMethod $resize_method If set, the image will be resized differently
 	 * @return ImageResizer
+	 * @throws Exception
 	 */
-	function __construct ($file, $filename_override = null, $mimetype_override = null) {
+	function __construct (
+		$file,
+		$filename_override = null,
+		$mimetype_override = null,
+		$resize_method = ImageResizeMethod::KEEP_ASPECT_RATIO
+	) {
 		if ($file['error'] !== UPLOAD_ERR_OK) throw new UploadException($file);
 
 		if (empty($file['tmp_name'])) {
@@ -98,6 +111,13 @@ class ImageResizer {
 		if (!ImageType::isValidValue($this->type)) {
 			throw new Exception('Image was not provided');
 		}
+
+		// Make sure resize method is an acceptable value
+		if (!ImageResizeMethod::isValidValue($resize_method)) {
+			throw new Exception('Invalid resize method');
+		}
+
+		$this->resize_method = $resize_method;
 
 		// Calculate new image size
 		if (!$this->dimensions($file)) {
@@ -224,11 +244,29 @@ class ImageResizer {
 	}
 
 	private function resize () {
+		// Determine resize coordinates
+		$scale = $this->width_src / $this->width;
+
+		$source_x = 0;
+		$source_y = 0;
+
+		if ($this->resize_method === ImageResizeMethod::SQUARE) {
+			if ($this->width_src > $this->height_src) {
+				$source_x = ceil(($this->width_src - $this->height_src) / 2.0);
+				$this->width_src = $this->height_src;
+				$this->width = $this->height;
+			} else if ($this->width_src < $this->height_src) {
+				$source_y = ceil(($this->height_src - $this->width_src) / 2.0);
+				$this->height_src = $this->width_src;
+				$this->height = $this->width;
+			}
+		}
+
 		$destination = imagecreatetruecolor($this->width, $this->height);
 		$success = imagecopyresampled(
-			$destination,                      // New image
+			$destination,                       // New image
 			$this->image,                       // Old image
-			0, 0, 0, 0,                         // Image origin coords
+			0, 0, $source_x, $source_y,         // Image origin coords
 			$this->width, $this->height,        // New image size
 			$this->width_src, $this->height_src // Old image size
 		);

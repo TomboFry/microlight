@@ -1,7 +1,7 @@
 <?php
 
 // This definition will prevent any files to be loaded outside of this file.
-define('MICROLIGHT', 'v1.0.0');
+define('MICROLIGHT', 'v1.0.1');
 
 session_start();
 require_once('includes/config.php');
@@ -73,12 +73,10 @@ class User {
 	const EMAIL = \'' . $email .'\';
 ';
 
-	// Add note, if provided
-	if (!empty($note)) {
-		$note = quote($note);
-		$contents .= '	const NOTE = \'' . $note . '\';
+	// Always add note, even if it's empty.
+	$note = quote($note);
+	$contents .= '	const NOTE = \'' . $note . '\';
 ';
-	}
 
 	// Open identities section, even if there are no identities provided
 	$contents .= '	const IDENTITIES = [
@@ -96,7 +94,8 @@ class User {
 ';
 		}
 	} else {
-		$contents .= '		//	[ \'name\' => \'\', \'url\' => \'\' ],';
+		$contents .= '		//	[ \'name\' => \'\', \'url\' => \'\' ],
+';
 	}
 
 	// Close identities section
@@ -148,7 +147,12 @@ if (isset($_POST['submit'])) {
 
 		// Attempt to upload/resize profile picture
 		if (isset($_FILES['photo'])) {
-			$image = new ImageResizer($_FILES['photo'], 'me', 'image/jpg');
+			$image = new ImageResizer(
+				$_FILES['photo'],
+				'me',
+				ImageType::JPG,
+				ImageResizeMethod::SQUARE
+			);
 		}
 
 		if (count($errors) === 0) {

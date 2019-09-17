@@ -5,6 +5,8 @@
 }
 
 body {
+	background-color: #111;
+	color: #eee;
 	max-width: 640px;
 	width: 100%;
 	margin: 0 auto;
@@ -12,7 +14,7 @@ body {
 }
 
 a {
-	color: #333;
+	color: #ccc;
 	text-decoration: none;
 }
 
@@ -85,7 +87,7 @@ h2.p-name, h2.p-name a {
 	content: '';
 	width: 12px;
 	margin-left: 12px;
-	border-top: 1px solid #ccc;
+	border-top: 1px solid #666;
 	display: inline-block;
 	vertical-align: middle;
 }
@@ -113,7 +115,7 @@ article h2 {
 
 .dt-published-link, .dt-updated, #entry-interactions .dt-published {
 	display: block;
-	color: #666;
+	color: #999;
 	text-decoration: none;
 	font-size: 11pt;
 	font-weight: 500;
@@ -142,7 +144,7 @@ audio {
 
 .tags a {
 	font-weight: 700;
-	color: #666;
+	color: #ccc;
 	text-decoration: none;
 	text-transform: lowercase;
 	margin-left: 6px;
@@ -150,7 +152,7 @@ audio {
 
 .tags a:before {
 	content: '#';
-	color: #999;
+	color: #666;
 }
 
 .pagination {
@@ -172,12 +174,12 @@ audio {
 	text-align: center;
 	border-radius: 8px;
 	text-decoration: none;
-	border: 1px solid #eee;
+	border: 1px solid #191919;
 	font-weight: 700;
 }
 
 .pagination-left:hover, .pagination-right:hover {
-	background-color: #eee;
+	background-color: #191919;
 }
 
 .pagination-left {
@@ -202,13 +204,13 @@ audio {
 
 #entry-interactions::before {
 	content: 'INTERACTIONS';
-	color: #ccc;
+	color: #666;
 	font-weight: 700;
 }
 
 #entry-interactions > div {
 	padding: 10px 16px;
-	border: 1px solid #ddd;
+	border: 1px solid #333;
 	border-radius: 6px;
 	margin-top: 10px;
 }
