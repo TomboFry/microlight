@@ -29,7 +29,12 @@ h1, h2, h3, h4, h5, h6 {
 	/* font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "URW Palladio L", serif; */
 }
 
-p, .e-content, img {
+hr {
+	border: 0;
+	border-bottom: 1px solid #ccc;
+}
+
+p, .e-content, img, .e-content li, .e-content hr {
 	line-height: 20px;
 	margin-bottom: 10px;
 }
