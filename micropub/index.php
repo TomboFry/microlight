@@ -28,7 +28,7 @@ if (ml_api_validate_token($bearer) === false) {
 
 try {
 	switch (ml_api_method()) {
-	case 'GET':
+	case HTTPMethod::GET:
 		switch (ml_api_get('q')) {
 		case 'config':
 			ml_http_response(HTTPStatus::OK, query_config());
@@ -50,7 +50,7 @@ try {
 			return;
 		}
 
-	case 'POST':
+	case HTTPMethod::POST:
 		// Micropub can either have actions via the `action` value, or assume
 		// an entity is being created via the `type` (if JSON) or `h` (if form
 		// encoded) values. Yeah, gets a little inconvenient with all the

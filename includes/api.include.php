@@ -17,7 +17,7 @@ $auth = null;
 /**
  * Retrieve the HTTP method used, usually `GET` or `POST`
  *
- * @return void
+ * @return string
  */
 function ml_api_method () {
 	return $_SERVER['REQUEST_METHOD'];
