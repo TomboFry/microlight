@@ -13,11 +13,12 @@ class PostEntry {
 	public $photo;
 	public $audio;
 	public $video;
+	public $mp_slug;
 	public $bookmark_of;
 	public $in_reply_to;
 	public $like_of;
 	public $repost_of;
-	public $mp_slug;
+	public $listen_of;
 
 	/**
 	 * Convert a post from the database into a PostEntry
@@ -54,6 +55,9 @@ class PostEntry {
 		case 'repost':
 			$this->repost_of = $properties['url'];
 			break;
+		case 'listen':
+			$this->listen_of = $properties['url'];
+			break;
 		}
 	}
 
@@ -84,11 +88,12 @@ class PostEntry {
 		$this->photo = ml_api_post('photo');
 		$this->audio = ml_api_post('audio');
 		$this->video = ml_api_post('video');
+		$this->mp_slug = ml_api_post('mp-slug');
 		$this->bookmark_of = ml_api_post('bookmark-of');
 		$this->in_reply_to = ml_api_post('in-reply-to');
 		$this->like_of = ml_api_post('like-of');
 		$this->repost_of = ml_api_post('repost-of');
-		$this->mp_slug = ml_api_post('mp-slug');
+		$this->listen_of = ml_api_post('listen-of');
 	}
 
 	/**
@@ -116,6 +121,7 @@ class PostEntry {
 		$this->in_reply_to = ml_api_post_json($props, 'in-reply-to', true);
 		$this->like_of = ml_api_post_json($props, 'like-of', true);
 		$this->repost_of = ml_api_post_json($props, 'repost-of', true);
+		$this->listen_of = ml_api_post_json($props, 'listen-of', true);
 
 		// Parse content - May either be in text form or HTML, so figure it out
 		$content = ml_api_post_json($props, 'content', true);

@@ -155,6 +155,13 @@ function validate_post_type ($entry) {
 		];
 	}
 
+	if (!empty($entry->listen_of)) {
+		return [
+			'type' => 'listen',
+			'url' => $entry->listen_of,
+		];
+	}
+
 	return false;
 }
 

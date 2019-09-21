@@ -41,8 +41,8 @@ function entry ($post, $is_archive = true) {
 	case 'reply':
 		fmt_reply($post, $is_archive);
 		break;
-	case 'scrobble':
-		fmt_scrobble($post, $is_archive);
+	case 'listen':
+		fmt_listen($post, $is_archive);
 		break;
 	default:
 		fmt_default($post, $is_archive);

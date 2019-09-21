@@ -36,11 +36,13 @@ function fmt_video ($post, $is_archive) {
 	entry_content($post, $is_archive);
 }
 
-function fmt_scrobble ($post, $is_archive) {
+function fmt_listen ($post, $is_archive) {
 	$url = $post['url'];
+
 	if (empty($url)) {
 		$url = ml_post_permalink($post['slug']);
 	}
+
 	echo "<h2 class='p-name'>";
 		echo "<span class='p-name-emoji'>&#127911;</span>";
 		echo "<a class='u-listen-of' href='" . $url . "'>";
