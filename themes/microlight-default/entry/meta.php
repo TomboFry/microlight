@@ -112,7 +112,7 @@ function entry_footer ($post, $is_archive) {
 }
 
 function entry_hcard () {
-	echo "<div class='p-author vcard hcard h-card hidden'>";
+	echo "<div class='p-author vcard hcard h-card hidden' rel='author'>";
 		if (ml_user_has_icon()) {
 			echo "<img class='u-photo' alt='" . User::NAME . "' src='" . ml_icon_url() . "' />";
 		}
