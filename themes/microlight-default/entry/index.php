@@ -23,6 +23,9 @@ function entry ($post, $is_archive = true) {
 	case 'audio':
 		fmt_audio($post, $is_archive);
 		break;
+	case 'video':
+		fmt_video($post, $is_archive);
+		break;
 	case 'photo':
 		fmt_image($post, $is_archive);
 		break;

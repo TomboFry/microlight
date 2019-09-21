@@ -27,6 +27,15 @@ function fmt_audio ($post, $is_archive) {
 	entry_content($post, $is_archive);
 }
 
+function fmt_video ($post, $is_archive) {
+	entry_title($post, $is_archive);
+	echo "<video class='u-video' controls>";
+		echo "<source src='" . $post['url'] . "' />";
+		echo "<p>Your browser does not support this video format</p>";
+	echo "</video>";
+	entry_content($post, $is_archive);
+}
+
 function fmt_scrobble ($post, $is_archive) {
 	$url = $post['url'];
 	if (empty($url)) {

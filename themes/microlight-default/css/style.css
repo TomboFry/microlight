@@ -32,7 +32,7 @@ hr {
 	border-bottom: 1px solid #ccc;
 }
 
-p, .e-content, img, .e-content li, .e-content hr {
+p, .e-content, img, .e-content li, .e-content hr, .u-audio, .u-video {
 	line-height: 20px;
 	margin-bottom: 10px;
 }
@@ -121,7 +121,7 @@ img {
 	max-width: 100%;
 }
 
-audio {
+audio, video {
 	width: 100%;
 }
 

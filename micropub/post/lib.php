@@ -110,6 +110,23 @@ function validate_post_type ($entry) {
 		];
 	}
 
+	// TODO: Upload `audio` and `video` files when provided, similarly to photos
+
+	if (!empty($entry->audio) && filter_var($entry->audio, FILTER_VALIDATE_URL) !== false) {
+		return [
+			'type' => 'audio',
+			'url' => $entry->audio,
+		];
+	}
+
+	if (!empty($entry->video) && filter_var($entry->video, FILTER_VALIDATE_URL) !== false) {
+		return [
+			'type' => 'video',
+			'url' => $entry->video,
+		];
+	}
+
+
 	if (!empty($entry->bookmark_of)) {
 		return [
 			'type' => 'bookmark',
