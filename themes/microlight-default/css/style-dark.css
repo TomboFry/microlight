@@ -105,19 +105,6 @@ article h2 {
 	margin-bottom: 16px;
 }
 
-.page article h2 {
-	font-weight: 700;
-	font-style: italic;
-	font-size: 28pt;
-	margin-bottom: 16px;
-}
-
-.page article .e-content {
-	font-size: 12pt;
-	line-height: 1.618;
-	margin-bottom: 16px;
-}
-
 .dt-published-link, .dt-updated, #entry-interactions .dt-published {
 	display: block;
 	color: #999;
@@ -200,7 +187,7 @@ audio {
 }
 
 #entry-interactions {
-	padding-top: 40px;
+	padding-top: 32px;
 }
 
 #entry-interactions:empty {
@@ -214,7 +201,7 @@ audio {
 }
 
 #entry-interactions > div {
-	padding: 10px 16px;
+	padding: 10px;
 	border: 1px solid #333;
 	border-radius: 6px;
 	margin-top: 10px;
