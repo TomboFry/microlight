@@ -16,36 +16,6 @@ if (ml_api_method() !== HTTPMethod::POST) {
 if (!ml_api_post_decode()) return;
 
 /**
- * Ensure that the provided URL is a fully valid, absolute URL
- *
- * @param string $url
- * @return boolean
- */
-function ml_webmention_validate_url ($url) {
-	$url_parts = parse_url($url);
-
-	// URL must be absolute, so check for a scheme (http(s)) and a hostname/IP
-	if (!isset($url_parts['scheme']) || !isset($url_parts['host'])) return false;
-
-	// Must be a HTTP URL, do not allow `mailto` or `ftp`, etc.
-	if ($url_parts['scheme'] !== 'http' && $url_parts['scheme'] !== 'https') {
-		return false;
-	}
-
-	// According to the webmention spec, should not contain localhost or a
-	// loopback address
-	// if ($url_parts['host'] === 'localhost' || substr($url_parts['host'], 0, 4) === '127.') {
-	// 	return false;
-	// }
-
-	// Validate the URL we've created to make sure it's valid
-	if (filter_var($url, FILTER_VALIDATE_URL) === false) return false;
-
-	// If both tests passed, return true.
-	return true;
-}
-
-/**
  * Validate the POST body of the incoming request. Validates two URLs according
  * to the following link:
  * https://www.w3.org/TR/webmention/#request-verification
@@ -66,10 +36,10 @@ function ml_webmention_validate_post () {
 	}
 
 	// Make sure provided URLs *are actually* URLs.
-	if (ml_webmention_validate_url($post['source']) === false) {
+	if (ml_validate_url($post['source']) === false) {
 		return 'Source URL is not a valid URL';
 	}
-	if (ml_webmention_validate_url($post['target']) === false) {
+	if (ml_validate_url($post['target']) === false) {
 		return 'Target URL is not a valid URL';
 	}
 
@@ -218,6 +188,10 @@ function ml_webmention_validate_source_contents ($source, $target) {
 	foreach ($images as $image) {
 		if ($image->hasAttribute('src')) {
 			$author_image = $image->getAttribute('src');
+			$author_image = ml_validate_url($author_image, $source);
+			if ($author_image === false) {
+				throw new Exception('Author image URL is invalid');
+			}
 			break;
 		}
 	}
@@ -233,6 +207,10 @@ function ml_webmention_validate_source_contents ($source, $target) {
 		throw new Exception('Source URL does not contain the author\'s home URL');
 	}
 	$author_url = $urls[0]->getAttribute('href');
+	$author_url = ml_validate_url($author_url, $source);
+	if ($author_url === false) {
+		throw new Exception('Author URL is invalid');
+	}
 
 	// Assume normal post type for the meantime.
 

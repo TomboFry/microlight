@@ -5,58 +5,8 @@ if (!defined('MICROLIGHT')) die();
 require_once('sql.include.php');
 
 /**
- * Ensure that the webmention URL found is actually a valid absolute URL, and if
- * not, perhaps the source URL can help.
- * @param string $source
- * @param string $webmention_url
- * @return string|false
- */
-function ml_webmention_validate_url ($source, $url) {
-	$output = '';
-	$url_parts = parse_url($url);
-	$source_parts = parse_url($source);
-
-	// Test for absolute URL. As long as http(s) and the hostname is provided,
-	// we can safely assume it is absolute, as the rest doesn't really matter.
-	if (isset($url_parts['scheme']) && isset($url_parts['host'])) {
-		$output = $url;
-
-	// Otherwise, the provided URL must be relative
-	// (ie. not contain a scheme or hostname)
-	} else if (!isset($url_parts['host'])) {
-		$output = $source_parts['scheme'] . '://' . $source_parts['host'];
-
-		// Add source port
-		if (isset($source_parts['port'])) $output .= ':' . $source_parts['port'];
-
-		// Relative to Root (because first character is '/')
-		if (strpos($url_parts['path'], '/') === 0) {
-			$output .= $url;
-
-		// Relative to source page
-		} else {
-			// Remove everything after the last slash to point to the corrent
-			// relative URL.
-			$source_path = substr($source_parts['path'], 0, strrpos($source_parts['path'], '/'));
-
-			// Add the new path
-			$output .= $source_path;
-
-			// Prevent the URL from having two slashes if the path already ends with slash
-			if ($source_path[-1] !== '/' && strlen($url) > 0) $output .= '/';
-			$output .= $url;
-		}
-	}
-
-	// Finally, validate the URL we've created to make sure it's valid
-	if (filter_var($output, FILTER_VALIDATE_URL) !== false) return $output;
-
-	return false;
-}
-
-/**
  * Find a webmention URL by looking at the HTTP headers from the source URL. If
- * no URL could be found, return `false`.  
+ * no URL could be found, return `false`.
  * Example: `Link: <https://.../>; rel="webmention"`
  * @param array $response
  * @return string|false
@@ -91,7 +41,7 @@ function ml_webmention_head ($response) {
 
 /**
  * Find a webmention URL by looking at the HTML returned from the source URL. If
- * no URL could be found, return `false`.  
+ * no URL could be found, return `false`.
  * Example: `<link rel='webmention' href='https://.../' />`
  * @param array $response
  * @return string|false
@@ -157,7 +107,7 @@ function ml_webmention_perform ($url, $post_slug) {
 	if ($webmention_url === false) return;
 
 	// Parse relative URLs before attempting to send a webmention
-	$webmention_url = ml_webmention_validate_url($url, $webmention_url);
+	$webmention_url = ml_validate_url($webmention_url, $url);
 	if ($webmention_url === false) throw new Exception('Invalid webmention URL: "' . $webmention_url . '"');
 
 	$response = ml_http_request($webmention_url, HTTPMethod::POST, [

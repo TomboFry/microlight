@@ -164,3 +164,61 @@ function ml_api_validate_token ($token) {
 
 	return true;
 }
+
+/**
+ * Ensure that the webmention URL found is actually a valid absolute URL, and if
+ * not, perhaps the source URL can help.
+ * @param string $url URL to validate
+ * @param string $source
+ * @return string|false
+ */
+function ml_validate_url ($url, $source = null) {
+	$output = '';
+	$url_parts = parse_url($url);
+	$source_parts = parse_url($source);
+
+	// Test for absolute URL. As long as http(s) and the hostname is provided,
+	// we can safely assume it is absolute, as the rest doesn't really matter.
+	if (empty($url_parts['scheme']) === false && empty($url_parts['host']) === false) {
+		// Must be a HTTP URL, do not allow `mailto`, `ftp`, `javascript`, etc.
+		if ($url_parts['scheme'] !== 'http' && $url_parts['scheme'] !== 'https') {
+			return false;
+		}
+
+		$output = $url;
+
+	// Otherwise, the provided URL must be relative
+	// (ie. not contain a scheme or hostname)
+	} else if (empty($url_parts['host']) === true) {
+		// Don't allow relative URLs if the source is not provided
+		if ($source_parts === false || $source === null) return false;
+
+		$output = $source_parts['scheme'] . '://' . $source_parts['host'];
+
+		// Add source port
+		if (empty($source_parts['port']) === false) $output .= ':' . $source_parts['port'];
+
+		// Relative to Root (because first character is '/')
+		if (strpos($url_parts['path'], '/') === 0) {
+			$output .= $url;
+
+		// Relative to source page
+		} else {
+			// Remove everything after the last slash to point to the corrent
+			// relative URL.
+			$source_path = substr($source_parts['path'], 0, strrpos($source_parts['path'], '/'));
+
+			// Add the new path
+			$output .= $source_path;
+
+			// Prevent the URL from having two slashes if the path already ends with slash
+			if ($source_path[-1] !== '/' && strlen($url) > 0) $output .= '/';
+			$output .= $url;
+		}
+	}
+
+	// Finally, validate the URL we've created to make sure it's valid
+	if (filter_var($output, FILTER_VALIDATE_URL) !== false) return $output;
+
+	return false;
+}
