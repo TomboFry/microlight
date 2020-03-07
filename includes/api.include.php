@@ -168,6 +168,7 @@ function ml_api_validate_token ($token) {
 /**
  * Ensure that the webmention URL found is actually a valid absolute URL, and if
  * not, perhaps the source URL can help.
+ *
  * @param string $url URL to validate
  * @param string $source
  * @return string|false
@@ -211,8 +212,11 @@ function ml_validate_url ($url, $source = null) {
 			// Add the new path
 			$output .= $source_path;
 
-			// Prevent the URL from having two slashes if the path already ends with slash
-			if ($source_path[-1] !== '/' && strlen($url) > 0) $output .= '/';
+			// Prevent the URL from having two slashes if the path
+			// already ends with slash
+			if (strlen($source_path) === 0 || ($source_path[-1] !== '/' && strlen($url) > 0)) {
+				$output .= '/';
+			}
 			$output .= $url;
 		}
 	}
