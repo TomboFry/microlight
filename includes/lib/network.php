@@ -97,7 +97,10 @@ function ml_http_error ($error = HTTPStatus::SERVER_ERROR, $description = '') {
 
 	ml_http_response(
 		$error,
-		['error' => $error['description'], 'error_description' => $description]
+		[
+			'error' => $error['description'],
+			'error_description' => $description
+		]
 	);
 
 	return;

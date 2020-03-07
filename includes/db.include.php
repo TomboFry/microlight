@@ -43,7 +43,7 @@ class Model {
 	/**
 	 * Model constructor.
 	 *
-	 * @param PDO $db
+	 * @param DB $db
 	 * @param string $table_name
 	 */
 	function __construct (&$db, $table_name) {

@@ -197,7 +197,9 @@ function ml_validate_url ($url, $source = null) {
 		$output = $source_parts['scheme'] . '://' . $source_parts['host'];
 
 		// Add source port
-		if (empty($source_parts['port']) === false) $output .= ':' . $source_parts['port'];
+		if (empty($source_parts['port']) === false) {
+			$output .= ':' . $source_parts['port'];
+		}
 
 		// Relative to Root (because first character is '/')
 		if (strpos($url_parts['path'], '/') === 0) {
@@ -207,14 +209,21 @@ function ml_validate_url ($url, $source = null) {
 		} else {
 			// Remove everything after the last slash to point to the corrent
 			// relative URL.
-			$source_path = substr($source_parts['path'], 0, strrpos($source_parts['path'], '/'));
+			$source_path = substr(
+				$source_parts['path'],
+				0,
+				strrpos($source_parts['path'], '/')
+			);
 
 			// Add the new path
 			$output .= $source_path;
 
 			// Prevent the URL from having two slashes if the path
 			// already ends with slash
-			if (strlen($source_path) === 0 || ($source_path[-1] !== '/' && strlen($url) > 0)) {
+			if (
+				strlen($source_path) === 0 ||
+				($source_path[-1] !== '/' && strlen($url) > 0)
+			) {
 				$output .= '/';
 			}
 			$output .= $url;
