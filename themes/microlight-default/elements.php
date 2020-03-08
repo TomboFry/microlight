@@ -5,8 +5,6 @@
 if (!defined('MICROLIGHT')) die();
 
 function html_head () {
-	global $dark_mode;
-
 	echo "<head>";
 		echo "<meta charset='UTF-8' />";
 		echo "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' />";
@@ -15,7 +13,7 @@ function html_head () {
 		// Add pre-generated headers
 		ml_page_headers();
 
-		$css = isset($dark_mode) && $dark_mode === true
+		$css = DARK_MODE === true
 			? '/css/style-dark.css'
 			: '/css/style.css';
 

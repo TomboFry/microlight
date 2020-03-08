@@ -76,7 +76,7 @@ function entry_footer ($post, $is_archive) {
 	<?php
 
 	// Print Location
-	if (!$is_archive):
+	if (!$is_archive && SHOW_MAP_ON_POSTS === true):
 		$geo = ml_location_geo($post['location']);
 		if (is_array($geo)):
 			$link = 'https://www.openstreetmap.org/?mlat=' . $geo['lat'] . '&mlon=' . $geo['long'];
