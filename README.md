@@ -1,3 +1,5 @@
+[Please read this update about microlight's future](https://tomgardiner.me/?post_slug=20201128-why-microlight-was-destined-to-fail)
+
 # microlight (or µLight, or µlite, etc)
 
 ## Why?
